@@ -1,13 +1,234 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    box-sizing: border-box;
+    list-style: none;
+    text-decoration: none;
+    user-select: none;
+    -moz-user-select: none;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+:root {
+    --color-1: #006b38ff;
+    --color-2: #101820ff;
+    --color-3: #0C7A45ff;
+    --color-4: #3a434cff;
+    --transition: all 200ms ease;
+}
+
+body, div#root, div#root > div {
+    background: var(--color-1);
+    color: var(--color-2);
+    font-family: 'Press Start 2P', cursive;
+    display: flex;
+    /* flex-direction: column; */
+    flex-wrap: nowrap;
+    width: 100vw;
+    height: 100vh;
+    overflow: -moz-hidden-unscrollable;
+}
+
+#hand {
+    width: 80vw;
+    height: 100vw;
+    background-color: var(--color-1);
+    color: var(--color-2);
+    /* position: absolute;
+    float: left; */
+    /* display: flex;
+    flex-direction: row;
+    justify-content: center; */
+}
+
+#controls {
+    width: 20vw;
+    height: 100vw;
+    /* position: absolute;
+    float: right; */
+    background-color: var(--color-2);
+    color: var(--color-1);
+}
+
+h3, section > div {
+    width: 100%;
+    height: max-content;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    /* justify-content: center; */
+    text-align: center;
+    background: transparent;
+    display: grid;
+    grid-template-columns: auto;
+}
+
+.btn {
+    width: max-content;
+    justify-content: center;
+    height: max-content;
+    display: inline-grid;
+    color: var(--color-1);
+    background: var(--color-2);  
+    cursor: pointer;
+    border: 3px solid var(--color-1);
+    transition: var(--transition);
+    animation: fadeIn 0.4s;
+}
+
+.btn:hover {
+    background: var(--color-1);
+    color: var(--color-2);
+    border-color: transparent;
+}
+
+.btn-controls {
+    margin: 0.5rem;
+    padding: 0.75rem 1.2rem;
+}
+
+.btn-controls:hover {
+    border-color: transparent;
+}
+
+.btn-controls-active {
+    background: var(--color-1);
+    color: var(--color-2);
+    border-color: transparent;
+}
+
+.btn-hand {
+    margin: 1rem, 0.3rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.5rem;
+    float: left;
+}
+
+.btn-hand:hover {
+    border: 3px solid var(--color-2);
+}
+
+.btn-hand-active {
+    background: var(--color-1);
+    color: var(--color-2);
+    border: 3px solid var(--color-2);
+}
+
+.subdiv {
+    z-index: 999;
+    background: transparent;
+    border-top: 3px solid var(--color-3);
+    /* border-bottom: 3px solid var(--color-3); */
+    width: 100%;
+    /* height: 50%; */
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    /* justify-content: flex-end;
+    float: right; */
+    animation: fadeIn 0.4s;
+    transition: var(--transition);
+}
+
+.container {
+    position: relative;
+    top: 1.5rem;
+    width: 100%;
+    height: 90vh;
+    border-bottom: 3px solid var(--color-3);
+}
+
+.header {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    margin: 0;
+    padding: 0;
+    overflow: -moz-hidden-unscrollable;
+    position: absolute;
+    height: 3.3rem;
+    width: 70vw;
+}
+
+.header > div.btn {
+    float: right;
+}
+
+.set-subs {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    flex-wrap: nowrap;
+    overflow: -moz-hidden-unscrollable;
+    margin: 0;
+    padding: 0;
+}
+
+.selector {    
+    width: max-content;
+    height: max-content;
+    z-index: 99;
+    /* float: left; */
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+.btns-pitch {
+    height: 100%;
+    float: right;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    /* grid-template-columns: auto auto; */
+}
+
+.btn-pitch {
+    float: left;
+    width: max-content;
+    justify-content: center;
+    height: max-content;
+    color: var(--color-3);
+    background: transparent;
+    font-size: 0.5rem;
+    padding: 0.2rem;
+    margin: 0.1rem;
+    cursor: pointer;
+    border: 3px solid var(--color-3);
+    transition: var(--transition);
+    animation: fadeIn 1s;
+}
+
+.btn-pitch:hover {
+    background: var(--color-2);
+    color: var(--color-1);
+    border-color: transparent;
+    border: 3px solid var(--color-2);
+}
+
+.btn-pitch-active {
+    background: var(--color-2);
+    color: var(--color-1);
+    border-color: transparent;
+    border: 3px solid var(--color-2);
+}
+
+.btn-disabled {
+    width: max-content;
+    justify-content: center;
+    height: max-content;
+    display: inline-grid;
+    color: var(--color-4);
+    background: var(--color-2);
+    border: 3px solid var(--color-4);
+    margin: 0.2rem;
+    padding: 0.3rem 0.2rem;
+    transition: var(--transition);
+    animation: fadeIn 0.4s;
+    /* animation: fadeOut 0.05s; */
+    height: 37.2px;
 }

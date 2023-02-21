@@ -1,0 +1,30 @@
+canvas {
+  width: 100%;
+  height: 100%;
+  z-index: 6;
+  background: transparent;
+  /* display: flex;
+  flex-direction: row; */
+  position: absolute;
+  /* border: 3px solid var(--color-2); */
+}
+
+.subdivs {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  /* display: grid;
+  grid-template-columns: auto; */
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+Webcam {
+  z-index: 3;
+}

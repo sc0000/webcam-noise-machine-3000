@@ -1,0 +1,114 @@
+.octave-spread {
+  font-size: 0.7rem;
+  display: flex;
+}
+
+.control-buttons {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: column;
+  grid-template-columns: auto;
+  justify-content: center;
+  margin-top: 0;
+  width: 100%;
+}
+
+.control-buttons > .btn {
+  font-size: 0.7rem;
+}
+
+.randomize-outer {
+  height: max-content;
+  display: flex;
+  flex-direction: row-reverse;
+  margin: 0;
+  padding: 0;
+}
+
+.randomize-outer > .btn {
+  padding: 0.4rem;
+  font-size: 0.5rem;
+}
+
+.button-outer {
+  margin-bottom: 0rem;
+  font-size: 0.75rem;
+}
+
+.players-outer {
+  padding-top: 6px;
+  padding-left: 9px;
+  padding-right: 9px;
+}
+
+.players {
+  width: 100%;
+  
+}
+
+.shapes-options {
+  display: grid;
+  grid-template-columns: auto auto auto auto;
+}
+
+.shapes-options > .btn {
+  width: calc(100% - 6px);
+  position: relative;
+  padding: 0.4rem;
+  margin: 3px;
+  font-size: 0.5rem;
+}
+
+.shapes-options-outer {
+  padding-top: 9px;
+  border-top: 3px solid var(--color-1);
+}
+
+.shapes {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.7rem;
+  width: 100%;
+}
+
+.shapes-all {
+  display: grid;
+  flex-wrap: nowrap;
+  justify-content: center;
+  
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  width: 100%;
+  border-bottom: 3px solid var(--color-1);
+}
+
+.fingers {
+  display: flex;
+  width: max-content;
+  justify-content: center;
+}
+
+.shapes-thumb {
+  margin-top: 7rem;
+}
+
+.shapes-index {
+  margin-top: 1.8rem;
+}
+
+.shapes-ring {
+  margin-top: 1.8rem;
+}
+
+.shapes-pinky {
+  margin-top: 4rem;
+}
+
+.microtonal {
+  width: 100%;
+  height: max-content; 
+  padding: 9px;
+  margin-bottom: 3px;
+  border-bottom: 3px solid var(--color-1);
+
+}

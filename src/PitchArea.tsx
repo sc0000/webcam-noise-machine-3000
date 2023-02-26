@@ -1,9 +1,13 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, FC } from 'react'
 import { randomInt } from './utils';
 
 // TODO: Update style when reaching boundaries (greyed out buttons)
 
-const PitchArea = ({sendPitch}: any) => {
+interface PitchArea {
+    sendPitch: ({pitch, min, max}: {pitch: string, min: number, max: number}) => void;
+}
+
+const PitchArea: FC<PitchArea> = ({sendPitch}) => {
     const pitches = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
     const [activePitch, setActivePitch] = useState(pitches[randomInt(0, 11)]);
     
@@ -43,7 +47,7 @@ const PitchArea = ({sendPitch}: any) => {
         else {
             return (
                 <div>
-                    <div className="btn-pitch" onClick={() => {
+                    <div className="btn-pitch" onKeyDown={()=>{}} onClick={() => {
                         if (octaveSpread.max < 15)
                             setOctaveSpread({
                                 min: octaveSpread.min, 
@@ -53,7 +57,7 @@ const PitchArea = ({sendPitch}: any) => {
                     }
                     >+</div>
 
-                    <div className="btn-pitch" onClick={() => {
+                    <div className="btn-pitch" onKeyDown={()=>{}} onClick={() => {
                         if (octaveSpread.max > 1)
                             setOctaveSpread({
                                 min: (octaveSpread.min >= octaveSpread.max - 1 ? octaveSpread.max - 1 : octaveSpread.min), 
@@ -72,7 +76,7 @@ const PitchArea = ({sendPitch}: any) => {
         <div className="selector">
             {pitches.map((p) => {
                 return (
-                    <div key={p} onClick={() => {
+                    <div key={p} onKeyDown={()=>{}} onClick={() => {
                         setActivePitch(p); sendPitch({pitch: p, min: octaveSpread.min, max: octaveSpread.max});
                     }} 
                     
@@ -83,7 +87,7 @@ const PitchArea = ({sendPitch}: any) => {
 
         <div className="octave-spread">
             <div className="btn-pitch btn-pitch-active" style={{cursor: "default"}}>oct {locked ? octaveSpread.min : range}</div>
-            <div className="btn-pitch" onClick={() => {
+            <div className="btn-pitch" onKeyDown={()=>{}} onClick={() => {
                     if (octaveSpread.min < 15) {
                         if (locked)
                             setOctaveSpread({
@@ -100,7 +104,7 @@ const PitchArea = ({sendPitch}: any) => {
                 }
             }>+</div>
 
-            <div className="btn-pitch" onClick={() => {
+            <div className="btn-pitch" onKeyDown={()=>{}} onClick={() => {
                     if (octaveSpread.min > 1) {
                         if (locked)
                             setOctaveSpread({
@@ -119,7 +123,7 @@ const PitchArea = ({sendPitch}: any) => {
 
             <div>{maxSwitches(locked)}</div>
 
-            <div className="btn-pitch" onClick={() => setLocked(!locked)}>{locked ? "spread" : "unison"}</div>
+            <div className="btn-pitch" onKeyDown={()=>{}} onClick={() => setLocked(!locked)}>{locked ? "spread" : "unison"}</div>
         </div>
     </div>
   )

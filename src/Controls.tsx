@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from 'react'
-// import { ToneOscillatorType } from 'tone'
+import { useState } from 'react'
 import Player from './Player'
 import audio from './Audio'
 import './controls.css'
-import { randomInt } from './utils'
 import Dropdown from './Dropdown'
 import Slider from './Slider'
 
@@ -68,7 +66,8 @@ const Controls = () => {
     <section id="controls">
         <div className="control-buttons">
           <div className="button-outer">
-            <div className="btn btn-controls" onClick={() => {
+            <div className="btn btn-controls" onKeyDown={()=>{}} 
+              onClick={() => {
                   setStartButton(startButton === 'stop audio' ? 'start audio' : 'stop audio');
                   startButton === 'start audio' ? audio.start() : audio.stop();
                 }
@@ -82,13 +81,13 @@ const Controls = () => {
               {assignmentModes.map((m) => {
                 return (
                   <div key={m} className={assignmentMode === m ? "btn btn-controls btn-controls-active" : "btn btn-controls"}
-                    onClick={() => setAssignmentMode(m)}
+                  onKeyDown={()=>{}} onClick={() => setAssignmentMode(m)}
                     >{m}
                   </div>
                 )
               })}
               
-              <div className="btn btn-controls"
+              <div className="btn btn-controls" onKeyDown={()=>{}}
                 onClick={() => {
                   const lastMode = assignmentMode;
                   setRandomize(true); 

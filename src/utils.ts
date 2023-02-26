@@ -56,39 +56,22 @@ export const randomInt = (min: number, max: number) => {
 export let pitchAreas: DOMRect[] = [];
 export let pitches: {pitch: string, min: number, max: number}[] = [];
 
+////////
+const bigTask = (n: number) => {
+  const sum = new Array(n)
+      .fill(0)
+      .map((el, idx) => el + idx)
+      .reduce((sum, el) => sum + el, 0);
 
-// export const runHandpose = async (d: (net: any) => void) => {
-//     // TODO: Find better way to prevent reloading of the model
-//     // if (num === 0) {
-     
-//     // }
-//     console.log('INIT')
-  
-//     let net = await Handpose.load();
-//     console.log("Hand recognition model loaded");
-    
-//     // Loop and detect hands
-//     setInterval(() => {
-//       d(net);
-//     }, 40);
-//   }
+  console.log(sum);
+}
 
-  ////////
-  const bigTask = (n: number) => {
-    const sum = new Array(n)
-        .fill(0)
-        .map((el, idx) => el + idx)
-        .reduce((sum, el) => sum + el, 0);
-  
-    console.log(sum);
-  }
-  
-  export function runBigTask(n: number) {
-    bigTask(n);
-    return 'done';
-  }
-  
-  export async function runBigTaskAsync(n: number) {
-    bigTask(n);
-    return 'done';
-  }
+export function runBigTask(n: number) {
+  bigTask(n);
+  return 'done';
+}
+
+export async function runBigTaskAsync(n: number) {
+  bigTask(n);
+  return 'done';
+}

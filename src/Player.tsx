@@ -22,7 +22,8 @@ const Player: React.FC<Player> = ({/*update,*/ i}) => {
 
   return (
     <div className="player">
-          <img src={recordButton} alt="" onClick={() => {
+          <img src={recordButton} alt="" onKeyDown={()=>{}} 
+            onClick={() => {
                 if (!isRecording) {
                   setIsRecording(true);
                   audio.startRecording();
@@ -52,7 +53,8 @@ const Player: React.FC<Player> = ({/*update,*/ i}) => {
             className={recordButton === RECORDBUTTONRED ? "btn btn-controls" : "btn btn-controls btn-controls-active"}
           />
 
-          <img src={!audio.players[i] ? PLAYBUTTONDISABLED : playButton} alt="" onClick={() => {
+          <img src={!audio.players[i] ? PLAYBUTTONDISABLED : playButton} alt="" onKeyDown={()=>{}} 
+            onClick={() => {
                 if (playButton === PLAYBUTTONACTIVE) {
                   audio.players[i].start(); 
                   setPlayButton(STOPBUTTONACTIVE);
@@ -87,14 +89,16 @@ const Player: React.FC<Player> = ({/*update,*/ i}) => {
             className={!audio.players[i] ? "btn-disabled" : "btn btn-controls"}
           />
 
-          <div style={{paddingTop: "0.47rem"}} onClick={() => {
+          <div style={{paddingTop: "0.47rem"}} onKeyDown={()=>{}}
+            onClick={() => {
                 audio.players[i].playbackRate *= 0.5;
               }
             } 
             className={!audio.players[i] ? "btn-disabled" : "btn btn-controls"}>/2
           </div>
 
-          <div style={{paddingTop: "0.47rem"}} onClick={() => {
+          <div style={{paddingTop: "0.47rem"}} onKeyDown={()=>{}} 
+            onClick={() => {
                 audio.players[i].playbackRate *= 2;
               }
             } 

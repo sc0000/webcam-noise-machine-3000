@@ -28,7 +28,7 @@ const Dropdown: FC<Dropdown> = ({iterator, activeDropdown, lastWaveform, newWave
   }, [activeWaveform]);
 
   useEffect(() => {
-    if (activeDropdown != iterator) setOpen(false);
+    if (activeDropdown !== iterator) setOpen(false);
   }, [activeDropdown]);
 
   useEffect(() => {
@@ -64,7 +64,7 @@ const Dropdown: FC<Dropdown> = ({iterator, activeDropdown, lastWaveform, newWave
     return (<div className="shapes" style={{position: "absolute", width: "max-content", backgroundColor: "#101820ff", zIndex: "999"}}>
               {waveforms.map((s) => {
                   return (
-                      <div key={s} onClick={() => {
+                      <div key={s} onKeyDown={()=>{}} onClick={() => {
                         sendLastWaveform(activeWaveform);
                         setActiveWaveform(s);
                         sendNewWaveform(s);
@@ -79,7 +79,7 @@ const Dropdown: FC<Dropdown> = ({iterator, activeDropdown, lastWaveform, newWave
   }
 
   return (
-    <div className="dropdown" onMouseLeave={() => sendLastWaveform("")}>
+    <div className="dropdown" onKeyUp={()=>{}} onMouseLeave={() => sendLastWaveform("")}>
         <div style={{
             padding: "0.3rem",
             fontSize: "0.4rem",
@@ -88,6 +88,7 @@ const Dropdown: FC<Dropdown> = ({iterator, activeDropdown, lastWaveform, newWave
           
           // className={open ? "btn btn-controls btn-controls-active" : "btn btn-controls"}
           className={className}
+          onKeyDown={()=>{}}
           onMouseEnter={() => sendLastWaveform(activeWaveform)}
           
           onClick={() => setOpen(!open)}  

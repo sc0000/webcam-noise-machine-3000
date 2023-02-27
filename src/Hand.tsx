@@ -15,19 +15,19 @@ import PitchArea from './PitchArea'
 
 import './hand.css'
 
+//--------------------------------------------------
 
-let predictions: handpose.AnnotatedPrediction[] = [];
-let lastPredictions: handpose.AnnotatedPrediction[] = [];
-let net: handpose.HandPose;
+const INTERP_SPEED = 0.05;
+
+let prediction: handpose.AnnotatedPrediction[] = [];
+let lastPrediction: handpose.AnnotatedPrediction[] = [];
+
+let worker = new Worker(new URL("./predictionWorker", import.meta.url), { name: 'PredictionkWorker', type: 'module'});
+let { load, makePrediction, getPrediction, sendImageData } = wrap<import('./predictionWorker').PredictionWorker>(worker);
 
 //--------------------------------------------------
 
 const Hand = () => {
-  ////
-  // REMOVE! only for concurrency test
-  // const [data, setData] = useState("");
-  ////
- 
   const webcamRef = useRef<Webcam>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -35,24 +35,18 @@ const Hand = () => {
 
   const coordinates: {x: number, y: number, size: number, angle: number}[] = [];
 
-  useEffect(() => {
-    const load = async () => {
-      net = await handpose.load();
-      console.log("Hand recognition model loaded");
-    }
-
+  useEffect(() => { 
     load();
     runHandpose();
   }, []);
 
   const runHandpose = async () => {
-    // Loop and detect hands
     setInterval(() => {
-      detect(net);
+      detect();
     }, 20);
   }
   
-  const detect = async (net: handpose.HandPose | null) => {
+  const detect = async () => {
     if (webcamRef.current &&
       webcamRef.current?.video?.readyState === 4) {
         // Get video properties
@@ -80,15 +74,22 @@ const Hand = () => {
           videoCtx.clearRect(0, 0, videoCanvas.width, videoCanvas.height);
         }
 
-        // Scale canvas to prevent blur
-        fixDPI(canvasRef.current);
-      
-        // Make detections
-        if (predictions)
-          lastPredictions = predictions;
+        sendImageData(imageData!);
 
-        predictions = await net?.estimateHands(imageData!)!;
-        // console.log(hand);
+        // START OF WORKER RESPONSIBILITY
+        // if (prediction)
+        //   lastPrediction = prediction;
+
+        // prediction = await net?.estimateHands(imageData!)!;
+        // END OF WORKER RESPONSIBILITY
+
+        if (prediction)
+          lastPrediction = prediction;
+
+        prediction = await getPrediction();
+       
+        // Scale canvas to prevent blur
+        fixDPI(canvasRef.current!);
 
         if (canvasRef.current && coordinates.length === 0) {
           for (let i = 0; i < 21; ++i) {
@@ -104,13 +105,12 @@ const Hand = () => {
         }
 
         // Draw to canvas
-        drawHand(predictions, videoWidth, videoHeight);
-        // console.log('drawHand running');
+        drawHand(prediction, videoWidth, videoHeight);
       }
   }
 
-  const drawHand = async (predictions: handpose.AnnotatedPrediction[] | undefined, videoWidth: number, videoHeight: number) => {
-    if (!predictions) predictions = lastPredictions;
+  const drawHand = async (prediction: handpose.AnnotatedPrediction[] | undefined, videoWidth: number, videoHeight: number) => {
+    if (!prediction) prediction = lastPrediction;
     
     const ctx = canvasRef.current?.getContext("2d");
 
@@ -125,8 +125,8 @@ const Hand = () => {
       ctx.lineCap = 'square';
     }
     
-    if (predictions != null && predictions.length > 0) {
-      predictions.forEach((p: handpose.AnnotatedPrediction) => {
+    if (prediction != null && prediction.length > 0) {
+      prediction.forEach((p: handpose.AnnotatedPrediction) => {
         const landmarks = p.landmarks;
         
         
@@ -134,23 +134,20 @@ const Hand = () => {
           const targetX = canvasRef.current?.width! - scale(landmarks[i][0], [0, videoWidth], [0, canvasRef.current?.width!]);
           const targetY = scale(landmarks[i][1], [0, videoHeight], [0, canvasRef.current?.height!]);
           
-          coordinates[i].x = lerp(coordinates[i].x, targetX, 0.08);
-          coordinates[i].y = lerp(coordinates[i].y, targetY, 0.08);
+          coordinates[i].x = lerp(coordinates[i].x, targetX, INTERP_SPEED);
+          coordinates[i].y = lerp(coordinates[i].y, targetY, INTERP_SPEED);
 
           const targetSize = scale(Math.abs(landmarks[i][2]), [0, 80], [2, 32]);
           // const zMicro = scale(Math.abs(landmarks[i][2]), [0, 80], [2, 1000]);
           coordinates[i].size = lerp(coordinates[i].size, targetSize, 0.01);
           
-          if (ctx) ctx.fillRect(coordinates[i].x,  coordinates[i].y, coordinates[i].size, coordinates[i].size);          
+          if (ctx) 
+            ctx.fillRect(coordinates[i].x,  coordinates[i].y, coordinates[i].size, coordinates[i].size);          
 
-          //
           // Update corresponding oscillator
-          //
-
           updatePitch(landmarks, i);
           updateVolume(i);
         }
-        
       });
     }
 
@@ -161,8 +158,8 @@ const Hand = () => {
         const targetX = (canvasRef.current?.width! / 2) - Math.sin(coordinates[i].angle) * 300;
         const targetY = (canvasRef.current?.height! / 2) - Math.cos(coordinates[i].angle) * 300;
 
-        coordinates[i].x = lerp(coordinates[i].x, targetX, 0.08);
-        coordinates[i].y = lerp(coordinates[i].y, targetY, 0.08);
+        coordinates[i].x = lerp(coordinates[i].x, targetX, INTERP_SPEED * 0.7);
+        coordinates[i].y = lerp(coordinates[i].y, targetY, INTERP_SPEED * 0.7);
 
         ctx?.fillRect(coordinates[i].x, coordinates[i].y, coordinates[i].size, coordinates[i].size);
 
@@ -241,20 +238,6 @@ const Hand = () => {
             }}
             
             className="btn btn-hand" onClick={() => {setNum(num - 1)}} onKeyDown={()=>{}}>-</div>
-          {/* <div style={{
-              marginTop: "0.6rem", marginLeft: "0.3rem", fontSize: "1rem", padding: "0.rem"
-            }}
-            
-            className="btn btn-hand" onClick={async () => {
-
-              setData('loading');
-
-              const worker = new Worker(new URL("./worker", import.meta.url), { name: 'runBigTaskWorker', type: 'module'});
-              const { runBigTask } = wrap<import('./worker').RunBigTaskWorker>(worker);
-              setData(await runBigTask(100000000));
-            }}>Web Worker</div> */}
-
-          
         </div>
 
         <h3>BROWSER THEREMIN 3000</h3>

@@ -1,5 +1,4 @@
 import {useState, useEffect} from 'react'
-import * as Handpose from '@tensorflow-models/handpose'
 
 export const scale = (value: number, [inMin, inMax]: [number, number], [outMin, outMax]: [number, number]): number => {
     return (value - inMin) / (inMax - inMin) * (outMax - outMin) + outMin;
@@ -11,15 +10,15 @@ export const lerp = (A: number, B: number, factor: number): number => {
     return A + (B - A) * factor;
 }
 
-export const fixDPI = (canvas: any) => {
+export const fixDPI = (canvas: HTMLCanvasElement) => {
     const dpi = window.devicePixelRatio;
     // const canvas = canvasRef.current;
     
     const styleHeight = +getComputedStyle(canvas).getPropertyValue('height').slice(0, -2);
     const styleWidth = +getComputedStyle(canvas).getPropertyValue('width').slice(0, -2);
 
-    canvas.setAttribute('height', styleHeight * dpi);
-    canvas.setAttribute('width', styleWidth * dpi);
+    canvas.setAttribute('height', (styleHeight * dpi).toString());
+    canvas.setAttribute('width', (styleWidth * dpi).toString());
   }
 
   const getWindowDimensions = () => {
@@ -55,23 +54,3 @@ export const randomInt = (min: number, max: number) => {
 // TODO: Move both into Audio.js as one array of objects!
 export let pitchAreas: DOMRect[] = [];
 export let pitches: {pitch: string, min: number, max: number}[] = [];
-
-////////
-const bigTask = (n: number) => {
-  const sum = new Array(n)
-      .fill(0)
-      .map((el, idx) => el + idx)
-      .reduce((sum, el) => sum + el, 0);
-
-  console.log(sum);
-}
-
-export function runBigTask(n: number) {
-  bigTask(n);
-  return 'done';
-}
-
-export async function runBigTaskAsync(n: number) {
-  bigTask(n);
-  return 'done';
-}

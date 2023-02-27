@@ -26,7 +26,7 @@ const makePrediction = async () => {
 
 const getPrediction = (): handpose.AnnotatedPrediction[] => {
     return prediction;
- }
+}
 
 const sendImageData = (iD: ImageData) => {
     imageData = iD;

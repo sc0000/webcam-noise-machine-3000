@@ -1,5 +1,4 @@
 import * as Tone from 'tone'
-// import { TickSignal } from 'tone/build/esm/core/clock/TickSignal';
 import { lerp } from './utils'
 
 class Audio {
@@ -44,7 +43,6 @@ class Audio {
           autostart: false,
           fadeIn: 0.5,
           fadeOut: 0.5,
-          // reverse: true,
       }).toDestination();
 
       console.log(`from audio.stopRecording(): ${this.players}`);
@@ -65,8 +63,6 @@ class Audio {
   }
 
   toFrequency(note: string) {
-      // console.clear();
-      // console.log(freq);
       return Tone.Frequency(note).toFrequency();
   }
 }

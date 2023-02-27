@@ -17,7 +17,7 @@ import './hand.css'
 
 //--------------------------------------------------
 
-const INTERP_SPEED = 0.05;
+const INTERP_SPEED = 0.04;
 
 let prediction: handpose.AnnotatedPrediction[] = [];
 let lastPrediction: handpose.AnnotatedPrediction[] = [];
@@ -75,13 +75,6 @@ const Hand = () => {
         }
 
         sendImageData(imageData!);
-
-        // START OF WORKER RESPONSIBILITY
-        // if (prediction)
-        //   lastPrediction = prediction;
-
-        // prediction = await net?.estimateHands(imageData!)!;
-        // END OF WORKER RESPONSIBILITY
 
         if (prediction)
           lastPrediction = prediction;
@@ -158,8 +151,8 @@ const Hand = () => {
         const targetX = (canvasRef.current?.width! / 2) - Math.sin(coordinates[i].angle) * 300;
         const targetY = (canvasRef.current?.height! / 2) - Math.cos(coordinates[i].angle) * 300;
 
-        coordinates[i].x = lerp(coordinates[i].x, targetX, INTERP_SPEED * 0.7);
-        coordinates[i].y = lerp(coordinates[i].y, targetY, INTERP_SPEED * 0.7);
+        coordinates[i].x = lerp(coordinates[i].x, targetX, INTERP_SPEED * 0.5);
+        coordinates[i].y = lerp(coordinates[i].y, targetY, INTERP_SPEED * 0.5);
 
         ctx?.fillRect(coordinates[i].x, coordinates[i].y, coordinates[i].size, coordinates[i].size);
 

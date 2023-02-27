@@ -16,7 +16,11 @@ interface Dropdown {
   randomize: boolean;
 }
 
-const Dropdown: FC<Dropdown> = ({iterator, activeDropdown, lastWaveform, newWaveform, sendActivation, sendLastWaveform, sendNewWaveform, assignmentMode, randomize}) => {
+const Dropdown: FC<Dropdown> = (
+  {iterator, activeDropdown, lastWaveform, 
+    newWaveform, sendActivation, sendLastWaveform, 
+    sendNewWaveform, assignmentMode, randomize}
+  ) => {
   const [open, setOpen] = useState(false);
   const [className, setClassName] = useState("btn btn-controls");
   const waveforms = ['square', 'sine', 'triangle', 'sawtooth'];

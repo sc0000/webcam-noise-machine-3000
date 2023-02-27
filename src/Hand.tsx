@@ -1,25 +1,26 @@
 import { useRef, useState, useEffect } from 'react'
-// import * as tf from '@tensorflow/tfjs'
+
 
 import * as handpose from '@tensorflow-models/handpose'
-////
-// import { HandDetector } from '@tensorflow-models/handpose/dist/hand'
+import { Coords3D } from '@tensorflow-models/handpose/dist/pipeline'
+import '@tensorflow/tfjs-backend-webgl'
+import '@tensorflow/tfjs-backend-cpu'
 
-////
 import Webcam from 'react-webcam'
 import { wrap } from 'comlink';
 
-import '@tensorflow/tfjs-backend-webgl';
-import '@tensorflow/tfjs-backend-cpu';
-import './hand.css'
 import { scale, lerp, fixDPI, randomInt, pitches, pitchAreas } from './utils'
 import audio from './Audio'
 import PitchArea from './PitchArea'
+
+import './hand.css'
+
 
 let predictions: handpose.AnnotatedPrediction[] = [];
 let lastPredictions: handpose.AnnotatedPrediction[] = [];
 let net: handpose.HandPose;
 
+//--------------------------------------------------
 
 const Hand = () => {
   ////
@@ -146,23 +147,8 @@ const Hand = () => {
           // Update corresponding oscillator
           //
 
-          for (let j = 0; j < pitchAreas.length; ++j) {
-            if (coordinates[i].y > pitchAreas[j].y) {
-              const note = `${pitches[j].pitch}${randomInt(pitches[j].min, pitches[j].max)}`;
-              
-              let freq = audio.toFrequency(note);
-              freq += scale(coordinates[i].y, 
-                [pitchAreas[j].y, pitchAreas[j].y + pitchAreas[j].height], 
-                [freq / audio.microtonalSpread, -freq / audio.microtonalSpread]);
-              
-              audio.oscillators[i].set({
-                frequency: freq,
-                });
-            }
-          }
-
-          audio.oscillators[i].volume.value = scale(coordinates[i].x, [0, canvasRef.current?.width!], [-48, -12]);
-        
+          updatePitch(landmarks, i);
+          updateVolume(i);
         }
         
       });
@@ -180,19 +166,39 @@ const Hand = () => {
 
         ctx?.fillRect(coordinates[i].x, coordinates[i].y, coordinates[i].size, coordinates[i].size);
 
-        // Update corresponding oscillator pitch
-        updatePitch(i);
-
-        // TODO: Add to function
-        audio.oscillators[i].volume.value = scale(coordinates[i].x, [0, canvasRef.current?.width!], [-48, -12]);
+        // Update corresponding oscillator
+        updatePitchNoHand(i);
+        updateVolume(i);
       }
     }
   }
 
-  // TODO: Move into Audio.js
-  const updatePitch = (iterator: number) => {
-    const targetPitch = 880 - scale(coordinates[iterator].y, [0, canvasRef.current?.height!], [220, 880]);
-        audio.updatePitch(audio.oscillators[iterator], targetPitch);
+  const updatePitch = (landmarks: Coords3D, i: number) => {
+    for (let j = 0; j < pitchAreas.length; ++j) {
+      if (coordinates[i].y > pitchAreas[j].y) {
+        const note = `${pitches[j].pitch}${randomInt(pitches[j].min, pitches[j].max)}`;
+        
+        let freq = audio.toFrequency(note);
+        freq += scale(coordinates[i].y, 
+          [pitchAreas[j].y, pitchAreas[j].y + pitchAreas[j].height], 
+          [freq / audio.microtonalSpread, -freq / audio.microtonalSpread]);
+        
+        audio.oscillators[i].set({
+          frequency: freq,
+          });
+      }
+    }
+  }
+
+  // TODO: Move into Audio.js?
+  const updatePitchNoHand = (i: number) => {
+    const targetPitch = 880 - scale(coordinates[i].y, [0, canvasRef.current?.height!], [220, 880]);
+    audio.updatePitch(audio.oscillators[i], targetPitch);
+  }
+
+  const updateVolume = (i: number) => {
+    // update volume from x-axis; scaled to a value between -50 and -24
+     audio.oscillators[i].volume.value = scale(coordinates[i].x, [0, canvasRef.current?.width!], [-50, -24]);
   }
 
   useEffect(() => {

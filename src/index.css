@@ -30,8 +30,10 @@ div#root>div {
     /* flex-direction: column; */
     flex-wrap: nowrap;
     width: 100vw;
-    height: 100vh;
+    /* height: 100vh; */
     overflow: -moz-hidden-unscrollable;
+    overflow-y: hidden;
+    height: 100%;
 }
 
 #hand {

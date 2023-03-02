@@ -12,7 +12,7 @@ const PitchArea: FC<PitchArea> = ({sendPitch}) => {
     const [activePitch, setActivePitch] = useState(pitches[randomInt(0, 11)]);
     
     const [octaveSpread, setOctaveSpread] = useState(() => {
-        const init = randomInt(1, 8);
+        const init = randomInt(1, 7);
         return {min: init, max: init};
     });
 
@@ -34,7 +34,7 @@ const PitchArea: FC<PitchArea> = ({sendPitch}) => {
         if (!locked && lastMax > octaveSpread.max)
             setOctaveSpread({min: octaveSpread.min, max: lastMax});
 
-    }, [locked, lastMax, octaveSpread.max, octaveSpread.min]);
+    }, [locked]);
 
     useEffect(() => {
         setRange(`${octaveSpread.min}-${octaveSpread.max}`);
@@ -48,7 +48,7 @@ const PitchArea: FC<PitchArea> = ({sendPitch}) => {
             return (
                 <div>
                     <div className="btn-pitch" onKeyDown={()=>{}} onClick={() => {
-                        if (octaveSpread.max < 15)
+                        if (octaveSpread.max < 9)
                             setOctaveSpread({
                                 min: octaveSpread.min, 
                                 max: octaveSpread.max + 1}
@@ -60,7 +60,7 @@ const PitchArea: FC<PitchArea> = ({sendPitch}) => {
                     <div className="btn-pitch" onKeyDown={()=>{}} onClick={() => {
                         if (octaveSpread.max > 1)
                             setOctaveSpread({
-                                min: (octaveSpread.min >= octaveSpread.max - 1 ? octaveSpread.max - 1 : octaveSpread.min), 
+                                min: (octaveSpread.min >= octaveSpread.max ? octaveSpread.max - 1 : octaveSpread.min), 
                                 max: octaveSpread.max - 1}
                             );
                         }
@@ -88,7 +88,7 @@ const PitchArea: FC<PitchArea> = ({sendPitch}) => {
         <div className="octave-spread">
             <div className="btn-pitch btn-pitch-active" style={{cursor: "default"}}>oct {locked ? octaveSpread.min : range}</div>
             <div className="btn-pitch" onKeyDown={()=>{}} onClick={() => {
-                    if (octaveSpread.min < 15) {
+                    if (octaveSpread.min < 9) {
                         if (locked)
                             setOctaveSpread({
                                 min: octaveSpread.min + 1, 

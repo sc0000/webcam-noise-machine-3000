@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect, useCallback } from 'react'
 
 import * as handpose from '@tensorflow-models/handpose'
 import { Coords3D } from '@tensorflow-models/handpose/dist/pipeline'
@@ -18,6 +18,8 @@ import './hand.css'
 
 const INTERP_SPEED = 0.04;
 
+const coordinates: {x: number, y: number, size: number, angle: number}[] = [];
+
 let prediction: handpose.AnnotatedPrediction[] = [];
 let lastPrediction: handpose.AnnotatedPrediction[] = [];
 
@@ -32,76 +34,38 @@ const Hand = () => {
 
   const [num, setNum] = useState(1);
 
-  const coordinates: {x: number, y: number, size: number, angle: number}[] = [];
-
-  useEffect(() => { 
-    load();
-    runHandpose();
-  }, []);
-
-  const runHandpose = async () => {
-    setInterval(() => {
-      detect();
-    }, 20);
-  }
-  
-  const detect = async () => {
-    if (webcamRef.current &&
-      webcamRef.current?.video?.readyState === 4) {
-        // Get video properties
-        const video = webcamRef.current.video;
-
-        // Get intrinsic size of the resource
-        const videoWidth = video.videoWidth;
-        const videoHeight = video.videoHeight;
-
-        // Extract image data
-        let videoCanvas = document.createElement('canvas');
-
-        // unnecessary!?
-        videoCanvas.width = videoWidth;
-        videoCanvas.height = videoHeight;
-
-        const videoCtx = videoCanvas.getContext('2d',{ willReadFrequently: true });
-
-        let imageData: ImageData;
-
-        if (videoCtx !== null) {
-          videoCtx.drawImage(video, 0, 0, videoCanvas.width, videoCanvas.height);
-          imageData = videoCtx.getImageData(0, 0, videoCanvas.width, videoCanvas.height);
-          // console.log(imageData.data);
-          videoCtx.clearRect(0, 0, videoCanvas.width, videoCanvas.height);
-        }
-
-        sendImageData(imageData!);
-
-        if (prediction)
-          lastPrediction = prediction;
-
-        prediction = await getPrediction();
-       
-        // Scale canvas to prevent blur
-        fixDPI(canvasRef.current!);
-
-        if (canvasRef.current && coordinates.length === 0) {
-          for (let i = 0; i < 21; ++i) {
-            const c = {
-              x: canvasRef.current?.clientWidth / 2,
-              y: canvasRef.current?.clientHeight / 2,
-              size: 8,
-              angle: 2 * Math.PI * Math.random(), 
-            }
+  const updatePitch = (landmarks: Coords3D, i: number) => {
+    for (let j = 0; j < pitchAreas.length; ++j) {
+      if (coordinates[i].y > pitchAreas[j].y) {
+        const note = `${pitches[j].pitch}${randomInt(pitches[j].min, pitches[j].max)}`;
         
-            coordinates.push(c);
-          }
-        }
-
-        // Draw to canvas
-        drawHand(prediction, videoWidth, videoHeight);
+        let freq = audio.toFrequency(note);
+        freq += scale(coordinates[i].y, 
+          [pitchAreas[j].y, pitchAreas[j].y + pitchAreas[j].height], 
+          [freq / audio.microtonalSpread, -freq / audio.microtonalSpread]
+        );
+        
+        audio.oscillators[i].set({
+          frequency: freq,
+          });
       }
+    }
   }
 
-  const drawHand = async (prediction: handpose.AnnotatedPrediction[] | undefined, videoWidth: number, videoHeight: number) => {
+  // TODO: Move into Audio.js?
+  const updatePitchNoHand = (i: number) => {
+    const targetPitch = 880 - scale(coordinates[i].y, [0, canvasRef.current?.height!], [220, 880]);
+    audio.updatePitch(audio.oscillators[i], targetPitch);
+  }
+
+  const updateVolume = (i: number) => {
+    // update volume from x-axis; scaled to a value between -50 and -24
+     audio.oscillators[i].volume.value = scale(coordinates[i].x, [0, canvasRef.current?.width!], [-50, -24]);
+  }
+
+
+
+  const drawHand = useCallback(async (prediction: handpose.AnnotatedPrediction[] | undefined, videoWidth: number, videoHeight: number) => {
     if (!prediction) prediction = lastPrediction;
     
     const ctx = canvasRef.current?.getContext("2d");
@@ -160,36 +124,76 @@ const Hand = () => {
         updateVolume(i);
       }
     }
-  }
+  }, []);
 
-  const updatePitch = (landmarks: Coords3D, i: number) => {
-    for (let j = 0; j < pitchAreas.length; ++j) {
-      if (coordinates[i].y > pitchAreas[j].y) {
-        const note = `${pitches[j].pitch}${randomInt(pitches[j].min, pitches[j].max)}`;
+  const detect = useCallback(async () => {
+    if (webcamRef.current &&
+      webcamRef.current?.video?.readyState === 4) {
+        // Get video properties
+        const video = webcamRef.current.video;
+
+        // Get intrinsic size of the resource
+        const videoWidth = video.videoWidth;
+        const videoHeight = video.videoHeight;
+
+        // Extract image data
+        let videoCanvas = document.createElement('canvas');
+
+        // unnecessary!?
+        videoCanvas.width = videoWidth;
+        videoCanvas.height = videoHeight;
+
+        const videoCtx = videoCanvas.getContext('2d',{ willReadFrequently: true });
+
+        let imageData: ImageData;
+
+        if (videoCtx !== null) {
+          videoCtx.drawImage(video, 0, 0, videoCanvas.width, videoCanvas.height);
+          imageData = videoCtx.getImageData(0, 0, videoCanvas.width, videoCanvas.height);
+          // console.log(imageData.data);
+          videoCtx.clearRect(0, 0, videoCanvas.width, videoCanvas.height);
+        }
+
+        sendImageData(imageData!);
+
+        if (prediction)
+          lastPrediction = prediction;
+
+        prediction = await getPrediction();
+       
+        // Scale canvas to prevent blur
+        fixDPI(canvasRef.current!);
+
+        if (canvasRef.current && coordinates.length === 0) {
+          for (let i = 0; i < 21; ++i) {
+            const c = {
+              x: canvasRef.current?.clientWidth / 2,
+              y: canvasRef.current?.clientHeight / 2,
+              size: 8,
+              angle: 2 * Math.PI * Math.random(), 
+            }
         
-        let freq = audio.toFrequency(note);
-        freq += scale(coordinates[i].y, 
-          [pitchAreas[j].y, pitchAreas[j].y + pitchAreas[j].height], 
-          [freq / audio.microtonalSpread, -freq / audio.microtonalSpread]
-        );
-        
-        audio.oscillators[i].set({
-          frequency: freq,
-          });
+            coordinates.push(c);
+          }
+        }
+
+        // Draw to canvas
+        drawHand(prediction, videoWidth, videoHeight);
       }
-    }
-  }
+  }, [drawHand]);
 
-  // TODO: Move into Audio.js?
-  const updatePitchNoHand = (i: number) => {
-    const targetPitch = 880 - scale(coordinates[i].y, [0, canvasRef.current?.height!], [220, 880]);
-    audio.updatePitch(audio.oscillators[i], targetPitch);
-  }
+  const runHandpose = useCallback(async () => {
+    setInterval(() => {
+      detect();
+    }, 20);
+  }, [detect]);
 
-  const updateVolume = (i: number) => {
-    // update volume from x-axis; scaled to a value between -50 and -24
-     audio.oscillators[i].volume.value = scale(coordinates[i].x, [0, canvasRef.current?.width!], [-50, -24]);
-  }
+  
+
+  useEffect(() => { 
+    load();
+    runHandpose();
+  }, [runHandpose]);
 
   useEffect(() => {
     pitchAreas.splice(0, pitchAreas.length);

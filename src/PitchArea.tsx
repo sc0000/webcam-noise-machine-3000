@@ -7,16 +7,15 @@ interface PitchArea {
     sendPitch: ({pitch, min, max}: {pitch: string, min: number, max: number}) => void;
 }
 
-const PitchArea: FC<PitchArea> = ({sendPitch}) => {
-    const pitches = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+const pitches = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+
+const PitchArea: FC<PitchArea> = ({sendPitch}) => {   
     const [activePitch, setActivePitch] = useState(pitches[randomInt(0, 11)]);
     
     const [octaveSpread, setOctaveSpread] = useState(() => {
         const init = randomInt(1, 7);
         return {min: init, max: init};
     });
-
-    sendPitch({pitch: activePitch, min: octaveSpread.min, max: octaveSpread.max});
 
     const [lastMax, setLastMax] = useState(octaveSpread.max);
 
@@ -39,7 +38,7 @@ const PitchArea: FC<PitchArea> = ({sendPitch}) => {
     useEffect(() => {
         setRange(`${octaveSpread.min}-${octaveSpread.max}`);
         sendPitch({pitch: activePitch, min: octaveSpread.min, max: octaveSpread.max});
-    }, [octaveSpread, activePitch, sendPitch]);
+    }, [octaveSpread, activePitch]);
 
     const maxSwitches = (l: boolean) => {
         if (l) return;

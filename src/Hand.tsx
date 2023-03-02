@@ -1,6 +1,5 @@
 import { useRef, useState, useEffect } from 'react'
 
-
 import * as handpose from '@tensorflow-models/handpose'
 import { Coords3D } from '@tensorflow-models/handpose/dist/pipeline'
 import '@tensorflow/tfjs-backend-webgl'
@@ -23,7 +22,7 @@ let prediction: handpose.AnnotatedPrediction[] = [];
 let lastPrediction: handpose.AnnotatedPrediction[] = [];
 
 let worker = new Worker(new URL("./predictionWorker", import.meta.url), { name: 'PredictionkWorker', type: 'module'});
-let { load, makePrediction, getPrediction, sendImageData } = wrap<import('./predictionWorker').PredictionWorker>(worker);
+let { load, getPrediction, sendImageData } = wrap<import('./predictionWorker').PredictionWorker>(worker);
 
 //--------------------------------------------------
 
@@ -171,7 +170,8 @@ const Hand = () => {
         let freq = audio.toFrequency(note);
         freq += scale(coordinates[i].y, 
           [pitchAreas[j].y, pitchAreas[j].y + pitchAreas[j].height], 
-          [freq / audio.microtonalSpread, -freq / audio.microtonalSpread]);
+          [freq / audio.microtonalSpread, -freq / audio.microtonalSpread]
+        );
         
         audio.oscillators[i].set({
           frequency: freq,
@@ -224,13 +224,17 @@ const Hand = () => {
               marginTop: "0.6rem", marginLeft: "0.3rem", fontSize: "1rem", padding: "0.rem", width: "3rem"
             }}
 
-            className="btn btn-hand" onClick={() => {
-            setNum(num + 1)}} onKeyDown={()=>{}}>+</div>
+            className={num < 13 ? "btn btn-hand" : "btn-hand-disabled"} onKeyDown={()=>{}} onClick={() => {
+              if (num < 13) setNum(num + 1);
+            }} >+</div>
+
           <div style={{
               marginTop: "0.6rem", marginLeft: "0.3rem", fontSize: "1rem", padding: "0.rem", width: "3rem"
             }}
             
-            className="btn btn-hand" onClick={() => {setNum(num - 1)}} onKeyDown={()=>{}}>-</div>
+            className={num > 0 ? "btn btn-hand" : "btn-hand-disabled"} onKeyDown={()=>{}} onClick={() => {
+              if (num > 0) setNum(num - 1);
+            }} >-</div>
         </div>
 
         <h3>BROWSER THEREMIN 3000</h3>

@@ -20,7 +20,9 @@
     --transition: all 200ms ease;
 }
 
-body, div#root, div#root > div {
+body,
+div#root,
+div#root>div {
     background: var(--color-1);
     color: var(--color-2);
     font-family: 'Press Start 2P', cursive;
@@ -37,23 +39,17 @@ body, div#root, div#root > div {
     height: 100vw;
     background-color: var(--color-1);
     color: var(--color-2);
-    /* position: absolute;
-    float: left; */
-    /* display: flex;
-    flex-direction: row;
-    justify-content: center; */
 }
 
 #controls {
     width: 20vw;
     height: 100vw;
-    /* position: absolute;
-    float: right; */
     background-color: var(--color-2);
     color: var(--color-1);
 }
 
-h3, section > div {
+h3,
+section>div {
     width: 100%;
     height: max-content;
     margin-top: 1rem;
@@ -71,7 +67,7 @@ h3, section > div {
     height: max-content;
     display: inline-grid;
     color: var(--color-1);
-    background: var(--color-2);  
+    background: var(--color-2);
     cursor: pointer;
     border: 3px solid var(--color-1);
     transition: var(--transition);
@@ -116,6 +112,21 @@ h3, section > div {
     border: 3px solid var(--color-2);
 }
 
+.btn-hand-disabled {
+    width: max-content;
+    justify-content: center;
+    height: max-content;
+    display: inline-grid;
+    margin: 1rem, 0.3rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.5rem;
+    float: left;
+    background: var(--color-2);
+    color: var(--color-4);
+    border: 3px solid var(--color-1);
+    transition: var(--transition);
+}
+
 .subdiv {
     z-index: 999;
     background: transparent;
@@ -152,7 +163,7 @@ h3, section > div {
     width: 70vw;
 }
 
-.header > div.btn {
+.header>div.btn {
     float: right;
 }
 
@@ -166,7 +177,7 @@ h3, section > div {
     padding: 0;
 }
 
-.selector {    
+.selector {
     width: max-content;
     height: max-content;
     z-index: 99;
@@ -174,8 +185,13 @@ h3, section > div {
 }
 
 @keyframes fadeIn {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
 }
 
 .btns-pitch {

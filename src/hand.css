@@ -21,10 +21,19 @@ canvas {
 }
 
 @keyframes fadeIn {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
 }
 
 Webcam {
   z-index: 3;
+}
+
+.set-subs>.btn {
+  animation: fadeIn 0.0s;
 }

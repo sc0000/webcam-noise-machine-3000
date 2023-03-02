@@ -33,7 +33,7 @@ const sendImageData = (iD: ImageData) => {
 }
 
 const worker = {
-    load, makePrediction, getPrediction, sendImageData
+    load, getPrediction, sendImageData
 }
 
 export type PredictionWorker = typeof worker;

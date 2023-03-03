@@ -235,6 +235,22 @@ section>div {
     border: 3px solid var(--color-2);
 }
 
+.btn-pitch-disabled {
+    float: left;
+    width: max-content;
+    justify-content: center;
+    height: max-content;
+    color: var(--color-4);
+    background: transparent;
+    font-size: 0.5rem;
+    padding: 0.2rem;
+    margin: 0.1rem;
+    /* cursor: pointer; */
+    border: 3px solid var(--color-4);
+    transition: var(--transition);
+    animation: fadeIn 1s;
+}
+
 .btn-disabled {
     width: max-content;
     justify-content: center;

@@ -2,7 +2,6 @@ import * as Tone from 'tone'
 import { lerp } from './utils'
 
 class Audio {
-// member vars
   recorder = new Tone.Recorder();
   players: Tone.Player[] = [];
   oscillators: Tone.Oscillator[] = [];

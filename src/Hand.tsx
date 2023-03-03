@@ -17,6 +17,7 @@ import './hand.css'
 //--------------------------------------------------
 
 const INTERP_SPEED = 0.04;
+const INTERP_SPEED_NO_HAND = 0.01;
 
 const coordinates: {x: number, y: number, size: number, angle: number}[] = [];
 
@@ -114,8 +115,8 @@ const Hand = () => {
         const targetX = (canvasRef.current?.width! / 2) - Math.sin(coordinates[i].angle) * 300;
         const targetY = (canvasRef.current?.height! / 2) - Math.cos(coordinates[i].angle) * 300;
 
-        coordinates[i].x = lerp(coordinates[i].x, targetX, INTERP_SPEED * 0.5);
-        coordinates[i].y = lerp(coordinates[i].y, targetY, INTERP_SPEED * 0.5);
+        coordinates[i].x = lerp(coordinates[i].x, targetX, INTERP_SPEED_NO_HAND);
+        coordinates[i].y = lerp(coordinates[i].y, targetY, INTERP_SPEED_NO_HAND);
 
         ctx?.fillRect(coordinates[i].x, coordinates[i].y, coordinates[i].size, coordinates[i].size);
 
@@ -183,12 +184,12 @@ const Hand = () => {
   }, [drawHand]);
 
   const runHandpose = useCallback(async () => {
-    setInterval(() => {
+    const loop = setInterval(() => {
       detect();
     }, 20);
-  }, [detect]);
 
-  
+    return () => clearInterval(loop);
+  }, [detect]);
 
   useEffect(() => { 
     load();

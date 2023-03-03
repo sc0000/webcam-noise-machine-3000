@@ -4,16 +4,18 @@ import '@tensorflow/tfjs-backend-cpu'
 
 import { expose } from 'comlink'
 
-let model: handpose.HandPose;
+let model: handpose.HandPose | null = null;
 let prediction: handpose.AnnotatedPrediction[] = [];
 let imageData: ImageData;
 
 const load = async () => {
+    if (model !== null) return;
+
     model = await handpose.load();
     
     if (model) console.log("Hand recognition model loaded");
 
-    setInterval(() => {
+    const loop = setInterval(() => {
         makePrediction();
     }, 20);
 }

@@ -9,6 +9,9 @@ interface PitchArea {
 
 const pitches = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
+const MAX_OCTAVE = 9;
+const MIN_OCTAVE = 1;
+
 const PitchArea: FC<PitchArea> = ({sendPitch}) => {   
     const [activePitch, setActivePitch] = useState(pitches[randomInt(0, 11)]);
     
@@ -33,11 +36,13 @@ const PitchArea: FC<PitchArea> = ({sendPitch}) => {
         if (!locked && lastMax > octaveSpread.max)
             setOctaveSpread({min: octaveSpread.min, max: lastMax});
 
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [locked]);
 
     useEffect(() => {
         setRange(`${octaveSpread.min}-${octaveSpread.max}`);
         sendPitch({pitch: activePitch, min: octaveSpread.min, max: octaveSpread.max});
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [octaveSpread, activePitch]);
 
     const maxSwitches = (l: boolean) => {
@@ -46,8 +51,8 @@ const PitchArea: FC<PitchArea> = ({sendPitch}) => {
         else {
             return (
                 <div>
-                    <div className="btn-pitch" onKeyDown={()=>{}} onClick={() => {
-                        if (octaveSpread.max < 9)
+                    <div className={octaveSpread.max < MAX_OCTAVE ? "btn-pitch" : "btn-pitch-disabled"} onKeyDown={()=>{}} onClick={() => {
+                        if (octaveSpread.max < MAX_OCTAVE)
                             setOctaveSpread({
                                 min: octaveSpread.min, 
                                 max: octaveSpread.max + 1}
@@ -56,7 +61,7 @@ const PitchArea: FC<PitchArea> = ({sendPitch}) => {
                     }
                     >+</div>
 
-                    <div className="btn-pitch" onKeyDown={()=>{}} onClick={() => {
+                    <div className={octaveSpread.max > MIN_OCTAVE ? "btn-pitch" : "btn-pitch-disabled"} onKeyDown={()=>{}} onClick={() => {
                         if (octaveSpread.max > 1)
                             setOctaveSpread({
                                 min: (octaveSpread.min >= octaveSpread.max ? octaveSpread.max - 1 : octaveSpread.min), 
@@ -86,8 +91,8 @@ const PitchArea: FC<PitchArea> = ({sendPitch}) => {
 
         <div className="octave-spread">
             <div className="btn-pitch btn-pitch-active" style={{cursor: "default"}}>oct {locked ? octaveSpread.min : range}</div>
-            <div className="btn-pitch" onKeyDown={()=>{}} onClick={() => {
-                    if (octaveSpread.min < 9) {
+            <div className={octaveSpread.min < MAX_OCTAVE ? "btn-pitch" : "btn-pitch-disabled"} onKeyDown={()=>{}} onClick={() => {
+                    if (octaveSpread.min < MAX_OCTAVE) {
                         if (locked)
                             setOctaveSpread({
                                 min: octaveSpread.min + 1, 
@@ -103,7 +108,7 @@ const PitchArea: FC<PitchArea> = ({sendPitch}) => {
                 }
             }>+</div>
 
-            <div className="btn-pitch" onKeyDown={()=>{}} onClick={() => {
+            <div className={octaveSpread.min > MIN_OCTAVE ? "btn-pitch" : "btn-pitch-disabled"} onKeyDown={()=>{}} onClick={() => {
                     if (octaveSpread.min > 1) {
                         if (locked)
                             setOctaveSpread({
@@ -122,7 +127,9 @@ const PitchArea: FC<PitchArea> = ({sendPitch}) => {
 
             <div>{maxSwitches(locked)}</div>
 
-            <div className="btn-pitch" onKeyDown={()=>{}} onClick={() => setLocked(!locked)}>{locked ? "spread" : "unison"}</div>
+            <div className="btn-pitch" onKeyDown={()=>{}} onClick={() => {
+                setLocked(!locked);
+            }}>{locked ? "spread" : "unison"}</div>
         </div>
     </div>
   )

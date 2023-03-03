@@ -8,7 +8,7 @@ import '@tensorflow/tfjs-backend-cpu'
 import Webcam from 'react-webcam'
 import { wrap } from 'comlink';
 
-import { scale, lerp, fixDPI, randomInt, pitches, pitchAreas } from './utils'
+import { scale, logScale, mapLinearToLogarithmicScale, lerp, fixDPI, randomInt, pitches, pitchAreas } from './utils'
 import audio from './Audio'
 import PitchArea from './PitchArea'
 
@@ -35,6 +35,10 @@ const Hand = () => {
 
   const [num, setNum] = useState(1);
 
+  useEffect(() => {
+    console.log(canvasRef.current?.height);
+  }, [canvasRef]);
+
   const updatePitch = (landmarks: Coords3D, i: number) => {
     for (let j = 0; j < pitchAreas.length; ++j) {
       if (coordinates[i].y > pitchAreas[j].y) {
@@ -55,13 +59,23 @@ const Hand = () => {
 
   // TODO: Move into Audio.js?
   const updatePitchNoHand = (i: number) => {
-    const targetPitch = 880 - scale(coordinates[i].y, [0, canvasRef.current?.height!], [220, 880]);
+    // const targetPitch = 880 - scale(coordinates[i].y, [0, canvasRef.current?.height!], [220, 880]);
+    const targetPitch = 880 - mapLinearToLogarithmicScale(coordinates[i].y, 0.0001, canvasRef.current?.height!, 220, 880);
+    // if (i = 1) console.log(targetPitch);
     audio.updatePitch(audio.oscillators[i], targetPitch);
   }
 
   const updateVolume = (i: number) => {
+    const minVolume = -50;
+    const maxVolume = -24;
+
+    // Linear mapping:
     // update volume from x-axis; scaled to a value between -50 and -24
-     audio.oscillators[i].volume.value = scale(coordinates[i].x, [0, canvasRef.current?.width!], [-50, -24]);
+    // audio.oscillators[i].volume.value = scale(coordinates[i].x, [0, canvasRef.current?.width!], [minVolume, maxVolume]);
+
+    // logarithmic mapping:
+    audio.oscillators[i].volume.value = mapLinearToLogarithmicScale(coordinates[i].x, 0, canvasRef.current?.width!, Math.abs(maxVolume), Math.abs(minVolume)) + minVolume + maxVolume;
+    // if (i = 1) console.log(audio.oscillators[i].volume.value);
   }
 
 

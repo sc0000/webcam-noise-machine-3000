@@ -2,7 +2,7 @@ import { useState, useRef, FC, MouseEvent } from 'react'
 import { useEffect } from 'react';
 import './slider.css'
 import audio from './Audio'
-import { scale } from './utils'
+import { scale, logScale, mapLinearToLogarithmicScale } from './utils'
 
 // TODO: Solve: releasing mouse outside of component
 
@@ -52,9 +52,9 @@ const Slider: FC<Slider> = ({micro, iterator}) => {
           }
 
           if (micro) {
-              // TODO: Find a WAY better way to do this! (log scaling for starters)
-              audio.microtonalSpread = scale(currentX, [minX, maxX], [1000, 1]);
-              // console.log(audio.microtonalSpread);
+              // TODO: Find a WAY better way to do this! (Get the log scaling right!)
+              audio.microtonalSpread = 1000 - mapLinearToLogarithmicScale(currentX, minX, maxX, 0.1, 1000);
+              console.log(audio.microtonalSpread);
           }
         }
       }

@@ -1,4 +1,4 @@
-import { useState, useEffect, FC } from 'react'
+import { useState, useEffect, FC, memo } from 'react'
 import { ToneOscillatorType } from 'tone';
 import audio from './Audio'
 import './'
@@ -16,14 +16,15 @@ interface Dropdown {
   randomize: boolean;
 }
 
+const waveforms = ['square', 'sine', 'triangle', 'sawtooth'];
+
 const Dropdown: FC<Dropdown> = (
   {iterator, activeDropdown, lastWaveform, 
     newWaveform, sendActivation, sendLastWaveform, 
     sendNewWaveform, assignmentMode, randomize}
   ) => {
   const [open, setOpen] = useState(false);
-  const [className, setClassName] = useState("btn btn-controls");
-  const waveforms = ['square', 'sine', 'triangle', 'sawtooth'];
+  const [className, setClassName] = useState("btn btn-controls dd");
   const [activeWaveform, setActiveWaveform] = useState(waveforms[randomInt(0, 3)]);
 
   useEffect(() => {
@@ -32,16 +33,18 @@ const Dropdown: FC<Dropdown> = (
   }, [activeWaveform]);
 
   useEffect(() => {
+    console.log(activeDropdown);
     if (activeDropdown !== iterator) setOpen(false);
+    else setOpen(true);
   }, [activeDropdown]);
 
   useEffect(() => {
     if ((lastWaveform === activeWaveform && assignmentMode === "all of type") ||
         (lastWaveform !== "" && assignmentMode === "all")) {
-          setClassName("btn btn-controls btn-controls-active");
+          setClassName("btn btn-controls btn-controls-active dd");
         }
 
-    else if (lastWaveform === "") setClassName("btn btn-controls");
+    else if (lastWaveform === "") setClassName("btn btn-controls dd");
   }, [lastWaveform]);
 
   useEffect(() => {
@@ -56,12 +59,14 @@ const Dropdown: FC<Dropdown> = (
   }, [randomize]);
 
   useEffect(() => {
+    console.log(`${iterator}: ${open}`);
+
     if (open) {
-      sendActivation(iterator);
-      setClassName("btn btn-controls btn-controls-active");
+      setClassName("btn btn-controls btn-controls-active dd");
+      // sendActivation(iterator);
     }
 
-    else setClassName("btn btn-controls");
+    else setClassName("btn btn-controls dd");
   }, [open]);
 
   const createSelector = () => {
@@ -73,7 +78,7 @@ const Dropdown: FC<Dropdown> = (
                         setActiveWaveform(s);
                         sendNewWaveform(s);
                       }} 
-                        className={activeWaveform === s ? "btn btn-controls btn-controls-active" : "btn btn-controls"}
+                        className={activeWaveform === s ? "btn btn-controls btn-controls-active dd" : "btn btn-controls dd"}
                         style={{margin: "3px"}}
                         >{s.substring(0, 3)}
                       </div>
@@ -95,8 +100,16 @@ const Dropdown: FC<Dropdown> = (
           onKeyDown={()=>{}}
           onMouseEnter={() => sendLastWaveform(activeWaveform)}
           
-          onClick={() => setOpen(!open)}  
-          >{activeWaveform.substring(0, 3)}
+          onClick={(e) => {
+            if (open) {
+              e.stopPropagation();
+              sendActivation(99);
+            } else {
+                e.stopPropagation();
+                sendActivation(iterator);
+            }
+          }
+        }>{activeWaveform.substring(0, 3)}
         </div>
 
         {open && createSelector()}
@@ -105,4 +118,4 @@ const Dropdown: FC<Dropdown> = (
   )
 }
 
-export default Dropdown
+export default Dropdown;

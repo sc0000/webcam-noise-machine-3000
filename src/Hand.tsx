@@ -78,8 +78,6 @@ const Hand = () => {
     // if (i = 1) console.log(audio.oscillators[i].volume.value);
   }
 
-
-
   const drawHand = useCallback(async (prediction: handpose.AnnotatedPrediction[] | undefined, videoWidth: number, videoHeight: number) => {
     if (!prediction) prediction = lastPrediction;
     
@@ -256,7 +254,7 @@ const Hand = () => {
             }} >-</div>
         </div>
 
-        <h3>BROWSER THEREMIN 3000</h3>
+        <h3>WEBCAM NOISE MACHINE 3000</h3>
         
       </div>
       

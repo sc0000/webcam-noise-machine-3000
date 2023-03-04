@@ -1,14 +1,16 @@
-import { useState } from 'react'
+import { useEffect, useState, memo } from 'react'
 import Player from './Player'
 import audio from './Audio'
 import './controls.css'
 import Dropdown from './Dropdown'
 import Slider from './Slider'
 
+import { randomInt } from './utils'
+
 const Controls = () => {
   const [startButton, setStartButton] = useState('start audio');
 
-  // Waveshapes
+  // Waveforms
   const [activeDropdown, setActiveDropdown] = useState(1);
   const [lastWaveform, setLastWaveform] = useState("");
   const [newWaveform, setNewWaveform] = useState("");
@@ -33,16 +35,17 @@ const Controls = () => {
 
     for (let i = 0; i < 4; ++i) {
       nodes.push(
-        <Dropdown key={i} 
-          iterator={firstIterator - i} 
+        <Dropdown key={i}
+          iterator={firstIterator - i}
           activeDropdown={activeDropdown}
           lastWaveform={lastWaveform}
           newWaveform={newWaveform}
           sendActivation={sendActivation}
           sendLastWaveform={sendLastWaveform}
           sendNewWaveform={sendNewWaveform}
-          assignmentMode={assignmentMode} 
-          randomize={randomize} />
+          assignmentMode={assignmentMode}
+          randomize={randomize}
+          />
       );
     }
 
@@ -62,11 +65,33 @@ const Controls = () => {
     return players;
   }
 
+  // useEffect(() => {
+  //   console.log(activeDropdown);
+  // }, [activeDropdown]);
+
+
+  // TODO: Tidy up!
+  const [CC, setCC] = useState<string | null>("");
+
+  useEffect(() => {
+    if (CC !== ("btn btn-controls dd" || "btn btn-controls btn-controls-active dd"))
+      setActiveDropdown(99);
+
+    console.log(activeDropdown);
+    
+  }, [CC]);
+
   return (
-    <section id="controls">
+    <section id="controls" onKeyDown={()=>{}} onClick={(event: React.MouseEvent) => {
+      const target = event.target as Element;
+      const targetClass = target.getAttribute("class");
+      setCC(targetClass);
+      console.log(CC);
+
+    }}>
         <div className="control-buttons">
           <div className="button-outer">
-            <div className="btn btn-controls" onKeyDown={()=>{}} 
+            <div className="btn btn-controls" onKeyDown={()=>{}}
               onClick={() => {
                   setStartButton(startButton === 'stop audio' ? 'start audio' : 'stop audio');
                   startButton === 'start audio' ? audio.start() : audio.stop();
@@ -86,17 +111,17 @@ const Controls = () => {
                   </div>
                 )
               })}
-              
+
               <div className="btn btn-controls" onKeyDown={()=>{}}
                 onClick={() => {
                   const lastMode = assignmentMode;
-                  setRandomize(true); 
+                  setRandomize(true);
                   setTimeout(() => setRandomize(false), 0)}}
                   >rand</div>
             </div>
           </div>
 
-          <div className="shapes shapes-all">
+          <div className="shapes shapes-all" onKeyDown={()=>{}} >
               <div className="fingers">
                 <div className="shapes shapes-thumb">
                   {createNodes(4)}
@@ -109,8 +134,8 @@ const Controls = () => {
                 <div className="shapes shapes-middle">
                   {createNodes(12)}
                   <div style={{marginTop: "7rem"}}>
-                    <Dropdown key={30} 
-                    iterator={0} 
+                    <Dropdown key={30}
+                    iterator={0}
                     activeDropdown={activeDropdown}
                     lastWaveform={lastWaveform}
                     newWaveform={newWaveform}
@@ -120,7 +145,7 @@ const Controls = () => {
                     assignmentMode={assignmentMode}
                     randomize={randomize} />
                   </div>
-                  
+
                 </div>
 
                 <div className="shapes shapes-ring">
@@ -131,7 +156,7 @@ const Controls = () => {
                   {createNodes(20)}
                 </div>
 
-              </div>    
+              </div>
           </div>
 
           <div className="microtonal">
@@ -147,9 +172,9 @@ const Controls = () => {
             </div>
           </div>
         </div>
-        
+
     </section>
   )
 }
 
-export default Controls
+export default Controls;

@@ -1,46 +1,53 @@
-import { useEffect, useState, memo } from 'react'
+import { useEffect, useState, FC, memo } from 'react'
 import Player from './Player'
 import audio from './Audio'
 import './controls.css'
 import Dropdown from './Dropdown'
 import Slider from './Slider'
 
-import { randomInt } from './utils'
+//--------------------------------------------------
 
-const Controls = () => {
+interface Controls {
+  activeUIElement: number;
+  sendActivationGlobally: (i: number) => void;
+}
+
+//--------------------------------------------------
+
+const Controls: FC<Controls> = ({
+  activeUIElement, sendActivationGlobally
+}) => {
   const [startButton, setStartButton] = useState('start audio');
 
   // Waveforms
-  const [activeDropdown, setActiveDropdown] = useState(99);
   const [lastWaveform, setLastWaveform] = useState("");
   const [newWaveform, setNewWaveform] = useState("sine");
   const [assignmentMode, setAssignmentMode] = useState("single");
   const assignmentModes = ["single", "all of type", "all"];
   const [randomize, setRandomize] = useState(false);
 
-
-  const sendLastWaveform = (s: string) => {
+  const sendLastWaveform = (s: string): void => {
     setLastWaveform(s);
   }
 
   const sendNewWaveform = async (s: string) => {
-    // TODO: Remove first reset w/ string shenanigans
     await setNewWaveform("");
     await setNewWaveform(s);
   }
 
-  const sendActivation = (i: number) => {
-    setActiveDropdown(i);
+  const sendActivation = (i: number): void => {
+    // setActiveUIElement(i);
+    sendActivationGlobally(i);
   }
 
-  const createNodes = (firstIterator: number) => {
+  const createNodes = (firstIterator: number): JSX.Element[] => {
     const nodes = [];
 
     for (let i = 0; i < 4; ++i) {
       nodes.push(
         <Dropdown key={i}
           iterator={firstIterator - i}
-          activeDropdown={activeDropdown}
+          activeUIElement={activeUIElement}
           lastWaveform={lastWaveform}
           newWaveform={newWaveform}
           sendActivation={sendActivation}
@@ -56,7 +63,7 @@ const Controls = () => {
   }
 
   // Record and play back
-  const createPlayers = (n: number) => {
+  const createPlayers = (n: number): JSX.Element[] => {
     let players = [];
 
     for (let i = 0; i < n; ++i) {
@@ -68,20 +75,8 @@ const Controls = () => {
     return players;
   }
 
-  // TODO: Tidy up and move to global scope!
-  const [CC, setCC] = useState<string | null>("");
-
-  useEffect(() => {
-    if (CC && CC !== ("btn btn-controls dd" || "btn btn-controls btn-controls-active dd"))
-      setActiveDropdown(99); 
-  }, [CC]);
-
   return (
-    <section id="controls" onKeyDown={()=>{}} onClick={(event: React.MouseEvent) => {
-      const target = event.target as Element;
-      const targetClass = target.getAttribute("class");
-      setCC(targetClass);
-    }}>
+    <section id="controls">
         <div className="control-buttons">
           <div className="button-outer">
             <div className="btn btn-controls" onKeyDown={()=>{}}
@@ -129,7 +124,7 @@ const Controls = () => {
                   <div style={{marginTop: "7rem"}}>
                     <Dropdown key={30}
                     iterator={0}
-                    activeDropdown={activeDropdown}
+                    activeUIElement={activeUIElement}
                     lastWaveform={lastWaveform}
                     newWaveform={newWaveform}
                     sendActivation={sendActivation}

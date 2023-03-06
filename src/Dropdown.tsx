@@ -4,9 +4,11 @@ import audio from './Audio'
 import './'
 import { randomInt } from './utils';
 
+//--------------------------------------------------
+
 interface Dropdown {
   iterator: number;
-  activeDropdown: number;
+  activeUIElement: number;
   lastWaveform: string;
   newWaveform: string;
   sendActivation: (i: number) => void;
@@ -18,8 +20,10 @@ interface Dropdown {
 
 const waveforms = ['square', 'sine', 'triangle', 'sawtooth'];
 
+//--------------------------------------------------
+
 const Dropdown: FC<Dropdown> = (
-  {iterator, activeDropdown, lastWaveform, 
+  {iterator, activeUIElement, lastWaveform, 
     newWaveform, sendActivation, sendLastWaveform, 
     sendNewWaveform, assignmentMode, randomize}
   ) => {
@@ -33,9 +37,9 @@ const Dropdown: FC<Dropdown> = (
   }, [activeWaveform]);
 
   useEffect(() => {
-    if (activeDropdown !== iterator) setOpen(false);
+    if (activeUIElement !== iterator) setOpen(false);
     else setOpen(true);
-  }, [activeDropdown]);
+  }, [activeUIElement]);
 
   useEffect(() => {
     if ((lastWaveform === activeWaveform && assignmentMode === "all of type") ||
@@ -63,7 +67,7 @@ const Dropdown: FC<Dropdown> = (
     else setClassName("btn btn-controls dd");
   }, [open]);
 
-  const createSelector = () => {
+  const createSelector = (): JSX.Element => {
     return (<div className="shapes" style={{position: "absolute", width: "max-content", backgroundColor: "#101820ff", zIndex: "999"}}>
               {waveforms.map((w) => {
                   return (
@@ -90,7 +94,6 @@ const Dropdown: FC<Dropdown> = (
             margin: "0.3rem",
           }} 
           
-          // className={open ? "btn btn-controls btn-controls-active" : "btn btn-controls"}
           className={className}
           onKeyDown={()=>{}}
           onMouseEnter={() => sendLastWaveform(activeWaveform)}
@@ -110,7 +113,6 @@ const Dropdown: FC<Dropdown> = (
 
         {open && createSelector()}
     </div>
-    
   )
 }
 

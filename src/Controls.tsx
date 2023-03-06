@@ -26,7 +26,7 @@ const Controls: FC<Controls> = ({
   const assignmentModes = ["single", "all of type", "all"];
   const [randomize, setRandomize] = useState(false);
 
-  const sendLastWaveform = (s: string): void => {
+  const sendLastWaveform = (s: string) => {
     setLastWaveform(s);
   }
 

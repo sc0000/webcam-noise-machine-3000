@@ -47,7 +47,7 @@ const Dropdown: FC<Dropdown> = (
           setClassName("btn btn-controls btn-controls-active dd");
         }
 
-    else if (lastWaveform === "") setClassName("btn btn-controls dd");
+    else if (lastWaveform !== activeWaveform) setClassName("btn btn-controls dd");
   }, [lastWaveform]);
 
   useEffect(() => {

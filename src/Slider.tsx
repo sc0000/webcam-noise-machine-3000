@@ -1,6 +1,7 @@
 import { useState, useRef, FC, MouseEvent } from 'react'
 import { useEffect } from 'react';
 import './slider.css'
+
 import audio from './Audio'
 import { scale, logScale, mapLinearToLogarithmicScale } from './utils'
 
@@ -11,61 +12,68 @@ interface Slider {
   iterator?: number;
 }
 
+          
+
 const Slider: FC<Slider> = ({micro, iterator}) => {
     let innerRef = useRef<HTMLDivElement>(null);
     let handleRef = useRef<HTMLDivElement>(null);
+
+    const [handlePosition, setHandlePosition] = useState(15);
     const [hold, setHold] = useState(false);
-    const [offset, setOffset] = useState(0);
     const [startX, setStartX] = useState(0);
 
     const handleDown = (e: MouseEvent<HTMLElement>) => {
-        setHold(true);
-    }
-
-    useEffect(() => {
-        if (hold && handleRef.current !== null) 
-          setStartX(handleRef.current.offsetLeft +  15);
-    }, [hold]);
+          // const target = e.target as Element;
+          const left = innerRef.current?.getBoundingClientRect().left!;
+          const x = e.clientX - left;
+          setHold(true);
+          setHandlePosition(x);
+        }
 
     const handleMove = (e: MouseEvent<HTMLElement>) => {
-        if (hold) setOffset(e.pageX - startX);
+      if (hold) {
+        const left = innerRef.current?.getBoundingClientRect().left!;
+        const x = e.clientX - left;
+        setHandlePosition(x);
+      }
     }
 
-    const handleUp = (e: MouseEvent<HTMLElement>) => {
-        setOffset(0);
+    const handleUp = async (e: MouseEvent<HTMLElement>) => {
         setHold(false);
-    }
+      }
 
     useEffect(() => {
-      if (handleRef.current !== null && innerRef.current !== null) {
-        const currentX = startX + offset;
-        const minX = handleRef.current.offsetLeft + handleRef.current.clientWidth - 3
-        const maxX = handleRef.current.offsetLeft + innerRef.current.clientWidth + 3;;
-      
-        if (hold && 
-          (currentX > minX) &&
-          (currentX < maxX)) {
-          handleRef.current.style.transform = `translateX(${offset}px)`;
+      console.log(`handlePos: ${handlePosition}`);
 
-          if (iterator && audio.players[iterator]) {
-              audio.players[iterator].volume.value = scale(currentX, [minX, maxX], [-12, 12]);
-          }
+          //
+          // Audio parameter mapping
+          //  
 
-          if (micro) {
-              // TODO: Find a WAY better way to do this! (Get the log scaling right!)
-              audio.microtonalSpread = 1000 - mapLinearToLogarithmicScale(currentX, minX, maxX, 0.1, 1000);
-              // console.log(audio.microtonalSpread);
-          }
+          const left = innerRef.current?.getBoundingClientRect().left!;
+          const right = innerRef.current?.getBoundingClientRect().right!;
+        
+          // if (handlePosition > right) setHandlePosition(handlePosition - 15);
+          
+        if (iterator && audio.players[iterator]) {
+          // const vol = scale(handlePosition, [0, right - left], [-12, 12]);
+          const vol = mapLinearToLogarithmicScale(handlePosition, 0, right - left, -12, 12);
+          console.log(`vol: ${vol}`);
+          audio.players[iterator].volume.value = vol;
         }
-      }
-    }, [offset]);
+
+        if (micro) {
+            // TODO: Find a WAY better way to do this! (Get the log scaling right!)
+            audio.microtonalSpread = 1000 - mapLinearToLogarithmicScale(handlePosition, 0, right - left, 0.1, 1000);
+            // console.log(audio.microtonalSpread);
+        }
+    }, [handlePosition]);
 
   return (
     <div className="slider-outer" onMouseDown={handleDown} onMouseUp={handleUp} onMouseMove={handleMove}>
         <div className="slider-inner" ref={innerRef}>
             <div className="slider-handle" 
                 ref={handleRef}
-                />
+                style={{width: `${handlePosition}px`}}/>
         </div>
     </div>
   )

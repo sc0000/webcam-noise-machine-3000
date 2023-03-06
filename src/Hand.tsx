@@ -35,10 +35,6 @@ const Hand = () => {
 
   const [num, setNum] = useState(1);
 
-  // useEffect(() => {
-  //   console.log(canvasRef.current?.height);
-  // }, [canvasRef]);
-
   const updatePitch = (landmarks: Coords3D, i: number) => {
     for (let j = 0; j < pitchAreas.length; ++j) {
       if (coordinates[i].y > pitchAreas[j].y) {
@@ -66,8 +62,8 @@ const Hand = () => {
   }
 
   const updateVolume = (i: number) => {
-    const minVolume = -50;
-    const maxVolume = -24;
+    const minVolume = -62;
+    const maxVolume = -36;
 
     // Linear mapping:
     // update volume from x-axis; scaled to a value between -50 and -24

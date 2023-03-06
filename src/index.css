@@ -27,13 +27,12 @@ div#root>div {
     color: var(--color-2);
     font-family: 'Press Start 2P', cursive;
     display: flex;
-    /* flex-direction: column; */
     flex-wrap: nowrap;
-    width: 100vw;
-    /* height: 100vh; */
+    width: 100%;
     overflow: -moz-hidden-unscrollable;
     overflow-y: hidden;
     height: 100%;
+    overflow-x: hidden;
 }
 
 #hand {

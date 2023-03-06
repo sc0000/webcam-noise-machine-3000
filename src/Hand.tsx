@@ -35,9 +35,9 @@ const Hand = () => {
 
   const [num, setNum] = useState(1);
 
-  useEffect(() => {
-    console.log(canvasRef.current?.height);
-  }, [canvasRef]);
+  // useEffect(() => {
+  //   console.log(canvasRef.current?.height);
+  // }, [canvasRef]);
 
   const updatePitch = (landmarks: Coords3D, i: number) => {
     for (let j = 0; j < pitchAreas.length; ++j) {

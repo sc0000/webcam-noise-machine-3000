@@ -54,7 +54,7 @@ const Slider: FC<Slider> = ({micro, iterator}) => {
           if (micro) {
               // TODO: Find a WAY better way to do this! (Get the log scaling right!)
               audio.microtonalSpread = 1000 - mapLinearToLogarithmicScale(currentX, minX, maxX, 0.1, 1000);
-              console.log(audio.microtonalSpread);
+              // console.log(audio.microtonalSpread);
           }
         }
       }

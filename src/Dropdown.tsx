@@ -1,4 +1,4 @@
-import { useState, useEffect, FC, memo } from 'react'
+import { useState, useEffect, FC } from 'react'
 import { ToneOscillatorType } from 'tone';
 import audio from './Audio'
 import './'
@@ -33,7 +33,6 @@ const Dropdown: FC<Dropdown> = (
   }, [activeWaveform]);
 
   useEffect(() => {
-    console.log(activeDropdown);
     if (activeDropdown !== iterator) setOpen(false);
     else setOpen(true);
   }, [activeDropdown]);
@@ -51,6 +50,7 @@ const Dropdown: FC<Dropdown> = (
     if ((assignmentMode === "all of type" && activeWaveform === lastWaveform) ||
         (assignmentMode === "all"))
           setActiveWaveform(newWaveform);
+          setClassName("btn btn-controls dd");
   }, [newWaveform]);
 
   useEffect(() => {
@@ -59,28 +59,23 @@ const Dropdown: FC<Dropdown> = (
   }, [randomize]);
 
   useEffect(() => {
-    console.log(`${iterator}: ${open}`);
-
-    if (open) {
-      setClassName("btn btn-controls btn-controls-active dd");
-      // sendActivation(iterator);
-    }
-
+    if (open) setClassName("btn btn-controls btn-controls-active dd");
     else setClassName("btn btn-controls dd");
   }, [open]);
 
   const createSelector = () => {
     return (<div className="shapes" style={{position: "absolute", width: "max-content", backgroundColor: "#101820ff", zIndex: "999"}}>
-              {waveforms.map((s) => {
+              {waveforms.map((w) => {
                   return (
-                      <div key={s} onKeyDown={()=>{}} onClick={() => {
+                      <div key={w} onKeyDown={()=>{}} onClick={() => {
                         sendLastWaveform(activeWaveform);
-                        setActiveWaveform(s);
-                        sendNewWaveform(s);
-                      }} 
-                        className={activeWaveform === s ? "btn btn-controls btn-controls-active dd" : "btn btn-controls dd"}
+                        setActiveWaveform(w);
+                        sendNewWaveform(w);
+                      }}
+
+                        className={activeWaveform === w ? "btn btn-controls btn-controls-active dd" : "btn btn-controls dd"}
                         style={{margin: "3px"}}
-                        >{s.substring(0, 3)}
+                        >{w.substring(0, 3)}
                       </div>
                   );
               })}
@@ -100,12 +95,13 @@ const Dropdown: FC<Dropdown> = (
           onKeyDown={()=>{}}
           onMouseEnter={() => sendLastWaveform(activeWaveform)}
           
-          onClick={(e) => {
+          onClick={async (e) => {
             if (open) {
               e.stopPropagation();
               sendActivation(99);
             } else {
                 e.stopPropagation();
+                await sendActivation(99);
                 sendActivation(iterator);
             }
           }

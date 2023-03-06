@@ -11,19 +11,22 @@ const Controls = () => {
   const [startButton, setStartButton] = useState('start audio');
 
   // Waveforms
-  const [activeDropdown, setActiveDropdown] = useState(1);
+  const [activeDropdown, setActiveDropdown] = useState(99);
   const [lastWaveform, setLastWaveform] = useState("");
-  const [newWaveform, setNewWaveform] = useState("");
+  const [newWaveform, setNewWaveform] = useState("sine");
   const [assignmentMode, setAssignmentMode] = useState("single");
   const assignmentModes = ["single", "all of type", "all"];
   const [randomize, setRandomize] = useState(false);
+
 
   const sendLastWaveform = (s: string) => {
     setLastWaveform(s);
   }
 
-  const sendNewWaveform = (s: string) => {
-    setNewWaveform(s);
+  const sendNewWaveform = async (s: string) => {
+    // TODO: Remove first reset w/ string shenanigans
+    await setNewWaveform("");
+    await setNewWaveform(s);
   }
 
   const sendActivation = (i: number) => {
@@ -65,20 +68,12 @@ const Controls = () => {
     return players;
   }
 
-  // useEffect(() => {
-  //   console.log(activeDropdown);
-  // }, [activeDropdown]);
-
-
-  // TODO: Tidy up!
+  // TODO: Tidy up and move to global scope!
   const [CC, setCC] = useState<string | null>("");
 
   useEffect(() => {
-    if (CC !== ("btn btn-controls dd" || "btn btn-controls btn-controls-active dd"))
-      setActiveDropdown(99);
-
-    console.log(activeDropdown);
-    
+    if (CC && CC !== ("btn btn-controls dd" || "btn btn-controls btn-controls-active dd"))
+      setActiveDropdown(99); 
   }, [CC]);
 
   return (
@@ -86,8 +81,6 @@ const Controls = () => {
       const target = event.target as Element;
       const targetClass = target.getAttribute("class");
       setCC(targetClass);
-      console.log(CC);
-
     }}>
         <div className="control-buttons">
           <div className="button-outer">

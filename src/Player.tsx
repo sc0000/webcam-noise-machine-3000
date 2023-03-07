@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import audio from './Audio';
 import Slider from './Slider';
 import PLAYBUTTON from './assets/playbutton-lo.png'
@@ -18,10 +18,16 @@ interface Player {
 const Player: React.FC<Player> = ({/*update,*/ i}) => {
     const [recordButton, setRecordButton] = useState(RECORDBUTTONRED);
     const [isRecording, setIsRecording] = useState(false);
-    const [playButton, setPlayButton] = useState(PLAYBUTTON);
+    const [playButton, setPlayButton] = useState(PLAYBUTTONDISABLED);
+
+    const [className, setClassName] = useState("btn-disabled");
+
+    
+
 
   return (
     <div className="player">
+          {/* Record button */}
           <img src={recordButton} alt="" onKeyDown={()=>{}} 
             onClick={() => {
                 if (!isRecording) {
@@ -35,6 +41,8 @@ const Player: React.FC<Player> = ({/*update,*/ i}) => {
                   audio.stopRecording(i);
                   setIsRecording(false);
                   setRecordButton(RECORDBUTTONRED);
+                  setClassName("btn btn-controls");
+                  setPlayButton(PLAYBUTTON);
                 }
               }
             }
@@ -53,7 +61,8 @@ const Player: React.FC<Player> = ({/*update,*/ i}) => {
             className={recordButton === RECORDBUTTONRED ? "btn btn-controls" : "btn btn-controls btn-controls-active"}
           />
 
-          <img src={!audio.players[i] ? PLAYBUTTONDISABLED : playButton} alt="" onKeyDown={()=>{}} 
+          {/* Play button */}
+          <img src={playButton} alt="" style={{ transition: "opacity 200ms ease-in-out" }} onKeyDown={()=>{}} 
             onClick={() => {
                 if (playButton === PLAYBUTTONACTIVE) {
                   audio.players[i].start(); 
@@ -86,23 +95,25 @@ const Player: React.FC<Player> = ({/*update,*/ i}) => {
             } 
             
             // className={playButton === PLAYBUTTON ? "btn btn-controls" : "btn btn-controls btn-controls-active"} 
-            className={!audio.players[i] ? "btn-disabled" : "btn btn-controls"}
+            className={className}
           />
 
+          {/* Half speed button */}
           <div style={{paddingTop: "0.47rem"}} onKeyDown={()=>{}}
             onClick={() => {
                 audio.players[i].playbackRate *= 0.5;
               }
             } 
-            className={!audio.players[i] ? "btn-disabled" : "btn btn-controls"}>/2
+            className={className}>/2
           </div>
 
+          {/* Double speed button */}
           <div style={{paddingTop: "0.47rem"}} onKeyDown={()=>{}} 
             onClick={() => {
                 audio.players[i].playbackRate *= 2;
               }
             } 
-            className={!audio.players[i] ? "btn-disabled" : "btn btn-controls"}>*2
+            className={className}>*2
         </div>
 
         <div className="slider">

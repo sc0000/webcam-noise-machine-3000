@@ -13,16 +13,20 @@ import './player.css'
 
 interface Player {
   i: number;
+  activeUIElement: number;
+  sendActiveUIElementToParent: (id: number) => void;
 }
 
-const Player: React.FC<Player> = ({/*update,*/ i}) => {
+const Player: React.FC<Player> = ({i, activeUIElement, sendActiveUIElementToParent}) => {
     const [recordButton, setRecordButton] = useState(RECORDBUTTONRED);
     const [isRecording, setIsRecording] = useState(false);
     const [playButton, setPlayButton] = useState(PLAYBUTTONDISABLED);
 
     const [className, setClassName] = useState("btn-disabled");
 
-    
+    const sendActiveUIElementToPlayer = (id: number): void => {
+      sendActiveUIElementToParent(id);
+    }
 
 
   return (
@@ -117,7 +121,7 @@ const Player: React.FC<Player> = ({/*update,*/ i}) => {
         </div>
 
         <div className="slider">
-          <Slider iterator={i} />
+          <Slider id={i + 22} mapping={"playerVolume"} activeUIElement={activeUIElement} sendActiveUIElementToParent={sendActiveUIElementToPlayer}/>
         </div>
         
     </div>

@@ -1,5 +1,4 @@
-import { useState, useRef, FC, MouseEvent } from 'react'
-import { useEffect } from 'react';
+import { useRef, useState, useEffect, FC, MouseEvent } from 'react'
 import './slider.css'
 
 import audio from './Audio'
@@ -8,13 +7,15 @@ import { scale, logScale, mapLinearToLogarithmicScale } from './utils'
 // TODO: Solve: releasing mouse outside of component
 
 interface Slider {
-  micro?: boolean;
-  iterator?: number;
+  id: number; // TODO: Make mandatory
+  mapping: string; // what parameter the slider is mapped to.
+  activeUIElement: number;
+  sendActiveUIElementToParent: (id: number) => void;
 }
 
-          
+//--------------------------------------------------   
 
-const Slider: FC<Slider> = ({micro, iterator}) => {
+const Slider: FC<Slider> = ({id, mapping, activeUIElement, sendActiveUIElementToParent}) => {
     let innerRef = useRef<HTMLDivElement>(null);
     let handleRef = useRef<HTMLDivElement>(null);
 
@@ -28,6 +29,7 @@ const Slider: FC<Slider> = ({micro, iterator}) => {
           const x = e.clientX - left;
           setHold(true);
           setHandlePosition(x);
+          sendActiveUIElementToParent(id);
         }
 
     const handleMove = (e: MouseEvent<HTMLElement>) => {
@@ -43,6 +45,10 @@ const Slider: FC<Slider> = ({micro, iterator}) => {
       }
 
     useEffect(() => {
+      if (activeUIElement !== id) setHold(false);
+    }, [activeUIElement]);
+
+    useEffect(() => {
       console.log(`handlePos: ${handlePosition}`);
 
           //
@@ -54,15 +60,15 @@ const Slider: FC<Slider> = ({micro, iterator}) => {
         
           // if (handlePosition > right) setHandlePosition(handlePosition - 15);
           
-        if (iterator && audio.players[iterator]) {
+        if (mapping === 'playerVolume' && audio.players[id!]) {
           // const vol = scale(handlePosition, [0, right - left], [-12, 12]);
           const vol = mapLinearToLogarithmicScale(handlePosition, 0, right - left, -12, 12);
           console.log(`vol: ${vol}`);
-          audio.players[iterator].volume.value = vol;
+          audio.players[id!].volume.value = vol;
         }
 
-        if (micro) {
-            // TODO: Find a WAY better way to do this! (Get the log scaling right!)
+        if (mapping === 'microtonalSpread') {
+            // TODO: Get the log scaling right!
             audio.microtonalSpread = 1000 - mapLinearToLogarithmicScale(handlePosition, 0, right - left, 0.1, 1000);
             // console.log(audio.microtonalSpread);
         }

@@ -5,23 +5,34 @@ import Controls from './Controls'
 
 const App = () => {
   const [activeUIElement, setActiveUIElement] = useState(99);
+  // ? UI element Ids are hardcoded as of yet... 
 
   useEffect(() => {
-    console.log(activeUIElement);
+    console.log(`Active UI Element: ${activeUIElement}`);
   }, [activeUIElement]);
 
-  const sendActivationGlobally = (i: number): void => {
+  const sendActiveUIElementToApp = (i: number): void => {
     setActiveUIElement(i);
   }
+
+  // TODO: make mouse events depend on target class/type?, not UI element index!
   
   return (
-    <div onKeyDown={()=>{}} onClick={(event: React.MouseEvent) => {
-      setActiveUIElement(99); 
-    }}>
+    <div  onKeyDown={()=>{}} 
+          onMouseDown={(event: React.MouseEvent) => {
+            // ???
+            if (activeUIElement !== 99)
+              setActiveUIElement(99);
+          }}
+          
+          onMouseUp={() => {
+            if (activeUIElement > 20)
+              setActiveUIElement(99);
+          }}>
         <Hand/>
         <Controls 
           activeUIElement={activeUIElement}
-          sendActivationGlobally={sendActivationGlobally}/>
+          sendActiveUIElementToApp={sendActiveUIElementToApp}/>
     </div>
   )
 }

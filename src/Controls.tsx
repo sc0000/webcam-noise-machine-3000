@@ -9,13 +9,13 @@ import Slider from './Slider'
 
 interface Controls {
   activeUIElement: number;
-  sendActivationGlobally: (i: number) => void;
+  sendActiveUIElementToApp: (i: number) => void;
 }
 
 //--------------------------------------------------
 
 const Controls: FC<Controls> = ({
-  activeUIElement, sendActivationGlobally
+  activeUIElement, sendActiveUIElementToApp
 }) => {
   const [startButton, setStartButton] = useState('start audio');
 
@@ -35,9 +35,8 @@ const Controls: FC<Controls> = ({
     await setNewWaveform(s);
   }
 
-  const sendActivation = (i: number): void => {
-    // setActiveUIElement(i);
-    sendActivationGlobally(i);
+  const sendActiveUIElementToControls = (i: number): void => {
+    sendActiveUIElementToApp(i);
   }
 
   const createNodes = (firstIterator: number): JSX.Element[] => {
@@ -50,7 +49,7 @@ const Controls: FC<Controls> = ({
           activeUIElement={activeUIElement}
           lastWaveform={lastWaveform}
           newWaveform={newWaveform}
-          sendActivation={sendActivation}
+          sendActiveUIElementToParent={sendActiveUIElementToControls}
           sendLastWaveform={sendLastWaveform}
           sendNewWaveform={sendNewWaveform}
           assignmentMode={assignmentMode}
@@ -68,7 +67,7 @@ const Controls: FC<Controls> = ({
 
     for (let i = 0; i < n; ++i) {
       players.push(
-        <Player key={i} i={i} />
+        <Player key={i} i={i} activeUIElement={activeUIElement} sendActiveUIElementToParent={sendActiveUIElementToControls}/>
       )
     }
 
@@ -121,13 +120,15 @@ const Controls: FC<Controls> = ({
 
                 <div className="shapes shapes-middle">
                   {createNodes(12)}
+                  
+                  {/* Palm landmark: */}
                   <div style={{marginTop: "7rem"}}>
                     <Dropdown key={30}
                     iterator={0}
                     activeUIElement={activeUIElement}
                     lastWaveform={lastWaveform}
                     newWaveform={newWaveform}
-                    sendActivation={sendActivation}
+                    sendActiveUIElementToParent={sendActiveUIElementToControls}
                     sendLastWaveform={sendLastWaveform}
                     sendNewWaveform={sendNewWaveform}
                     assignmentMode={assignmentMode}
@@ -150,7 +151,7 @@ const Controls: FC<Controls> = ({
           <div className="microtonal">
             <h5>microtonal deviations</h5>
             <div style={{padding: "3px", height: "32px"}}>
-              <Slider micro={true}/>
+              <Slider id={21} mapping={"microtonalSpread"} activeUIElement={activeUIElement} sendActiveUIElementToParent={sendActiveUIElementToControls}/>
             </div>
           </div>
 

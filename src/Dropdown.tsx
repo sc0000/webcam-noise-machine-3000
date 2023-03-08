@@ -11,7 +11,7 @@ interface Dropdown {
   activeUIElement: number;
   lastWaveform: string;
   newWaveform: string;
-  sendActivation: (i: number) => void;
+  sendActiveUIElementToParent: (i: number) => void;
   sendLastWaveform: (s: string) => void;
   sendNewWaveform: (s: string) => void;
   assignmentMode: string;
@@ -24,7 +24,7 @@ const waveforms = ['square', 'sine', 'triangle', 'sawtooth'];
 
 const Dropdown: FC<Dropdown> = (
   {iterator, activeUIElement, lastWaveform, 
-    newWaveform, sendActivation, sendLastWaveform, 
+    newWaveform, sendActiveUIElementToParent, sendLastWaveform, 
     sendNewWaveform, assignmentMode, randomize}
   ) => {
   const [open, setOpen] = useState(false);
@@ -98,14 +98,14 @@ const Dropdown: FC<Dropdown> = (
           onKeyDown={()=>{}}
           onMouseEnter={() => sendLastWaveform(activeWaveform)}
           
-          onClick={async (e) => {
+          onMouseDown={async (e) => {
             if (open) {
               e.stopPropagation();
-              sendActivation(99);
+              sendActiveUIElementToParent(99);
             } else {
                 e.stopPropagation();
-                await sendActivation(99);
-                sendActivation(iterator);
+                await sendActiveUIElementToParent(99); // ???
+                sendActiveUIElementToParent(iterator);
             }
           }
         }>{activeWaveform.substring(0, 3)}

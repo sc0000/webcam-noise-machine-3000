@@ -7,14 +7,14 @@ import Slider from './Slider'
 
 //--------------------------------------------------
 
-interface Controls {
+interface ControlsProps {
   activeUIElement: number;
   sendActiveUIElementToControlLayer: (i: number) => void;
 }
 
 //--------------------------------------------------
 
-const Controls: FC<Controls> = ({
+const Controls: FC<ControlsProps> = ({
   activeUIElement, sendActiveUIElementToControlLayer
 }) => {
   const [startButton, setStartButton] = useState('start audio');

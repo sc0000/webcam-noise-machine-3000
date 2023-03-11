@@ -11,13 +11,13 @@ import RECORDBUTTONACTIVE from './assets/recordbutton-lo-active.png'
 
 import './player.css'
 
-interface Player {
+interface PlayerProps {
   i: number;
   activeUIElement: number;
   sendActiveUIElementToParent: (id: number) => void;
 }
 
-const Player: React.FC<Player> = ({i, activeUIElement, sendActiveUIElementToParent}) => {
+const Player: React.FC<PlayerProps> = ({i, activeUIElement, sendActiveUIElementToParent}) => {
     const [recordButton, setRecordButton] = useState(RECORDBUTTONRED);
     const [isRecording, setIsRecording] = useState(false);
     const [playButton, setPlayButton] = useState(PLAYBUTTONDISABLED);

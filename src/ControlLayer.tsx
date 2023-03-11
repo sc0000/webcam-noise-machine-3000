@@ -5,7 +5,7 @@ import Controls from "./Controls";
 import { MouseContext } from "./MouseContext";
 
 const ControlLayer: FC = () => {
-  const {mouseX, setMouseX} = useContext(MouseContext);
+  const {setMouseX} = useContext(MouseContext);
 
   const [activeUIElement, setActiveUIElement] = useState(99);
   // ? UI element Ids are hardcoded as of yet... 

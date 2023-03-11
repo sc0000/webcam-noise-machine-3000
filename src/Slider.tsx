@@ -7,7 +7,7 @@ import { MouseContext } from './MouseContext';
 
 //--------------------------------------------------
 
-interface Slider {
+interface SliderProps {
   id: number;
   mapping: string; // what parameter the slider is mapped to.
   activeUIElement: number;
@@ -16,7 +16,7 @@ interface Slider {
 
 //--------------------------------------------------   
 
-const Slider: FC<Slider> = ({id, mapping, activeUIElement, sendActiveUIElementToParent}) => {
+const Slider: FC<SliderProps> = ({id, mapping, activeUIElement, sendActiveUIElementToParent}) => {
     let innerRef = useRef<HTMLDivElement>(null);
     let handleRef = useRef<HTMLDivElement>(null);
 

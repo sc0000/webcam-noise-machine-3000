@@ -3,7 +3,7 @@ import { randomInt } from './utils';
 
 // TODO: Update style when reaching boundaries (greyed out buttons)
 
-interface PitchArea {
+interface PitchAreaProps {
     sendPitch: ({pitch, min, max}: {pitch: string, min: number, max: number}) => void;
 }
 
@@ -12,7 +12,7 @@ const pitches = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'
 const MAX_OCTAVE = 9;
 const MIN_OCTAVE = 1;
 
-const PitchArea: FC<PitchArea> = ({sendPitch}) => {   
+const PitchArea: FC<PitchAreaProps> = ({sendPitch}) => {   
     const [activePitch, setActivePitch] = useState(pitches[randomInt(0, 11)]);
     
     const [octaveSpread, setOctaveSpread] = useState(() => {

@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useCallback } from 'react'
+import { useRef, useState, useEffect, useCallback, FC } from 'react'
 
 import * as handpose from '@tensorflow-models/handpose'
 import { Coords3D } from '@tensorflow-models/handpose/dist/pipeline'
@@ -29,7 +29,7 @@ let { load, getPrediction, sendImageData } = wrap<import('./predictionWorker').P
 
 //--------------------------------------------------
 
-const Hand = () => {
+const Hand: FC = () => {
   const webcamRef = useRef<Webcam>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 

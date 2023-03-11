@@ -6,7 +6,7 @@ import { randomInt } from './utils';
 
 //--------------------------------------------------
 
-interface Dropdown {
+interface DropdownProps {
   iterator: number;
   activeUIElement: number;
   lastWaveform: string;
@@ -22,7 +22,7 @@ const waveforms = ['square', 'sine', 'triangle', 'sawtooth'];
 
 //--------------------------------------------------
 
-const Dropdown: FC<Dropdown> = (
+const Dropdown: FC<DropdownProps> = (
   {iterator, activeUIElement, lastWaveform, 
     newWaveform, sendActiveUIElementToParent, sendLastWaveform, 
     sendNewWaveform, assignmentMode, randomize}

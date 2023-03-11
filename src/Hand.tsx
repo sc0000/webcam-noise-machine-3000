@@ -33,6 +33,7 @@ const Hand: FC = () => {
   const webcamRef = useRef<Webcam>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
+  // Current number of pitch areas
   const [num, setNum] = useState(1);
 
   const updatePitch = (landmarks: Coords3D, i: number) => {
@@ -41,10 +42,15 @@ const Hand: FC = () => {
         const note = `${pitches[j].pitch}${randomInt(pitches[j].min, pitches[j].max)}`;
         
         let freq = audio.toFrequency(note);
-        freq += scale(coordinates[i].y, 
-          [pitchAreas[j].y, pitchAreas[j].y + pitchAreas[j].height], 
-          [freq / audio.microtonalSpread, -freq / audio.microtonalSpread]
-        );
+
+        if (audio.microtonalSpread !== 1000) {
+          freq += scale(coordinates[i].y, 
+            [pitchAreas[j].y, pitchAreas[j].y + pitchAreas[j].height], 
+            [freq / audio.microtonalSpread, -freq / audio.microtonalSpread]
+          );
+          
+          if (i === 8) console.log(freq);
+        }
         
         audio.oscillators[i].set({
           frequency: freq,

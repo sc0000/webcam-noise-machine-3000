@@ -23,7 +23,7 @@ const Slider: FC<SliderProps> = ({id, mapping, activeUIElement, sendActiveUIElem
     const sizeAndBoundaries = useCallback(() => {
       const left = innerRef.current?.getBoundingClientRect().left!;
       const right = innerRef.current?.getBoundingClientRect().right!;
-      const width = right - left + 1;
+      const width = right - left;
       // height...
 
       return {
@@ -45,12 +45,9 @@ const Slider: FC<SliderProps> = ({id, mapping, activeUIElement, sendActiveUIElem
         const handleX = mouseX - left;
         if (handleX > 0 && handleX < width) {
           setHandlePosition(handleX);
-          console.log(width);
         } else if (handleX < 0) {
           setHandlePosition(0);
         } else setHandlePosition(width);
-
-        console.log(`handlePos: ${handlePosition}\nhandleX: ${handleX}`);
       }
     }, [mouseX]);
 
@@ -66,18 +63,19 @@ const Slider: FC<SliderProps> = ({id, mapping, activeUIElement, sendActiveUIElem
       // Audio parameter mapping
       //  
 
-      const {left, right} = sizeAndBoundaries();
+      const {width} = sizeAndBoundaries();
         
-      if (mapping === 'playerVolume' && audio.players[id]) {
-        // const vol = scale(handlePosition, [0, right - left], [-12, 12]);
-        const vol = mapLinearToLogarithmicScale(handlePosition, 0, right - left, -12, 12);
-        console.log(`vol: ${vol}`);
-        audio.players[id!].volume.value = vol;
+      if (mapping === 'playerVolume' && audio.players[id - 22]) {
+        // linear scaling:
+        // const vol = scale(handlePosition, [0, width], [-12, 12]);
+        
+        const logVol = mapLinearToLogarithmicScale(handlePosition, 0, width, 0.001, 24) - 12;
+        audio.players[id - 22].volume.value = logVol;
       }
 
       if (mapping === 'microtonalSpread') {
           // TODO: Get the log scaling right!
-          audio.microtonalSpread = 1000 - mapLinearToLogarithmicScale(handlePosition, 0, right - left, 0.1, 1000);
+          audio.microtonalSpread = 1000 - mapLinearToLogarithmicScale(handlePosition, 0, width, 0.1, 1000);
           // console.log(audio.microtonalSpread);
       }
     }, [handlePosition]);

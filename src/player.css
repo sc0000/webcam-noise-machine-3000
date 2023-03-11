@@ -1,11 +1,21 @@
 @keyframes fadeIn {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
 }
 
 @keyframes fadeOut {
-  0% { opacity: 1; }
-  100% { opacity: 0.4; }
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0.4;
+  }
 }
 
 .player {
@@ -15,14 +25,14 @@
   flex-wrap: nowrap;
 }
 
-.player > .btn {
+.player>.btn {
   /* width: 37.2px; */
   height: 37.2px;
   margin: 0.2rem;
   padding: 0.3rem 0.2rem;
 }
 
-.slider > .slider-outer {
+.slider>.slider-outer {
 
   min-width: 95px;
   width: 100%;
@@ -31,12 +41,12 @@
 
 .slider {
   padding: 0.2rem 0.2rem;
-  /* width: 50px; */
+  width: 100%;
   min-height: 37.2px;
+  display: grid;
 }
 
 .btn-disabled {
-  /* width: 37.2px; */
   height: 37.2px;
   margin: 0.2rem;
   padding: 0.3rem 0.2rem;

@@ -9,13 +9,13 @@ import Slider from './Slider'
 
 interface Controls {
   activeUIElement: number;
-  sendActiveUIElementToApp: (i: number) => void;
+  sendActiveUIElementToControlLayer: (i: number) => void;
 }
 
 //--------------------------------------------------
 
 const Controls: FC<Controls> = ({
-  activeUIElement, sendActiveUIElementToApp
+  activeUIElement, sendActiveUIElementToControlLayer
 }) => {
   const [startButton, setStartButton] = useState('start audio');
 
@@ -36,7 +36,7 @@ const Controls: FC<Controls> = ({
   }
 
   const sendActiveUIElementToControls = (i: number): void => {
-    sendActiveUIElementToApp(i);
+    sendActiveUIElementToControlLayer(i);
   }
 
   const createNodes = (firstIterator: number): JSX.Element[] => {
@@ -148,6 +148,7 @@ const Controls: FC<Controls> = ({
               </div>
           </div>
 
+          {/* Microtonal slider */}
           <div className="microtonal">
             <h5>microtonal deviations</h5>
             <div style={{padding: "3px", height: "32px"}}>

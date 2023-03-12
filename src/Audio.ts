@@ -11,7 +11,7 @@ class Audio {
     max: 6
   };
 
-  microtonalSpread = 1000;
+  microtonalSpread = 0;
 
   constructor() {
       for (let i = 0; i < 21; ++i) {

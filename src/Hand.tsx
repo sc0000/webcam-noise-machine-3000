@@ -60,7 +60,7 @@ const Hand: FC = () => {
         freq += scaledDeviation;
 
         if (freq < 0) freq = 0;
-        
+
         audio.oscillators[i].set({
           frequency: freq,
           });
@@ -68,7 +68,7 @@ const Hand: FC = () => {
     }
   }
 
-  // TODO: Move into Audio.js?
+  // TODO: Move into Audio class
   const updatePitchNoHand = (i: number) => {
     // const targetPitch = 880 - scale(coordinates[i].y, 0, canvasRef.current?.height!, 220, 880);
     const targetPitch = 880 - mapLinearToLogarithmicScale(coordinates[i].y, 0.0001, canvasRef.current?.height!, 220, 880);

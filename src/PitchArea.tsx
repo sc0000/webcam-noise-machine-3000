@@ -1,8 +1,6 @@
 import { useState, useEffect, FC } from 'react'
 import { randomInt } from './utils';
 
-// TODO: Update style when reaching boundaries (greyed out buttons)
-
 interface PitchAreaProps {
     sendPitch: ({pitch, min, max}: {pitch: string, min: number, max: number}) => void;
 }

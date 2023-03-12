@@ -1,5 +1,5 @@
 import * as Tone from 'tone'
-import { lerp } from './utils'
+import { logerp } from './utils'
 
 class Audio {
   recorder = new Tone.Recorder();
@@ -58,7 +58,7 @@ class Audio {
 
   updatePitch(osc: Tone.Oscillator, targetPitch: number) {
       // TODO: Find audio appropriate interpolation function
-      osc.frequency.value = lerp(osc.frequency.value as number, targetPitch, 0.1);
+      osc.frequency.value = logerp(osc.frequency.value as number, targetPitch, 0.1);
   }
 
   toFrequency(note: string) {

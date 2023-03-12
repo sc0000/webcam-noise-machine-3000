@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useContext, useCallback, useMemo, FC, MouseEvent } from 'react'
+import { useRef, useState, useEffect, useContext, useCallback, FC, MouseEvent } from 'react'
 import './slider.css'
 
 import audio from './Audio'
@@ -39,7 +39,7 @@ const Slider: FC<SliderProps> = ({id, mapping, activeUIElement, sendActiveUIElem
     if (mapping === 'playerVolume') {
       setHandlePosition(sizeAndBoundaries().width / 2);
     }
-  }, [sizeAndBoundaries]);
+  }, [mapping, sizeAndBoundaries]);
 
   const [handlePosition, setHandlePosition] = useState(0);
 
@@ -56,6 +56,8 @@ const Slider: FC<SliderProps> = ({id, mapping, activeUIElement, sendActiveUIElem
         setHandlePosition(0);
       } else setHandlePosition(width);
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mouseX]);
 
   const handleDown = (e: MouseEvent<HTMLElement>) => {
@@ -80,7 +82,9 @@ const Slider: FC<SliderProps> = ({id, mapping, activeUIElement, sendActiveUIElem
     if (mapping === 'microtonalSpread') {
         audio.microtonalSpread = scale(handlePosition, 0, width, 0, 1);
     }
-  }, [handlePosition]);
+
+
+  }, [handlePosition, id, mapping, sizeAndBoundaries]);
 
   return (
     <div className="slider-outer" onMouseDown={handleDown}>

@@ -23,13 +23,15 @@ export const lerp = (A: number, B: number, factor: number): number => {
     return A + (B - A) * factor;
 }
 
-// export const logerp = (A: number, B: number, factor: number): number => {
-//     return Math.log(A) + (Math.log(B) - Math.log(A)) * factor;
-// }
+export const logerp = (A: number, B: number, factor: number): number => {
+    const logA = Math.log10(A);
+    const logB = Math.log10(B);
+    const logFactor = logA + (logB - logA) * factor;
+    return Math.pow(10, logFactor);
+  }
 
 export const fixDPI = (canvas: HTMLCanvasElement) => {
     const dpi = window.devicePixelRatio;
-    // const canvas = canvasRef.current;
     
     const styleHeight = +getComputedStyle(canvas).getPropertyValue('height').slice(0, -2);
     const styleWidth = +getComputedStyle(canvas).getPropertyValue('width').slice(0, -2);

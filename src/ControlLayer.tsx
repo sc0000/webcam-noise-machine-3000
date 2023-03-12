@@ -25,9 +25,14 @@ const ControlLayer: FC = () => {
   return (
     <div  onKeyDown={()=>{}} 
           onMouseDown={(event: React.MouseEvent) => {
+            const target = event.target as Element;
+            const className = target.getAttribute("class");
             // ???
-            if (activeUIElement !== 99)
+            if (className !== "btn btn-controls dd" && 
+              className !== "btn btn-controls btn-controls-active dd" && 
+              activeUIElement !== 99) {
               setActiveUIElement(99);
+            }
           }}
           
           onMouseUp={() => {

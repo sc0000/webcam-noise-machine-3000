@@ -71,10 +71,10 @@ const Dropdown: FC<DropdownProps> = (
     return (<div className="shapes" style={{position: "absolute", width: "max-content", backgroundColor: "#101820ff", zIndex: "999"}}>
               {waveforms.map((w) => {
                   return (
-                      <div key={w} onKeyDown={()=>{}} onClick={() => {
-                        sendLastWaveform(activeWaveform);
-                        setActiveWaveform(w);
-                        sendNewWaveform(w);
+                      <div key={w} onKeyDown={()=>{}} onClick={async () => {
+                        await sendLastWaveform(activeWaveform);
+                        await setActiveWaveform(w);
+                        await sendNewWaveform(w);
                       }}
 
                         className={activeWaveform === w ? "btn btn-controls btn-controls-active dd" : "btn btn-controls dd"}
@@ -96,7 +96,9 @@ const Dropdown: FC<DropdownProps> = (
           
           className={className}
           onKeyDown={()=>{}}
-          onMouseEnter={() => sendLastWaveform(activeWaveform)}
+          onMouseEnter={() => {
+            sendLastWaveform(activeWaveform);
+          }}
           
           onMouseDown={async (e) => {
             if (open) {
@@ -104,7 +106,6 @@ const Dropdown: FC<DropdownProps> = (
               sendActiveUIElementToParent(99);
             } else {
                 e.stopPropagation();
-                await sendActiveUIElementToParent(99); // ???
                 sendActiveUIElementToParent(iterator);
             }
           }

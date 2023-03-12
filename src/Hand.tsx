@@ -8,7 +8,7 @@ import '@tensorflow/tfjs-backend-cpu'
 import Webcam from 'react-webcam'
 import { wrap } from 'comlink';
 
-import { scale, logScale, mapLinearToLogarithmicScale, lerp, fixDPI, randomInt, pitches, pitchAreas } from './utils'
+import { scale, mapLinearToLogarithmicScale, lerp, fixDPI, randomInt, pitches, pitchAreas } from './utils'
 import audio from './Audio'
 import PitchArea from './PitchArea'
 
@@ -36,21 +36,30 @@ const Hand: FC = () => {
   // Current number of pitch areas
   const [num, setNum] = useState(1);
 
+  // TODO: Move into Audio class
   const updatePitch = (landmarks: Coords3D, i: number) => {
     for (let j = 0; j < pitchAreas.length; ++j) {
-      if (coordinates[i].y > pitchAreas[j].y) {
+      if (coordinates[i].y > pitchAreas[j].y && coordinates[i].y < (pitchAreas[j].y + pitchAreas[j].height)) {
         const note = `${pitches[j].pitch}${randomInt(pitches[j].min, pitches[j].max)}`;
         
         let freq = audio.toFrequency(note);
 
-        if (audio.microtonalSpread !== 1000) {
-          freq += scale(coordinates[i].y, 
-            [pitchAreas[j].y, pitchAreas[j].y + pitchAreas[j].height], 
-            [freq / audio.microtonalSpread, -freq / audio.microtonalSpread]
-          );
-          
-          if (i === 8) console.log(freq);
-        }
+        // ADDING PITCH DEVIATIONS DEPENDING ON DISTANCE FROM THE CENTER LINE OF THE PITCH AREA
+        const pitchArea = pitchAreas[j];
+        const center = pitchArea.y + (pitchArea.height / 2);
+        const deviation = Math.abs(coordinates[i].y - center);
+
+        // For scaling the deviation from the middle line of the pitch area, we first flip over values above the line, 
+        // then get direction back into the picture after scaling
+        const landmarkY = coordinates[i].y > center ? coordinates[i].y : coordinates[i].y + (2 * deviation);
+        const direction = (coordinates[i].y > center ? -1 : 1);
+
+        const scaledDeviation = mapLinearToLogarithmicScale(landmarkY, center, center + (pitchArea.height / 2), 0.1, audio.maxDeviation(freq)) * 
+          direction * audio.microtonalSpread;
+
+        freq += scaledDeviation;
+
+        if (freq < 0) freq = 0;
         
         audio.oscillators[i].set({
           frequency: freq,
@@ -61,9 +70,8 @@ const Hand: FC = () => {
 
   // TODO: Move into Audio.js?
   const updatePitchNoHand = (i: number) => {
-    // const targetPitch = 880 - scale(coordinates[i].y, [0, canvasRef.current?.height!], [220, 880]);
+    // const targetPitch = 880 - scale(coordinates[i].y, 0, canvasRef.current?.height!, 220, 880);
     const targetPitch = 880 - mapLinearToLogarithmicScale(coordinates[i].y, 0.0001, canvasRef.current?.height!, 220, 880);
-    // if (i = 1) console.log(targetPitch);
     audio.updatePitch(audio.oscillators[i], targetPitch);
   }
 
@@ -71,13 +79,7 @@ const Hand: FC = () => {
     const minVolume = -62;
     const maxVolume = -36;
 
-    // Linear mapping:
-    // update volume from x-axis; scaled to a value between -50 and -24
-    // audio.oscillators[i].volume.value = scale(coordinates[i].x, [0, canvasRef.current?.width!], [minVolume, maxVolume]);
-
-    // logarithmic mapping:
     audio.oscillators[i].volume.value = mapLinearToLogarithmicScale(coordinates[i].x, 0, canvasRef.current?.width!, Math.abs(maxVolume), Math.abs(minVolume)) + minVolume + maxVolume;
-    // if (i = 1) console.log(audio.oscillators[i].volume.value);
   }
 
   const drawHand = useCallback(async (prediction: handpose.AnnotatedPrediction[] | undefined, videoWidth: number, videoHeight: number) => {
@@ -102,13 +104,13 @@ const Hand: FC = () => {
         
         
         for (let i = 0; i < landmarks.length; ++i) {
-          const targetX = canvasRef.current?.width! - scale(landmarks[i][0], [0, videoWidth], [0, canvasRef.current?.width!]);
-          const targetY = scale(landmarks[i][1], [0, videoHeight], [0, canvasRef.current?.height!]);
+          const targetX = canvasRef.current?.width! - scale(landmarks[i][0], 0, videoWidth, 0, canvasRef.current?.width!);
+          const targetY = scale(landmarks[i][1], 0, videoHeight, 0, canvasRef.current?.height!);
           
           coordinates[i].x = lerp(coordinates[i].x, targetX, INTERP_SPEED);
           coordinates[i].y = lerp(coordinates[i].y, targetY, INTERP_SPEED);
 
-          const targetSize = scale(Math.abs(landmarks[i][2]), [0, 80], [2, 32]);
+          const targetSize = scale(Math.abs(landmarks[i][2]), 0, 80, 2, 32);
           // const zMicro = scale(Math.abs(landmarks[i][2]), [0, 80], [2, 1000]);
           coordinates[i].size = lerp(coordinates[i].size, targetSize, 0.01);
           

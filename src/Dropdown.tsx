@@ -83,7 +83,7 @@ const Dropdown: FC<DropdownProps> = (
                       </div>
                   );
               })}
-            </div>)
+            </div>);
   }
 
   return (

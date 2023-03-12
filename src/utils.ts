@@ -1,27 +1,7 @@
 import {useState, useEffect} from 'react'
 
-export const scale = (value: number, [inMin, inMax]: [number, number], [outMin, outMax]: [number, number]): number => {
+export const scale = (value: number, inMin: number, inMax: number, outMin: number, outMax: number): number => {
     return (value - inMin) / (inMax - inMin) * (outMax - outMin) + outMin;
-}
-
-export const logScale = (value: number, [inMin, inMax]: [number, number], [outMin, outMax]: [number, number]): number => {
-    const logX1 = Math.log(outMin);
-    const logX2 = Math.log(outMax);
-    const logRatio = logX2 - logX1;
-
-    const logX = Math.log(value);
-    const logXRatio = (logX - logX1);
-    const ratio = logXRatio / logRatio;
-
-    return (outMin) * Math.pow((outMax / outMin), ratio);
-
-    // const b = (outMax - outMin) / Math.log(inMax / inMin);
-    // const a = outMin - b * Math.log(inMin);
-    // const result = a + b * Math.log(value);
-
-    // console.log(result);
-
-    // return result;
 }
 
 export const mapLinearToLogarithmicScale = (x: number, x1: number, x2: number, y1: number, y2: number): number => {

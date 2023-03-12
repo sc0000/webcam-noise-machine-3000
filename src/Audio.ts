@@ -64,6 +64,12 @@ class Audio {
   toFrequency(note: string) {
       return Tone.Frequency(note).toFrequency();
   }
+
+  maxDeviation(frequency: number) {
+    const B = 25 + 75 * (1 + 1.4 * Math.pow(Math.abs(frequency) / 1000, 2)) ** 0.69; // calculate critical bandwidth
+    const maxDev = Math.max(B / 2, 0); // calculate maximum deviation (set to zero if negative)
+    return maxDev;
+  }
 }
 
 const audio = new Audio();

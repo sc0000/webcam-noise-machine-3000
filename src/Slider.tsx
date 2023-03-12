@@ -2,7 +2,7 @@ import { useRef, useState, useEffect, useContext, useCallback, FC, MouseEvent } 
 import './slider.css'
 
 import audio from './Audio'
-import { scale, logScale, mapLinearToLogarithmicScale } from './utils'
+import { scale, mapLinearToLogarithmicScale } from './utils'
 import { MouseContext } from './MouseContext';
 
 //--------------------------------------------------
@@ -66,17 +66,12 @@ const Slider: FC<SliderProps> = ({id, mapping, activeUIElement, sendActiveUIElem
       const {width} = sizeAndBoundaries();
         
       if (mapping === 'playerVolume' && audio.players[id - 22]) {
-        // linear scaling:
-        // const vol = scale(handlePosition, [0, width], [-12, 12]);
-        
         const logVol = mapLinearToLogarithmicScale(handlePosition, 0, width, 0.001, 24) - 12;
         audio.players[id - 22].volume.value = logVol;
       }
 
       if (mapping === 'microtonalSpread') {
-          // TODO: Get the log scaling right!
-          audio.microtonalSpread = 1000 - mapLinearToLogarithmicScale(handlePosition, 0, width, 0.1, 1000);
-          // console.log(audio.microtonalSpread);
+          audio.microtonalSpread = scale(handlePosition, 0, width, 0, 1);
       }
     }, [handlePosition]);
 

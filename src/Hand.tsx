@@ -72,7 +72,9 @@ const Hand: FC = () => {
   const updatePitchNoHand = (i: number) => {
     // const targetPitch = 880 - scale(coordinates[i].y, 0, canvasRef.current?.height!, 220, 880);
     const targetPitch = 880 - mapLinearToLogarithmicScale(coordinates[i].y, 0.0001, canvasRef.current?.height!, 220, 880);
-    audio.updatePitch(audio.oscillators[i], targetPitch);
+    
+    if (audio.oscillators[i])
+      audio.updatePitch(audio.oscillators[i], targetPitch);
   }
 
   const updateVolume = (i: number) => {

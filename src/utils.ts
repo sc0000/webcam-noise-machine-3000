@@ -17,8 +17,6 @@ export const mapLinearToLogarithmicScale = (x: number, x1: number, x2: number, y
         return Math.exp(log_y);
 }
 
-
-// TODO: Replace with log interpolation!
 export const lerp = (A: number, B: number, factor: number): number => {
     return A + (B - A) * factor;
 }

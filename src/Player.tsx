@@ -20,9 +20,10 @@ interface PlayerProps {
 const Player: React.FC<PlayerProps> = ({i, activeUIElement, sendActiveUIElementToParent}) => {
     const [recordButton, setRecordButton] = useState(RECORDBUTTONRED);
     const [isRecording, setIsRecording] = useState(false);
+    const [hasRecorded, setHasRecorded] = useState(false);
     const [playButton, setPlayButton] = useState(PLAYBUTTONDISABLED);
 
-    const [className, setClassName] = useState("btn-disabled");
+    // const [className, setClassName] = useState("btn-disabled");
 
     const sendActiveUIElementToPlayer = (id: number): void => {
       sendActiveUIElementToParent(id);
@@ -44,8 +45,9 @@ const Player: React.FC<PlayerProps> = ({i, activeUIElement, sendActiveUIElementT
                   // update();
                   audio.stopRecording(i);
                   setIsRecording(false);
+                  setHasRecorded(true);
                   setRecordButton(RECORDBUTTONRED);
-                  setClassName("btn btn-controls");
+                  // setClassName("btn btn-controls");
                   setPlayButton(PLAYBUTTON);
                 }
               }
@@ -66,7 +68,7 @@ const Player: React.FC<PlayerProps> = ({i, activeUIElement, sendActiveUIElementT
           />
 
           {/* Play button */}
-          <img src={playButton} alt="" style={{ transition: "opacity 200ms ease-in-out" }} onKeyDown={()=>{}} 
+          <img src={hasRecorded ? playButton : PLAYBUTTONDISABLED} alt="" style={{ transition: "opacity 200ms ease-in-out" }} onKeyDown={()=>{}} 
             onClick={() => {
                 if (playButton === PLAYBUTTONACTIVE) {
                   audio.players[i].start(); 
@@ -98,8 +100,8 @@ const Player: React.FC<PlayerProps> = ({i, activeUIElement, sendActiveUIElementT
               }
             } 
             
-            // className={playButton === PLAYBUTTON ? "btn btn-controls" : "btn btn-controls btn-controls-active"} 
-            className={className}
+            className={hasRecorded ? "btn btn-controls" : "btn btn-controls btn-disabled"} 
+            // className={className}
           />
 
           {/* Half speed button */}
@@ -108,7 +110,8 @@ const Player: React.FC<PlayerProps> = ({i, activeUIElement, sendActiveUIElementT
                 audio.players[i].playbackRate *= 0.5;
               }
             } 
-            className={className}>/2
+
+            className={hasRecorded ? "btn btn-controls" : "btn btn-controls btn-disabled"}>/2
           </div>
 
           {/* Double speed button */}
@@ -117,11 +120,13 @@ const Player: React.FC<PlayerProps> = ({i, activeUIElement, sendActiveUIElementT
                 audio.players[i].playbackRate *= 2;
               }
             } 
-            className={className}>*2
+            
+            className={hasRecorded ? "btn btn-controls" : "btn btn-controls btn-disabled"}>*2
         </div>
 
         <div className="slider">
-          <Slider id={i + 22} mapping={"playerVolume"} activeUIElement={activeUIElement} sendActiveUIElementToParent={sendActiveUIElementToPlayer}/>
+          <Slider id={i + 22} mapping={"playerVolume"} recorded={hasRecorded} 
+            activeUIElement={activeUIElement} sendActiveUIElementToParent={sendActiveUIElementToPlayer}/>
         </div>
         
     </div>

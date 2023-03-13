@@ -27,7 +27,7 @@ const ControlLayer: FC = () => {
           onMouseDown={(event: React.MouseEvent) => {
             const target = event.target as Element;
             const className = target.getAttribute("class");
-            // ???
+  
             if (className !== "btn btn-controls dd" && 
               className !== "btn btn-controls btn-controls-active dd" && 
               activeUIElement !== 99) {

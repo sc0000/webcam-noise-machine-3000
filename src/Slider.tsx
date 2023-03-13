@@ -9,14 +9,17 @@ import { MouseContext } from './MouseContext';
 
 interface SliderProps {
   id: number;
+
   mapping: string; // what parameter the slider is mapped to.
+  recorded?: boolean;
+  
   activeUIElement: number;
   sendActiveUIElementToParent: (id: number) => void;
 }
 
 //--------------------------------------------------   
 
-const Slider: FC<SliderProps> = ({id, mapping, activeUIElement, sendActiveUIElementToParent}) => {
+const Slider: FC<SliderProps> = ({id, mapping, recorded, activeUIElement, sendActiveUIElementToParent}) => {
   let innerRef = useRef<HTMLDivElement>(null);
   let handleRef = useRef<HTMLDivElement>(null);
 
@@ -87,9 +90,9 @@ const Slider: FC<SliderProps> = ({id, mapping, activeUIElement, sendActiveUIElem
   }, [handlePosition, id, mapping, sizeAndBoundaries]);
 
   return (
-    <div className="slider-outer" onMouseDown={handleDown}>
-        <div className="slider-inner" ref={innerRef}>
-            <div className="slider-handle" 
+    <div className={mapping === "playerVolume" && !recorded ? "slider-outer slider-outer-disabled" : "slider-outer"} onMouseDown={handleDown}>
+        <div  className={mapping === "playerVolume" && !recorded ? "slider-inner slider-inner-disabled" : "slider-inner"} ref={innerRef}>
+            <div className={mapping === "playerVolume" && !recorded ? "slider-handle slider-handle-disabled" : "slider-handle"} 
                 ref={handleRef}
                 style={{width: `${handlePosition}px`}}/>
         </div>

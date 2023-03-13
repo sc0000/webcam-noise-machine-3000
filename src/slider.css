@@ -3,6 +3,16 @@
   background: transparent;
   border: 3px solid var(--color-1);
   height: 100%;
+
+}
+
+.slider-outer * {
+  transition: var(--transition);
+  transition: width 35ms ease-out;
+}
+
+.slider-outer-disabled {
+  border: 3px solid var(--color-4);
 }
 
 .slider-inner {
@@ -10,6 +20,12 @@
   height: 100%;
   background-image: url('./assets/check-pattern.png');
   background-repeat: repeat;
+  cursor: pointer;
+}
+
+.slider-inner-disabled {
+  background-image: url('./assets/check-pattern-grey.png');
+  cursor: default;
 }
 
 .slider-handle {
@@ -17,4 +33,8 @@
   height: 100%;
   width: 15px;
   z-index: 999;
+}
+
+.slider-handle-disabled {
+  background: var(--color-4);
 }

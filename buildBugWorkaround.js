@@ -1,3 +1,5 @@
+// ! This is a dirty workaround for what appears to be a create-react-app bug, see https://github.com/facebook/create-react-app/issues/12503
+
 const fs = require('fs-extra');
 
 const filesToCopy = [

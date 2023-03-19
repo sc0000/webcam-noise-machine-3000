@@ -7,10 +7,12 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1920,
     height: 1080,
-    backgroundColor: "white",
+    backgroundColor: "#101820ff",
     webPreferences: {
       preload: path.join(__dirname, "preload.js")
-    }
+    },
+    autoHideMenuBar: true,
+    frame: false,
   });
 
   // Load the index.html of the app

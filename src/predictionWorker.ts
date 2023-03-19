@@ -17,7 +17,7 @@ const load = async () => {
 
     const loop = setInterval(() => {
         makePrediction();
-    }, 20);
+    }, 12);
 }
 
 const makePrediction = async () => {

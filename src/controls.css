@@ -11,9 +11,10 @@
   justify-content: center;
   margin-top: 0;
   width: 100%;
+  /* border-top: 3px solid var(--color-1); */
 }
 
-.control-buttons > .btn {
+.control-buttons>.btn {
   font-size: 0.7rem;
 }
 
@@ -25,7 +26,7 @@
   padding: 0;
 }
 
-.randomize-outer > .btn {
+.randomize-outer>.btn {
   padding: 0.4rem;
   font-size: 0.5rem;
 }
@@ -43,7 +44,7 @@
 
 .players {
   width: 100%;
-  
+
 }
 
 .shapes-options {
@@ -51,7 +52,7 @@
   grid-template-columns: auto auto auto auto;
 }
 
-.shapes-options > .btn {
+.shapes-options>.btn {
   width: calc(100% - 6px);
   position: relative;
   padding: 0.4rem;
@@ -75,7 +76,7 @@
   display: grid;
   flex-wrap: nowrap;
   justify-content: center;
-  
+
   padding-top: 1rem;
   padding-bottom: 1rem;
   width: 100%;
@@ -106,7 +107,7 @@
 
 .microtonal {
   width: 100%;
-  height: max-content; 
+  height: max-content;
   padding: 9px;
   margin-bottom: 3px;
   border-bottom: 3px solid var(--color-1);

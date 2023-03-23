@@ -11,8 +11,6 @@ const ControlLayer: FC = () => {
   const [activeUIElement, setActiveUIElement] = useState(99);
   // ? UI element Ids are hardcoded as of yet... 
 
-  
-
   useEffect(() => {
     console.log(`Active UI Element: ${activeUIElement}`);
   }, [activeUIElement]);

@@ -134,14 +134,10 @@ section>div {
     z-index: 999;
     background: transparent;
     border-top: 3px solid var(--color-3);
-    /* border-bottom: 3px solid var(--color-3); */
     width: 100%;
-    /* height: 50%; */
     margin: 0;
     display: flex;
     flex-direction: column;
-    /* justify-content: flex-end;
-    float: right; */
     animation: fadeIn 0.4s;
     transition: var(--transition);
 }
@@ -162,7 +158,7 @@ section>div {
     padding: 0;
     overflow: -moz-hidden-unscrollable;
     position: absolute;
-    height: 3.3rem;
+    height: calc(3.3rem + 1px);
     width: 70vw;
 }
 

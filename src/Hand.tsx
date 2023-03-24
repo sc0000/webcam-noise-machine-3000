@@ -11,6 +11,7 @@ import { wrap } from 'comlink';
 import { scale, mapLinearToLogarithmicScale, lerp, fixDPI, randomInt, pitches, pitchAreas } from './utils'
 import audio from './Audio'
 import PitchArea from './PitchArea'
+import { ControlProps } from './ControlLayer'
 
 import './hand.css'
 
@@ -29,12 +30,18 @@ let { load, getPrediction, sendImageData } = wrap<import('./predictionWorker').P
 
 //--------------------------------------------------
 
-const Hand: FC = () => {
+const Hand: FC<ControlProps> = ({
+  activeUIElement, sendActiveUIElementToParent
+}) => {
   const webcamRef = useRef<Webcam>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   // Current number of pitch areas
   const [num, setNum] = useState(1);
+
+  const sendActiveUIElementToHand = (i: number): void => {
+    sendActiveUIElementToParent(i);
+  }
 
   // TODO: Move into Audio class
   const updatePitch = (landmarks: Coords3D, i: number) => {
@@ -50,8 +57,8 @@ const Hand: FC = () => {
         const deviation = Math.abs(coordinates[i].y - center);
 
         // For scaling the deviation from the middle line of the pitch area, we first flip over values above the line, 
-        // then get direction back into the picture after scaling
         const landmarkY = coordinates[i].y > center ? coordinates[i].y : coordinates[i].y + (2 * deviation);
+        // then get direction back into the picture after scaling
         const direction = (coordinates[i].y > center ? -1 : 1);
 
         const scaledDeviation = mapLinearToLogarithmicScale(landmarkY, center, center + (pitchArea.height / 2), 0.1, audio.maxDeviation(freq)) * 
@@ -232,7 +239,10 @@ const Hand: FC = () => {
       } 
 
       pitchAreas.push(
-        <PitchArea key={i*6} sendPitch={sendPitch}/>
+        <PitchArea  key={i*6} 
+                    sendPitch={sendPitch}
+                    activeUIElement={activeUIElement}
+                    sendActiveUIElementToParent={sendActiveUIElementToHand}/>
       );
     }
 

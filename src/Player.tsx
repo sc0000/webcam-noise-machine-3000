@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import audio from './Audio';
 import Slider from './Slider';
 import PLAYBUTTON from './assets/playbutton-lo.png'
@@ -125,7 +125,7 @@ const Player: React.FC<PlayerProps> = ({i, activeUIElement, sendActiveUIElementT
         </div>
 
         <div className="slider">
-          <Slider id={i + 22} mapping={"playerVolume"} recorded={hasRecorded} 
+          <Slider id={i + 22} mapping={"player-volume"} recorded={hasRecorded} 
             activeUIElement={activeUIElement} sendActiveUIElementToParent={sendActiveUIElementToPlayer}/>
         </div>
         

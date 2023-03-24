@@ -5,6 +5,15 @@ import Hand from "./Hand";
 import Controls from "./Controls";
 import { MouseContext } from "./MouseContext";
 
+//--------------------------------------------------
+
+export interface ControlProps {
+  activeUIElement: number;
+  sendActiveUIElementToParent: (i: number) => void;
+}
+
+//--------------------------------------------------
+
 const ControlLayer: FC = () => {
   const {setMouseX} = useContext(MouseContext);
 
@@ -18,8 +27,6 @@ const ControlLayer: FC = () => {
   const sendActiveUIElementToControlLayer = (i: number): void => {
     setActiveUIElement(i);
   }
-
-  // TODO: make mouse events depend on target class/type?, not UI element index!!!
 
   return (
     <div  style={{
@@ -55,10 +62,12 @@ const ControlLayer: FC = () => {
           flexDirection: "row",
           flexWrap: "nowrap",
         }}>    
-          <Hand/>
+          <Hand
+            activeUIElement={activeUIElement}
+            sendActiveUIElementToParent={sendActiveUIElementToControlLayer}/>
           <Controls 
             activeUIElement={activeUIElement}
-            sendActiveUIElementToControlLayer={sendActiveUIElementToControlLayer}/>
+            sendActiveUIElementToParent={sendActiveUIElementToControlLayer}/>
         </div>
     </div>
   )

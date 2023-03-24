@@ -31,7 +31,7 @@
 .slider-handle {
   background: var(--color-1);
   height: 100%;
-  width: 15px;
+  width: 16px;
   z-index: 999;
 }
 

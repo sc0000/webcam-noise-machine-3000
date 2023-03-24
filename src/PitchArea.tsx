@@ -1,5 +1,9 @@
 import { useState, useEffect, FC } from 'react'
 import { randomInt } from './utils';
+import { ControlProps } from './ControlLayer';
+import Slider from './Slider';
+
+//--------------------------------------------------
 
 interface PitchAreaProps {
     sendPitch: ({pitch, min, max}: {pitch: string, min: number, max: number}) => void;
@@ -10,7 +14,11 @@ const pitches = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'
 const MAX_OCTAVE = 9;
 const MIN_OCTAVE = 1;
 
-const PitchArea: FC<PitchAreaProps> = ({sendPitch}) => {   
+//--------------------------------------------------
+
+const PitchArea: FC<PitchAreaProps & ControlProps> = (
+    {sendPitch, activeUIElement, sendActiveUIElementToParent}
+    ) => {   
     const [activePitch, setActivePitch] = useState(pitches[randomInt(0, 11)]);
     
     const [octaveSpread, setOctaveSpread] = useState(() => {
@@ -19,10 +27,12 @@ const PitchArea: FC<PitchAreaProps> = ({sendPitch}) => {
     });
 
     const [lastMax, setLastMax] = useState(octaveSpread.max);
-
     const [locked, setLocked] = useState(true);
-
     const [range, setRange] = useState(`${octaveSpread.min}-${octaveSpread.max}`);
+
+    const sendActiveUIElementToPitchArea = (i: number): void => {
+        sendActiveUIElementToParent(i);
+    }
 
     useEffect(() => {
         // if locked, set both to min
@@ -73,16 +83,19 @@ const PitchArea: FC<PitchAreaProps> = ({sendPitch}) => {
         }
     }
 
+//--------------------------------------------------
+
   return (
     <div className="subdiv">
         <div className="selector">
             {pitches.map((p) => {
                 return (
                     <div key={p} onKeyDown={()=>{}} onClick={() => {
-                        setActivePitch(p); sendPitch({pitch: p, min: octaveSpread.min, max: octaveSpread.max});
-                    }} 
+                            setActivePitch(p); sendPitch({pitch: p, min: octaveSpread.min, max: octaveSpread.max});
+                        }} 
                     
-                    className={activePitch === p ? "btn-pitch btn-pitch-active" : "btn-pitch"}>{p}</div>
+                        className={activePitch === p ? "btn-pitch btn-pitch-active" : "btn-pitch"}>{p}
+                    </div>
                 );
             })}
         </div>
@@ -103,8 +116,8 @@ const PitchArea: FC<PitchAreaProps> = ({sendPitch}) => {
                                 max: (octaveSpread.max <= octaveSpread.min ? octaveSpread.min + 1 : octaveSpread.max)
                             });
                     }
-                }
-            }>+</div>
+                }}>+
+            </div>
 
             <div className={octaveSpread.min > MIN_OCTAVE ? "btn-pitch" : "btn-pitch-disabled"} onKeyDown={()=>{}} onClick={() => {
                     if (octaveSpread.min > 1) {
@@ -120,15 +133,25 @@ const PitchArea: FC<PitchAreaProps> = ({sendPitch}) => {
                                 max: octaveSpread.max
                             });
                     }
-                }
-            }>-</div>
+                }}>-
+            </div>
 
             <div>{maxSwitches(locked)}</div>
 
             <div className="btn-pitch" onKeyDown={()=>{}} onClick={() => {
-                setLocked(!locked);
-            }}>{locked ? "spread" : "unison"}</div>
+                    setLocked(!locked);
+                }}>{locked ? "spread" : "unison"}
+            </div>
+
+            {/* TODO: Hide slider behind "micro" button */}
+            <Slider 
+                id={30} 
+                mapping="cent-wise-deviation" 
+                activeUIElement={activeUIElement} 
+                sendActiveUIElementToParent={sendActiveUIElementToPitchArea}
+            />
         </div>
+       
     </div>
   )
 }

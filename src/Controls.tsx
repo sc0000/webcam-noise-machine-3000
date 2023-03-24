@@ -1,21 +1,15 @@
-import { useEffect, useState, FC, memo } from 'react'
+import { useState, FC } from 'react'
 import Player from './Player'
 import audio from './Audio'
 import './controls.css'
 import Dropdown from './Dropdown'
 import Slider from './Slider'
+import { ControlProps } from './ControlLayer'
 
 //--------------------------------------------------
 
-interface ControlsProps {
-  activeUIElement: number;
-  sendActiveUIElementToControlLayer: (i: number) => void;
-}
-
-//--------------------------------------------------
-
-const Controls: FC<ControlsProps> = ({
-  activeUIElement, sendActiveUIElementToControlLayer
+const Controls: FC<ControlProps> = ({
+  activeUIElement, sendActiveUIElementToParent
 }) => {
   const [startButton, setStartButton] = useState('start audio');
 
@@ -36,7 +30,7 @@ const Controls: FC<ControlsProps> = ({
   }
 
   const sendActiveUIElementToControls = (i: number): void => {
-    sendActiveUIElementToControlLayer(i);
+    sendActiveUIElementToParent(i);
   }
 
   const createNodes = (firstIterator: number): JSX.Element[] => {
@@ -62,6 +56,7 @@ const Controls: FC<ControlsProps> = ({
   }
 
   // Record and play back
+  // ? Turn into a callback ?
   const createPlayers = (n: number): JSX.Element[] => {
     let players = [];
 
@@ -73,6 +68,8 @@ const Controls: FC<ControlsProps> = ({
 
     return players;
   }
+
+  //--------------------------------------------------
 
   return (
     <section id="controls">
@@ -101,7 +98,6 @@ const Controls: FC<ControlsProps> = ({
 
               <div className="btn btn-controls" onKeyDown={()=>{}}
                 onClick={() => {
-                  const lastMode = assignmentMode;
                   setRandomize(true);
                   setTimeout(() => setRandomize(false), 0)}}
                   >rand</div>
@@ -152,7 +148,7 @@ const Controls: FC<ControlsProps> = ({
           <div className="microtonal">
             <h5>microtonal deviations</h5>
             <div style={{padding: "3px", height: "32px"}}>
-              <Slider id={21} mapping={"microtonalSpread"} activeUIElement={activeUIElement} sendActiveUIElementToParent={sendActiveUIElementToControls}/>
+              <Slider id={21} mapping={"microtonal-spread"} activeUIElement={activeUIElement} sendActiveUIElementToParent={sendActiveUIElementToControls}/>
             </div>
           </div>
 

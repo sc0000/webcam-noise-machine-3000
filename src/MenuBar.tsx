@@ -20,7 +20,7 @@ const MenuBar:FC = () => {
               // ipcRenderer.send('minimize-window');
             }}/>
             <img src={MAXIMIZEWINDOW} alt="" className="btn-menubar"/>
-            <img src={CLOSEWINDOW} alt="" className="btn-menubar" onKeyDown={()=>{}} onMouseDown={() => {
+            <img src={CLOSEWINDOW} alt="" className="btn-menubar btn-menubar-exit" onKeyDown={()=>{}} onMouseDown={() => {
               window.close();
             }}/>
   

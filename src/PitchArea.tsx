@@ -1,4 +1,4 @@
-import { useState, useEffect, FC } from 'react'
+import { useState, useEffect, useCallback, FC } from 'react'
 import { randomInt } from './utils';
 import { ControlProps } from './ControlLayer';
 import Slider from './Slider';
@@ -6,6 +6,7 @@ import Slider from './Slider';
 //--------------------------------------------------
 
 interface PitchAreaProps {
+    i: number;
     sendPitch: ({pitch, min, max}: {pitch: string, min: number, max: number}) => void;
 }
 
@@ -17,7 +18,7 @@ const MIN_OCTAVE = 1;
 //--------------------------------------------------
 
 const PitchArea: FC<PitchAreaProps & ControlProps> = (
-    {sendPitch, activeUIElement, sendActiveUIElementToParent}
+    {i, sendPitch, activeUIElement, sendActiveUIElementToParent}
     ) => {   
     const [activePitch, setActivePitch] = useState(pitches[randomInt(0, 11)]);
     
@@ -29,10 +30,36 @@ const PitchArea: FC<PitchAreaProps & ControlProps> = (
     const [lastMax, setLastMax] = useState(octaveSpread.max);
     const [locked, setLocked] = useState(true);
     const [range, setRange] = useState(`${octaveSpread.min}-${octaveSpread.max}`);
+    const [centWiseDeviation, setCentWiseDeviation] = useState(0);
 
     const sendActiveUIElementToPitchArea = (i: number): void => {
         sendActiveUIElementToParent(i);
     }
+
+    const sendCentWiseDeviation = (cents: number): void => {
+        setCentWiseDeviation(cents);
+    }
+
+    const printCentWiseDeviation = useCallback((): string => {
+        const absDeviation = Math.abs(centWiseDeviation);
+        
+        let toPrint = "";
+
+        if (absDeviation < 10) toPrint += " ";
+
+        if (centWiseDeviation < 0) toPrint += "-";
+        else if (centWiseDeviation > 0) toPrint += "+";
+        else toPrint += " ";
+
+        toPrint += Math.round(absDeviation);
+        toPrint += "ct";
+
+        toPrint.padStart(10, " ");
+
+        console.log(toPrint);
+
+        return toPrint;
+    }, [centWiseDeviation]);
 
     useEffect(() => {
         // if locked, set both to min
@@ -142,11 +169,16 @@ const PitchArea: FC<PitchAreaProps & ControlProps> = (
                     setLocked(!locked);
                 }}>{locked ? "spread" : "unison"}
             </div>
-
+            <div className="btn-pitch btn-pitch-active" style={{cursor: "default", whiteSpace: "pre-wrap"}}>
+                {printCentWiseDeviation()}
+                {/* {Math.abs(centWiseDeviation) < 10 ? "0" : ""}
+                {Math.round(Math.abs(centWiseDeviation))} ct */}
+            </div>
             {/* TODO: Hide slider behind "micro" button */}
             <Slider 
-                id={30} 
-                mapping="cent-wise-deviation" 
+                id={i + 40} 
+                mapping="cent-wise-deviation"
+                sendCentWiseDeviation={sendCentWiseDeviation} 
                 activeUIElement={activeUIElement} 
                 sendActiveUIElementToParent={sendActiveUIElementToPitchArea}
             />

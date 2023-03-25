@@ -12,11 +12,12 @@ interface SliderProps {
   id: number;
   mapping: string; // what parameter the slider is mapped to.
   recorded?: boolean;
+  sendCentWiseDeviation?: (cents: number) => void
 }
 
 //--------------------------------------------------   
 
-const Slider: FC<SliderProps & ControlProps> = ({id, mapping, recorded, activeUIElement, sendActiveUIElementToParent}) => {
+const Slider: FC<SliderProps & ControlProps> = ({id, mapping, recorded, sendCentWiseDeviation, activeUIElement, sendActiveUIElementToParent}) => {
   let innerRef = useRef<HTMLDivElement>(null);
   let handleRef = useRef<HTMLDivElement>(null);
 
@@ -83,6 +84,11 @@ const Slider: FC<SliderProps & ControlProps> = ({id, mapping, recorded, activeUI
         audio.microtonalSpread = scale(handlePosition, 0, width, 0, 1);
     }
 
+    if (mapping === 'cent-wise-deviation' && sendCentWiseDeviation) {
+      sendCentWiseDeviation(scale(handlePosition, 0, width, -50, 50));
+    }
+      
+
     console.log(handlePosition);
   }, [handlePosition, id, mapping, sizeAndBoundaries]);
 
@@ -90,7 +96,7 @@ const Slider: FC<SliderProps & ControlProps> = ({id, mapping, recorded, activeUI
 
   return (
     <div  className={mapping === "player-volume" && !recorded ? "slider-outer slider-outer-disabled" : "slider-outer"} 
-          onMouseDown={mapping !== "player-volume" || mapping === "player-volume" && recorded ? handleDown : ()=>{}}
+          onMouseDown={(mapping !== "player-volume") || (mapping === "player-volume" && recorded) ? handleDown : ()=>{}}
           style={mapping === "cent-wise-deviation" ? {width: "100px", marginLeft: "8px", border: "3px solid var(--color-1)"} : {}}>
         <div  className={mapping === "player-volume" && !recorded ? "slider-inner slider-inner-disabled" : "slider-inner"} 
               ref={innerRef}

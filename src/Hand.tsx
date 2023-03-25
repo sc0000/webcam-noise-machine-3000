@@ -239,7 +239,8 @@ const Hand: FC<ControlProps> = ({
       } 
 
       pitchAreas.push(
-        <PitchArea  key={i*6} 
+        <PitchArea  key={i}
+                    i={i}
                     sendPitch={sendPitch}
                     activeUIElement={activeUIElement}
                     sendActiveUIElementToParent={sendActiveUIElementToHand}/>

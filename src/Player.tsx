@@ -125,7 +125,7 @@ const Player: React.FC<PlayerProps> = ({i, activeUIElement, sendActiveUIElementT
         </div>
 
         <div className="slider">
-          <Slider id={i + 22} mapping={"player-volume"} recorded={hasRecorded} 
+          <Slider id={i + 30} mapping={"player-volume"} recorded={hasRecorded} 
             activeUIElement={activeUIElement} sendActiveUIElementToParent={sendActiveUIElementToPlayer}/>
         </div>
         

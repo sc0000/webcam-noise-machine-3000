@@ -2,12 +2,13 @@ import { useState, useEffect, useCallback, FC } from 'react'
 import { randomInt } from './utils';
 import { ControlProps } from './ControlLayer';
 import Slider from './Slider';
+import { Pitch } from './Audio';
 
 //--------------------------------------------------
 
 interface PitchAreaProps {
     i: number;
-    sendPitch: ({pitch, min, max}: {pitch: string, min: number, max: number}) => void;
+    sendPitch: (p: Pitch) => void;
 }
 
 const pitches = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
@@ -37,7 +38,7 @@ const PitchArea: FC<PitchAreaProps & ControlProps> = (
     }
 
     const sendCentWiseDeviation = (cents: number): void => {
-        setCentWiseDeviation(cents);
+        setCentWiseDeviation(Math.round(cents));
     }
 
     const printCentWiseDeviation = useCallback((): string => {
@@ -48,15 +49,11 @@ const PitchArea: FC<PitchAreaProps & ControlProps> = (
         if (absDeviation < 10) toPrint += " ";
 
         if (centWiseDeviation < 0) toPrint += "-";
-        else if (centWiseDeviation > 0) toPrint += "+";
-        else toPrint += " ";
+        else toPrint += "+";
+        // else toPrint += " ";
 
-        toPrint += Math.round(absDeviation);
+        toPrint += absDeviation;
         toPrint += "ct";
-
-        toPrint.padStart(10, " ");
-
-        console.log(toPrint);
 
         return toPrint;
     }, [centWiseDeviation]);
@@ -75,10 +72,11 @@ const PitchArea: FC<PitchAreaProps & ControlProps> = (
     }, [locked]);
 
     useEffect(() => {
+        console.log(centWiseDeviation);
         setRange(`${octaveSpread.min}-${octaveSpread.max}`);
-        sendPitch({pitch: activePitch, min: octaveSpread.min, max: octaveSpread.max});
+        sendPitch({pitch: activePitch, deviation: centWiseDeviation, min: octaveSpread.min, max: octaveSpread.max});
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [octaveSpread, activePitch]);
+    }, [octaveSpread, activePitch, centWiseDeviation]);
 
     const maxSwitches = (l: boolean) => {
         if (l) return;
@@ -118,7 +116,7 @@ const PitchArea: FC<PitchAreaProps & ControlProps> = (
             {pitches.map((p) => {
                 return (
                     <div key={p} onKeyDown={()=>{}} onClick={() => {
-                            setActivePitch(p); sendPitch({pitch: p, min: octaveSpread.min, max: octaveSpread.max});
+                            setActivePitch(p); sendPitch({pitch: p, deviation: centWiseDeviation, min: octaveSpread.min, max: octaveSpread.max});
                         }} 
                     
                         className={activePitch === p ? "btn-pitch btn-pitch-active" : "btn-pitch"}>{p}
@@ -171,8 +169,6 @@ const PitchArea: FC<PitchAreaProps & ControlProps> = (
             </div>
             <div className="btn-pitch btn-pitch-active" style={{cursor: "default", whiteSpace: "pre-wrap"}}>
                 {printCentWiseDeviation()}
-                {/* {Math.abs(centWiseDeviation) < 10 ? "0" : ""}
-                {Math.round(Math.abs(centWiseDeviation))} ct */}
             </div>
             {/* TODO: Hide slider behind "micro" button */}
             <Slider 

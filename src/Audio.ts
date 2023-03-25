@@ -1,6 +1,17 @@
 import * as Tone from 'tone'
 import { logerp } from './utils'
 
+//--------------------------------------------------
+
+export type Pitch = {
+    pitch: string,
+    deviation: number,
+    min: number,
+    max: number, 
+}
+
+//--------------------------------------------------
+
 class Audio {
   recorder = new Tone.Recorder();
   players: Tone.Player[] = [];
@@ -57,7 +68,6 @@ class Audio {
   }
 
   updatePitch(osc: Tone.Oscillator, targetPitch: number) {
-      // TODO: Find audio appropriate interpolation function
       osc.frequency.value = logerp(osc.frequency.value as number, targetPitch, 0.1);
   }
 

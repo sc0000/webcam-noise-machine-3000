@@ -8,8 +8,9 @@ import '@tensorflow/tfjs-backend-cpu'
 import Webcam from 'react-webcam'
 import { wrap } from 'comlink';
 
-import { scale, mapLinearToLogarithmicScale, lerp, fixDPI, randomInt, pitches, pitchAreas } from './utils'
+import { scale, mapLinearToLogarithmicScale, lerp, fixDPI, randomInt } from './utils'
 import audio from './Audio'
+import { Pitch } from './Audio'
 import PitchArea from './PitchArea'
 import { ControlProps } from './ControlLayer'
 
@@ -21,6 +22,9 @@ const INTERP_SPEED = 0.04;
 const INTERP_SPEED_NO_HAND = 0.01;
 
 const coordinates: {x: number, y: number, size: number, angle: number}[] = [];
+
+const pitchAreas: DOMRect[] = [];
+const pitches: Pitch[] = [];
 
 let prediction: handpose.AnnotatedPrediction[] = [];
 let lastPrediction: handpose.AnnotatedPrediction[] = [];
@@ -48,10 +52,12 @@ const Hand: FC<ControlProps> = ({
     for (let j = 0; j < pitchAreas.length; ++j) {
       if (coordinates[i].y > pitchAreas[j].y && coordinates[i].y < (pitchAreas[j].y + pitchAreas[j].height)) {
         const note = `${pitches[j].pitch}${randomInt(pitches[j].min, pitches[j].max)}`;
-        
+        // console.log(pitches[j].deviation);
         let freq = audio.toFrequency(note);
+        freq *= Math.pow(2, pitches[j].deviation / 1200);
+        console.log(freq);
 
-        // ADDING PITCH DEVIATIONS DEPENDING ON DISTANCE FROM THE CENTER LINE OF THE PITCH AREA
+        // ADDING PITCH DEVIATIONS DEPENDING ON DISTANCE FROM THE CENTER LINE OF THE PITCH AREA (amount set by global 'microtonal deviation' slider)
         const pitchArea = pitchAreas[j];
         const center = pitchArea.y + (pitchArea.height / 2);
         const deviation = Math.abs(coordinates[i].y - center);
@@ -70,7 +76,7 @@ const Hand: FC<ControlProps> = ({
 
         audio.oscillators[i].set({
           frequency: freq,
-          });
+        });
       }
     }
   }
@@ -84,6 +90,7 @@ const Hand: FC<ControlProps> = ({
       audio.updatePitch(audio.oscillators[i], targetPitch);
   }
 
+  // TODO: Move into Audio class
   const updateVolume = (i: number) => {
     const minVolume = -62;
     const maxVolume = -36;
@@ -234,7 +241,7 @@ const Hand: FC<ControlProps> = ({
 
     for (let i = 0; i < n; ++i) {
       // TODO: Make pitch w/ octave transposition into own type
-      const sendPitch = (p: {pitch: string, min: number, max: number}) => {
+      const sendPitch = (p: Pitch) => {
           pitches[i] = p;
       } 
 

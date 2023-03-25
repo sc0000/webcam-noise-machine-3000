@@ -68,6 +68,5 @@ export const randomInt = (min: number, max: number) => {
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-// TODO: Move both into Audio.js as one array of objects!
-export let pitchAreas: DOMRect[] = [];
-export let pitches: {pitch: string, min: number, max: number}[] = [];
+
+

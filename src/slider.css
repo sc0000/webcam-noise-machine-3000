@@ -8,7 +8,6 @@
 
 .slider-outer * {
   transition: var(--transition);
-  transition: width 35ms ease-out;
 }
 
 .slider-outer-disabled {
@@ -23,6 +22,10 @@
   cursor: pointer;
 }
 
+.slider-inner-hand {
+  background-image: url('./assets/check-pattern-hand.png');
+}
+
 .slider-inner-disabled {
   background-image: url('./assets/check-pattern-grey.png');
   cursor: default;
@@ -31,8 +34,9 @@
 .slider-handle {
   background: var(--color-1);
   height: 100%;
-  width: 16px;
+  width: 12px;
   z-index: 999;
+  transition: width 35ms ease-out, left 35ms ease-out;
 }
 
 .slider-handle-disabled {

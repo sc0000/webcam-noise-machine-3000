@@ -51,11 +51,22 @@ const Slider: FC<SliderProps & ControlProps> = ({id, mapping, recorded, sendCent
       const {left, width} = sizeAndBoundaries();
 
       const handleX = mouseX - left;
-      if (handleX > 0 && handleX < width) {
-        setHandlePosition(handleX);
-      } else if (handleX < 0) {
-        setHandlePosition(0);
-      } else setHandlePosition(width);
+
+      if (mapping !== "cent-wise-deviation") {
+        if (handleX > 0 && handleX < width) {
+          setHandlePosition(handleX);
+        } else if (handleX < 0) {
+          setHandlePosition(0);
+        } else setHandlePosition(width);
+      }
+      
+      else {
+        if (handleX > 6 && handleX < width - 6) {
+          setHandlePosition(handleX);
+        } else if (handleX < 6) {
+          setHandlePosition(6);
+        } else setHandlePosition(width - 6);
+      }
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -75,38 +86,35 @@ const Slider: FC<SliderProps & ControlProps> = ({id, mapping, recorded, sendCent
 
     const {width} = sizeAndBoundaries();
       
-    if (mapping === 'player-volume' && audio.players[id - 22]) {
+    if (mapping === 'player-volume' && audio.players[id - 30]) {
       const logVol = mapLinearToLogarithmicScale(handlePosition, 0, width, 0.001, 24) - 12;
-      audio.players[id - 22].volume.value = logVol;
+      audio.players[id - 30].volume.value = logVol;
     }
 
-    if (mapping === 'microtonal-spread') {
+    else if (mapping === 'microtonal-spread') {
         audio.microtonalSpread = scale(handlePosition, 0, width, 0, 1);
     }
 
-    if (mapping === 'cent-wise-deviation' && sendCentWiseDeviation) {
-      sendCentWiseDeviation(scale(handlePosition, 0, width, -50, 50));
+    else if (mapping === 'cent-wise-deviation' && sendCentWiseDeviation) {
+      sendCentWiseDeviation(scale(handlePosition, 6, width - 6, -50, 50));
     }
-      
-
-    console.log(handlePosition);
   }, [handlePosition, id, mapping, sizeAndBoundaries]);
+
+  const innerClassName = useCallback((): string => {
+    if (mapping === "cent-wise-deviation") return "slider-inner slider-inner-hand";
+    if (mapping === "player-volume" && !recorded) return "slider-inner slider-inner-disabled";
+    else return "slider-inner";
+  }, [mapping, recorded]);
 
   // TODO: Tidy up inline CSS with dedicated class for cent-wise-deviation slider!
 
   return (
     <div  className={mapping === "player-volume" && !recorded ? "slider-outer slider-outer-disabled" : "slider-outer"} 
           onMouseDown={(mapping !== "player-volume") || (mapping === "player-volume" && recorded) ? handleDown : ()=>{}}
-          style={mapping === "cent-wise-deviation" ? {width: "100px", marginLeft: "8px", border: "3px solid var(--color-1)"} : {}}>
-        <div  className={mapping === "player-volume" && !recorded ? "slider-inner slider-inner-disabled" : "slider-inner"} 
-              ref={innerRef}
-              style={mapping === "cent-wise-deviation" ? 
-                {
-                  backgroundImage: "url(./)",
-                  overflow: "hidden",
-                  background: "linear-gradient(var(--color-3), var(--color-3)) repeat-x center",
-                  backgroundSize: "3px 3px"
-                } : {}}>
+          // ? CSS parameter width is still hardcoded...
+          style={mapping === "cent-wise-deviation" ? {width: "93px", border: "3px solid var(--color-1)"} : {}}>
+        <div  className={innerClassName()} 
+              ref={innerRef}>
             <div className={mapping === "player-volume" && !recorded ? "slider-handle slider-handle-disabled" : "slider-handle"} 
                 ref={handleRef}
                 style={mapping !== "cent-wise-deviation" ? 
@@ -114,7 +122,7 @@ const Slider: FC<SliderProps & ControlProps> = ({id, mapping, recorded, sendCent
                   {
                     position: "relative",
                     backgroundColor: "var(--color-3)",
-                    left: `${handlePosition - 8}px`
+                    left: `${handlePosition - 6}px`
                   }}
             />
         </div>

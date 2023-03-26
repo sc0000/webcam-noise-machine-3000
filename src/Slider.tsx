@@ -84,9 +84,10 @@ const Slider: FC<SliderProps & ControlProps> = (
 
   // TODO: Consolidate with context useEffect!
   useEffect(() => {
-    //
-    // Audio parameter mapping
-    //  
+
+//--------------------------------------------------   
+// AUDIO PARAMETER MAPPING
+//--------------------------------------------------     
 
     const {width} = sizeAndBoundaries();
       

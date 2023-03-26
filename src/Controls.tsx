@@ -119,7 +119,7 @@ const Controls: FC<ControlProps> = ({
                   
                   {/* Palm landmark: */}
                   <div style={{marginTop: "7rem"}}>
-                    <Dropdown key={30}
+                    <Dropdown 
                     iterator={0}
                     activeUIElement={activeUIElement}
                     lastWaveform={lastWaveform}

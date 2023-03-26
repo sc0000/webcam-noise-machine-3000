@@ -38,7 +38,7 @@ const PitchArea: FC<PitchAreaProps & ControlProps> = (
     }
 
     const sendCentWiseDeviation = (cents: number): void => {
-        setCentWiseDeviation(Math.round(cents));
+        setCentWiseDeviation(Math.trunc(cents));
     }
 
     const printCentWiseDeviation = useCallback((): string => {
@@ -72,7 +72,6 @@ const PitchArea: FC<PitchAreaProps & ControlProps> = (
     }, [locked]);
 
     useEffect(() => {
-        console.log(centWiseDeviation);
         setRange(`${octaveSpread.min}-${octaveSpread.max}`);
         sendPitch({pitch: activePitch, deviation: centWiseDeviation, min: octaveSpread.min, max: octaveSpread.max});
         // eslint-disable-next-line react-hooks/exhaustive-deps

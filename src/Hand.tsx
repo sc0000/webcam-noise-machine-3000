@@ -52,10 +52,8 @@ const Hand: FC<ControlProps> = ({
     for (let j = 0; j < pitchAreas.length; ++j) {
       if (coordinates[i].y > pitchAreas[j].y && coordinates[i].y < (pitchAreas[j].y + pitchAreas[j].height)) {
         const note = `${pitches[j].pitch}${randomInt(pitches[j].min, pitches[j].max)}`;
-        // console.log(pitches[j].deviation);
         let freq = audio.toFrequency(note);
-        freq *= Math.pow(2, pitches[j].deviation / 1200);
-        console.log(freq);
+        freq *= Math.pow(2, pitches[j].deviation / 1200); // add in cent-wise deviation
 
         // ADDING PITCH DEVIATIONS DEPENDING ON DISTANCE FROM THE CENTER LINE OF THE PITCH AREA (amount set by global 'microtonal deviation' slider)
         const pitchArea = pitchAreas[j];

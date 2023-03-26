@@ -1,8 +1,8 @@
 import { useState, useEffect, FC } from 'react'
 import { ToneOscillatorType } from 'tone';
 import audio from './Audio'
-import './'
 import { randomInt } from './utils';
+import Slider from './Slider';
 
 //--------------------------------------------------
 
@@ -30,6 +30,17 @@ const Dropdown: FC<DropdownProps> = (
   const [open, setOpen] = useState(false);
   const [className, setClassName] = useState("btn btn-controls dd");
   const [activeWaveform, setActiveWaveform] = useState(waveforms[randomInt(0, 3)]);
+  const [effectsOpen, setEffectsOpen] = useState(false);
+
+// ? -----------------------------------------------
+
+  const [tremoloFrequency, setTremoloFrequency] = useState(0);
+  const [tremoloDepth, setTremoloDepth] = useState(0);
+  const [reverbDecay, setReverbDecay] = useState(0);
+  const [reverbMix, setReverbMix] = useState(0);
+ 
+// ? -----------------------------------------------
+
 
   useEffect(() => {
     audio.oscillators[iterator].type = activeWaveform as ToneOscillatorType;
@@ -37,8 +48,14 @@ const Dropdown: FC<DropdownProps> = (
   }, [activeWaveform]);
 
   useEffect(() => {
-    if (activeUIElement !== iterator) setOpen(false);
-    else setOpen(true);
+    const a = [60, 61, 62, 63]; // ? all effects sliders share the same IDs, also still hard-coded -.-
+    if ((activeUIElement === iterator) ||
+        (effectsOpen && a.includes(activeUIElement))) 
+        setOpen(true);
+    else {
+      setEffectsOpen(false);
+      setOpen(false);
+    };
   }, [activeUIElement]);
 
   useEffect(() => {
@@ -67,24 +84,85 @@ const Dropdown: FC<DropdownProps> = (
     else setClassName("btn btn-controls dd");
   }, [open]);
 
-  const createSelector = (): JSX.Element => {
-    return (<div className="shapes" style={{position: "absolute", width: "max-content", backgroundColor: "#101820ff", zIndex: "999"}}>
-              {waveforms.map((w) => {
-                  return (
-                      <div key={w} onKeyDown={()=>{}} onClick={async () => {
-                        await sendLastWaveform(activeWaveform);
-                        await setActiveWaveform(w);
-                        await sendNewWaveform(w);
-                        await sendActiveUIElementToParent(99);
-                      }}
+  // TODO: GET RID OF INLINE CSS!
 
-                        className={activeWaveform === w ? "btn btn-controls btn-controls-active dd" : "btn btn-controls dd"}
-                        style={{margin: "3px"}}
-                        >{w.substring(0, 3)}
-                      </div>
-                  );
-              })}
+  const createSelector = (): JSX.Element => {
+    return (<div className="shapes" style={{
+                position: "absolute", 
+                width: "max-content", 
+                backgroundColor: "#101820ff", 
+                zIndex: "999", 
+                paddingBottom: "1px", 
+                border: "2px solid var(--color-2)"}}>
+              <div style={{paddingBottom: "3px", display: "grid", }}>
+                {waveforms.map((w) => {
+                    return (
+                        <div key={w} onKeyDown={()=>{}} onMouseDown={async (event: React.MouseEvent) => {                        
+                          await sendLastWaveform(activeWaveform);
+                          await setActiveWaveform(w);
+                          await sendNewWaveform(w);
+                          await sendActiveUIElementToParent(99);
+                        }}
+
+                          className={activeWaveform === w ? "btn btn-controls btn-controls-active dd" : "btn btn-controls dd"}
+                          style={{margin: "3px"}}
+                          >{w.substring(0, 3)}
+                        </div>
+                    );
+                })}
+              </div>
+              <div style={{borderTop: "3px solid var(--color-1)", paddingTop: "3px"}}>
+                <div  className="btn btn-controls dd"
+                      style={{margin: "3px", whiteSpace: "pre-wrap"}}
+                      onKeyDown={()=>{}} onClick={() => setEffectsOpen(!effectsOpen)}>
+                        FX!
+                </div>
+                {effectsOpen && createFxMenu()}
+              </div>
             </div>);
+  }
+
+  // TODO: PREVENT MULTIPLE CALLS!
+  const createFxMenu = () => {
+    return (
+      <div className= "effects-settings" style={{
+            position: "absolute", 
+            width: "400px", 
+            height: "241px", 
+            backgroundColor: "var(--color-2)", 
+            zIndex: "999", 
+            right: "calc(100% + 1px)", 
+            top: "0",
+            padding: "3px",
+            border: "3px solid var(--color-1)",
+            }}>
+        <div style={{margin: "6px", display: "flex", height: "20%"}}>
+          <div style={{width: "40%", display:"flex", alignItems: "center"}}>
+            Tremolo Depth
+          </div>
+          <Slider id={60} mapping="tremolo-depth" activeUIElement={activeUIElement} sendActiveUIElementToParent={sendActiveUIElementToParent}/>
+        </div>
+        <div style={{margin: "6px", display: "flex", height: "20%"}}>
+          <div style={{width: "40%", display:"flex", alignItems: "center"}}>
+            Tremolo Freq
+          </div>
+          <Slider id={61} mapping="tremolo-depth" activeUIElement={activeUIElement} sendActiveUIElementToParent={sendActiveUIElementToParent}/>
+        </div>
+        <div style={{margin: "6px", display: "flex", height: "20%"}}>
+          <div style={{width: "40%", display:"flex", alignItems: "center"}}>
+            Reverb Decay
+          </div>
+          <Slider id={62} mapping="tremolo-depth" activeUIElement={activeUIElement} sendActiveUIElementToParent={sendActiveUIElementToParent}/>
+        </div>
+        <div style={{margin: "6px", display: "flex", height: "20%"}}>
+          <div style={{width: "40%", display:"flex", alignItems: "center"}}>
+            Reverb Mix
+          </div>
+          <Slider id={63} mapping="tremolo-depth" activeUIElement={activeUIElement} sendActiveUIElementToParent={sendActiveUIElementToParent}/>
+        </div>
+      
+      </div>
+    )
   }
 
 //--------------------------------------------------  
@@ -103,12 +181,12 @@ const Dropdown: FC<DropdownProps> = (
             sendLastWaveform(activeWaveform);
           }}
           
-          onMouseDown={async (e) => {
+          onMouseDown={async (event) => {
             if (open) {
-              e.stopPropagation();
+              event.stopPropagation();
               sendActiveUIElementToParent(99);
             } else {
-                e.stopPropagation();
+                event.stopPropagation();
                 sendActiveUIElementToParent(iterator);
             }
           }}>

@@ -18,10 +18,12 @@ const ControlLayer: FC = () => {
   const {setMouseX} = useContext(MouseContext);
 
   const [activeUIElement, setActiveUIElement] = useState(99);
+  const [prevUIElement, setPrevUIElement] = useState(99);
   // ? UI element Ids are hardcoded as of yet... 
 
   useEffect(() => {
     console.log(`Active UI Element: ${activeUIElement}`);
+    if (activeUIElement < 21) setPrevUIElement(activeUIElement);
   }, [activeUIElement]);
 
   const sendActiveUIElementToControlLayer = (i: number): void => {
@@ -37,20 +39,31 @@ const ControlLayer: FC = () => {
       flexWrap: "nowrap",
     }}
           onKeyDown={()=>{}} 
-          onMouseDown={(event: React.MouseEvent) => {
+          onMouseDown={async (event: React.MouseEvent) => {
             const target = event.target as Element;
             const className = target.getAttribute("class");
   
+            // TODO: FIND A BETTER WAY TO DO THIS!
+
             if (className !== "btn btn-controls dd" && 
-              className !== "btn btn-controls btn-controls-active dd" && 
+              className !== "btn btn-controls btn-controls-active dd" &&
+              className !== "effects-settings" &&
+              className !== "slider-inner" &&
+              className !== "slider-handle" &&
               activeUIElement !== 99) {
               setActiveUIElement(99);
             }
           }}
           
-          onMouseUp={() => {
-            if (activeUIElement > 20)
+          onMouseUp={async () => {
+            console.log(`temp: ${prevUIElement}`);
+            if (activeUIElement > 20 && activeUIElement < 60)
               setActiveUIElement(99);
+            
+            else if (activeUIElement >= 60 && activeUIElement < 99)
+              await setActiveUIElement(prevUIElement);
+
+            console.log(`AUI: ${activeUIElement}`);
           }}
 
           onMouseMove={(event: React.MouseEvent) => {

@@ -76,8 +76,8 @@ class Audio {
   }
 
   maxDeviation(frequency: number) {
-    const B = 25 + 75 * (1 + 1.4 * Math.pow(Math.abs(frequency) / 1000, 2)) ** 0.69; // calculate critical bandwidth
-    const maxDev = Math.max(B / 2, 0); // calculate maximum deviation (set to zero if negative)
+    const criticalBandwidth = 25 + 75 * (1 + 1.4 * Math.pow(Math.abs(frequency) / 1000, 2)) ** 0.69;
+    const maxDev = Math.max(criticalBandwidth / 2, 0);
     return maxDev;
   }
 }

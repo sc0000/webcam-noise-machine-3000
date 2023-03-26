@@ -75,6 +75,7 @@ const Dropdown: FC<DropdownProps> = (
                         await sendLastWaveform(activeWaveform);
                         await setActiveWaveform(w);
                         await sendNewWaveform(w);
+                        await sendActiveUIElementToParent(99);
                       }}
 
                         className={activeWaveform === w ? "btn btn-controls btn-controls-active dd" : "btn btn-controls dd"}
@@ -85,6 +86,8 @@ const Dropdown: FC<DropdownProps> = (
               })}
             </div>);
   }
+
+//--------------------------------------------------  
 
   return (
     <div className="dropdown" onKeyUp={()=>{}} onMouseLeave={() => sendLastWaveform("")}>
@@ -108,8 +111,8 @@ const Dropdown: FC<DropdownProps> = (
                 e.stopPropagation();
                 sendActiveUIElementToParent(iterator);
             }
-          }
-        }>{activeWaveform.substring(0, 3)}
+          }}>
+            {activeWaveform.substring(0, 3)}
         </div>
 
         {open && createSelector()}

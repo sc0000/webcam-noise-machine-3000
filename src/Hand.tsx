@@ -257,6 +257,8 @@ const Hand: FC<ControlProps> = ({
     return pitchAreas;
   }
 
+//--------------------------------------------------  
+
   return (
     <section id="hand">
       <div className="header">

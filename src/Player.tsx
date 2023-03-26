@@ -11,11 +11,15 @@ import RECORDBUTTONACTIVE from './assets/recordbutton-lo-active.png'
 
 import './player.css'
 
+//--------------------------------------------------
+
 interface PlayerProps {
   i: number;
   activeUIElement: number;
   sendActiveUIElementToParent: (id: number) => void;
 }
+
+//--------------------------------------------------
 
 const Player: React.FC<PlayerProps> = ({i, activeUIElement, sendActiveUIElementToParent}) => {
     const [recordButton, setRecordButton] = useState(RECORDBUTTONRED);
@@ -23,12 +27,11 @@ const Player: React.FC<PlayerProps> = ({i, activeUIElement, sendActiveUIElementT
     const [hasRecorded, setHasRecorded] = useState(false);
     const [playButton, setPlayButton] = useState(PLAYBUTTONDISABLED);
 
-    // const [className, setClassName] = useState("btn-disabled");
-
     const sendActiveUIElementToPlayer = (id: number): void => {
       sendActiveUIElementToParent(id);
     }
 
+//--------------------------------------------------    
 
   return (
     <div className="player">
@@ -101,7 +104,6 @@ const Player: React.FC<PlayerProps> = ({i, activeUIElement, sendActiveUIElementT
             } 
             
             className={hasRecorded ? "btn btn-controls" : "btn btn-controls btn-disabled"} 
-            // className={className}
           />
 
           {/* Half speed button */}

@@ -17,7 +17,9 @@ interface SliderProps {
 
 //--------------------------------------------------   
 
-const Slider: FC<SliderProps & ControlProps> = ({id, mapping, recorded, sendCentWiseDeviation, activeUIElement, sendActiveUIElementToParent}) => {
+const Slider: FC<SliderProps & ControlProps> = (
+  {id, mapping, recorded, sendCentWiseDeviation, activeUIElement, sendActiveUIElementToParent}
+) => {
   let innerRef = useRef<HTMLDivElement>(null);
   let handleRef = useRef<HTMLDivElement>(null);
 
@@ -73,10 +75,12 @@ const Slider: FC<SliderProps & ControlProps> = ({id, mapping, recorded, sendCent
   }, [mouseX]);
 
   const handleDown = (e: MouseEvent<HTMLElement>) => {
-        const x = e.clientX - sizeAndBoundaries().left;
-        setHandlePosition(x);
-        sendActiveUIElementToParent(id);
-      }
+    if (typeof(recorded) !== 'undefined' && recorded === false) return;
+
+    const x = e.clientX - sizeAndBoundaries().left;
+    setHandlePosition(x);
+    sendActiveUIElementToParent(id);
+  }
 
   // TODO: Consolidate with context useEffect!
   useEffect(() => {
@@ -106,11 +110,13 @@ const Slider: FC<SliderProps & ControlProps> = ({id, mapping, recorded, sendCent
     else return "slider-inner";
   }, [mapping, recorded]);
 
+//--------------------------------------------------
+
   // TODO: Tidy up inline CSS with dedicated class for cent-wise-deviation slider!
 
   return (
     <div  className={mapping === "player-volume" && !recorded ? "slider-outer slider-outer-disabled" : "slider-outer"} 
-          onMouseDown={(mapping !== "player-volume") || (mapping === "player-volume" && recorded) ? handleDown : ()=>{}}
+          onMouseDown={handleDown}
           // ? CSS parameter width is still hardcoded...
           style={mapping === "cent-wise-deviation" ? {width: "93px", border: "3px solid var(--color-1)"} : {}}>
         <div  className={innerClassName()} 

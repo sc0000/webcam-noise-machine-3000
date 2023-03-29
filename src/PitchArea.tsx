@@ -11,7 +11,7 @@ interface PitchAreaProps {
     sendPitch: (p: Pitch) => void;
 }
 
-const pitches = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+const PITCHES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
 const MAX_OCTAVE = 9;
 const MIN_OCTAVE = 1;
@@ -21,7 +21,7 @@ const MIN_OCTAVE = 1;
 const PitchArea: FC<PitchAreaProps & ControlProps> = (
     {i, sendPitch, activeUIElement, sendActiveUIElementToParent}
     ) => {   
-    const [activePitch, setActivePitch] = useState(pitches[randomInt(0, 11)]);
+    const [activePitch, setActivePitch] = useState(PITCHES[randomInt(0, 11)]);
     
     const [octaveSpread, setOctaveSpread] = useState(() => {
         const init = randomInt(1, 7);
@@ -112,7 +112,7 @@ const PitchArea: FC<PitchAreaProps & ControlProps> = (
   return (
     <div className="subdiv">
         <div className="selector">
-            {pitches.map((p) => {
+            {PITCHES.map((p) => {
                 return (
                     <div key={p} onKeyDown={()=>{}} onClick={() => {
                             setActivePitch(p); sendPitch({pitch: p, deviation: centWiseDeviation, min: octaveSpread.min, max: octaveSpread.max});

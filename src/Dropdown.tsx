@@ -1,8 +1,8 @@
 import { useState, useEffect, FC } from 'react'
 import { ToneOscillatorType } from 'tone';
 import audio from './Audio'
+import { WAVEFORMS } from './Audio';
 import { randomInt } from './utils';
-import Slider from './Slider';
 
 //--------------------------------------------------
 
@@ -18,44 +18,41 @@ interface DropdownProps {
   randomize: boolean;
 }
 
-const waveforms = ['square', 'sine', 'triangle', 'sawtooth'];
-
 //--------------------------------------------------
 
 const Dropdown: FC<DropdownProps> = (
   {iterator, activeUIElement, lastWaveform, 
-    newWaveform, sendActiveUIElementToParent, sendLastWaveform, 
-    sendNewWaveform, assignmentMode, randomize}
+    newWaveform, sendActiveUIElementToParent, 
+    sendLastWaveform, sendNewWaveform, 
+    assignmentMode, randomize}
   ) => {
   const [open, setOpen] = useState(false);
   const [className, setClassName] = useState("btn btn-controls dd");
-  const [activeWaveform, setActiveWaveform] = useState(waveforms[randomInt(0, 3)]);
-  const [effectsOpen, setEffectsOpen] = useState(false);
-
-// ? -----------------------------------------------
-
-  const [tremoloFrequency, setTremoloFrequency] = useState(0);
-  const [tremoloDepth, setTremoloDepth] = useState(0);
-  const [reverbDecay, setReverbDecay] = useState(0);
-  const [reverbMix, setReverbMix] = useState(0);
- 
-// ? -----------------------------------------------
-
+  const [activeWaveform, setActiveWaveform] = useState(WAVEFORMS[randomInt(0, 3)]);
 
   useEffect(() => {
     audio.oscillators[iterator].type = activeWaveform as ToneOscillatorType;
+   
+// CONNECT OSCILLATOR TO EFFECTS DEPENDING ON WAVEFORM
+    audio.oscillators[iterator]?.disconnect();
+
+    WAVEFORMS.forEach((w, i) => {          
+      if (activeWaveform === w)
+        audio.oscillators[iterator]
+          .connect(audio.reverbs[i])
+          .connect(audio.tremolos[i])
+          .connect(audio.recorder)
+          .toDestination();
+    })
+
     setOpen(false);
   }, [activeWaveform]);
 
   useEffect(() => {
-    const a = [60, 61, 62, 63]; // ? all effects sliders share the same IDs, also still hard-coded -.-
-    if ((activeUIElement === iterator) ||
-        (effectsOpen && a.includes(activeUIElement))) 
-        setOpen(true);
-    else {
-      setEffectsOpen(false);
+    if (activeUIElement === iterator) 
+      setOpen(true);
+    else 
       setOpen(false);
-    };
   }, [activeUIElement]);
 
   useEffect(() => {
@@ -76,7 +73,7 @@ const Dropdown: FC<DropdownProps> = (
 
   useEffect(() => {
     if (randomize)
-      setActiveWaveform(waveforms[randomInt(0, 3)]);
+      setActiveWaveform(WAVEFORMS[randomInt(0, 3)]);
   }, [randomize]);
 
   useEffect(() => {
@@ -90,12 +87,12 @@ const Dropdown: FC<DropdownProps> = (
     return (<div className="shapes" style={{
                 position: "absolute", 
                 width: "max-content", 
-                backgroundColor: "#101820ff", 
+                backgroundColor: "var(--color-2)", 
                 zIndex: "999", 
                 paddingBottom: "1px", 
                 border: "2px solid var(--color-2)"}}>
               <div style={{paddingBottom: "3px", display: "grid", }}>
-                {waveforms.map((w) => {
+                {WAVEFORMS.map((w) => {
                     return (
                         <div key={w} onKeyDown={()=>{}} onMouseDown={async (event: React.MouseEvent) => {                        
                           await sendLastWaveform(activeWaveform);
@@ -111,58 +108,7 @@ const Dropdown: FC<DropdownProps> = (
                     );
                 })}
               </div>
-              <div style={{borderTop: "3px solid var(--color-1)", paddingTop: "3px"}}>
-                <div  className="btn btn-controls dd"
-                      style={{margin: "3px", whiteSpace: "pre-wrap"}}
-                      onKeyDown={()=>{}} onClick={() => setEffectsOpen(!effectsOpen)}>
-                        FX!
-                </div>
-                {effectsOpen && createFxMenu()}
-              </div>
             </div>);
-  }
-
-  // TODO: PREVENT MULTIPLE CALLS!
-  const createFxMenu = () => {
-    return (
-      <div className= "effects-settings" style={{
-            position: "absolute", 
-            width: "400px", 
-            height: "241px", 
-            backgroundColor: "var(--color-2)", 
-            zIndex: "999", 
-            right: "calc(100% + 1px)", 
-            top: "0",
-            padding: "3px",
-            border: "3px solid var(--color-1)",
-            }}>
-        <div style={{margin: "6px", display: "flex", height: "20%"}}>
-          <div style={{width: "40%", display:"flex", alignItems: "center"}}>
-            Tremolo Depth
-          </div>
-          <Slider id={60} mapping="tremolo-depth" activeUIElement={activeUIElement} sendActiveUIElementToParent={sendActiveUIElementToParent}/>
-        </div>
-        <div style={{margin: "6px", display: "flex", height: "20%"}}>
-          <div style={{width: "40%", display:"flex", alignItems: "center"}}>
-            Tremolo Freq
-          </div>
-          <Slider id={61} mapping="tremolo-depth" activeUIElement={activeUIElement} sendActiveUIElementToParent={sendActiveUIElementToParent}/>
-        </div>
-        <div style={{margin: "6px", display: "flex", height: "20%"}}>
-          <div style={{width: "40%", display:"flex", alignItems: "center"}}>
-            Reverb Decay
-          </div>
-          <Slider id={62} mapping="tremolo-depth" activeUIElement={activeUIElement} sendActiveUIElementToParent={sendActiveUIElementToParent}/>
-        </div>
-        <div style={{margin: "6px", display: "flex", height: "20%"}}>
-          <div style={{width: "40%", display:"flex", alignItems: "center"}}>
-            Reverb Mix
-          </div>
-          <Slider id={63} mapping="tremolo-depth" activeUIElement={activeUIElement} sendActiveUIElementToParent={sendActiveUIElementToParent}/>
-        </div>
-      
-      </div>
-    )
   }
 
 //--------------------------------------------------  

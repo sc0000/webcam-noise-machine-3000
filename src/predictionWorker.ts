@@ -21,9 +21,8 @@ const load = async () => {
 }
 
 const makePrediction = async () => {
-    if (!imageData) return;
-
-    prediction = await model?.estimateHands(imageData!)!;
+    if (imageData && model?.estimateHands(imageData))
+        prediction = await model?.estimateHands(imageData);
 }
 
 const getPrediction = (): handpose.AnnotatedPrediction[] => {

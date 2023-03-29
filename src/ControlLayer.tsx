@@ -18,13 +18,7 @@ const ControlLayer: FC = () => {
   const {setMouseX} = useContext(MouseContext);
 
   const [activeUIElement, setActiveUIElement] = useState(99);
-  const [prevUIElement, setPrevUIElement] = useState(99);
   // ? UI element Ids are hardcoded as of yet... 
-
-  useEffect(() => {
-    console.log(`Active UI Element: ${activeUIElement}`);
-    if (activeUIElement < 21) setPrevUIElement(activeUIElement);
-  }, [activeUIElement]);
 
   const sendActiveUIElementToControlLayer = (i: number): void => {
     setActiveUIElement(i);
@@ -44,7 +38,6 @@ const ControlLayer: FC = () => {
             const className = target.getAttribute("class");
   
             // TODO: FIND A BETTER WAY TO DO THIS!
-
             if (className !== "btn btn-controls dd" && 
               className !== "btn btn-controls btn-controls-active dd" &&
               className !== "effects-settings" &&
@@ -56,14 +49,8 @@ const ControlLayer: FC = () => {
           }}
           
           onMouseUp={async () => {
-            console.log(`temp: ${prevUIElement}`);
-            if (activeUIElement > 20 && activeUIElement < 60)
+            if (activeUIElement > 20)
               setActiveUIElement(99);
-            
-            else if (activeUIElement >= 60 && activeUIElement < 99)
-              await setActiveUIElement(prevUIElement);
-
-            console.log(`AUI: ${activeUIElement}`);
           }}
 
           onMouseMove={(event: React.MouseEvent) => {

@@ -13,20 +13,26 @@ interface SliderProps {
   mapping: string; // what parameter the slider is mapped to.
   recorded?: boolean;
   sendCentWiseDeviation?: (cents: number) => void
+  sendFxParameterValue?: (val: number, mapping: string) => void
+  lastFxParameterValue?: number
 }
+
+const effectsParameters = ["tremolo-frequency", "tremolo-depth", "reverb-decay", "reverb-mix"];
 
 //--------------------------------------------------   
 
-const Slider: FC<SliderProps & ControlProps> = (
-  {id, mapping, recorded, sendCentWiseDeviation, activeUIElement, sendActiveUIElementToParent}
-) => {
-  let innerRef = useRef<HTMLDivElement>(null);
-  let handleRef = useRef<HTMLDivElement>(null);
+const Slider: FC<SliderProps & ControlProps> = ({
+  id, mapping, recorded, sendCentWiseDeviation, 
+  sendFxParameterValue, lastFxParameterValue, 
+  activeUIElement, sendActiveUIElementToParent
+}) => {
+  const innerRef = useRef<HTMLDivElement>(null);
+  const handleRef = useRef<HTMLDivElement>(null);
 
   const sizeAndBoundaries = useCallback(() => {
-    const left = innerRef.current?.getBoundingClientRect().left!;
-    const right = innerRef.current?.getBoundingClientRect().right!;
-    const width = right - left;
+    const left = innerRef.current?.getBoundingClientRect().left;
+    const right = innerRef.current?.getBoundingClientRect().right;
+    const width = right && left ? (right - left) : null;
     // height...
 
     return {
@@ -37,10 +43,25 @@ const Slider: FC<SliderProps & ControlProps> = (
     
   }, [innerRef]);
 
+  useEffect(() => {
+    if (typeof(lastFxParameterValue) === 'number') {
+      console.log(`${mapping}: ${lastFxParameterValue}`);
+      const {width} = sizeAndBoundaries();
+
+      const newHandleX = width ?
+        scale(lastFxParameterValue, 0, 1, 0, width) : null;
+
+      if (newHandleX) setHandlePosition(newHandleX);
+    }
+      
+  }, [lastFxParameterValue]);
+
   // Set Player default volume to recorded level
   useEffect(() => {
     if (mapping === 'player-volume' || mapping === 'cent-wise-deviation') {
-      setHandlePosition(sizeAndBoundaries().width / 2);
+      const {width} = sizeAndBoundaries();
+
+      if (width) setHandlePosition(width / 2);
     }
   }, [mapping, sizeAndBoundaries]);
 
@@ -52,22 +73,25 @@ const Slider: FC<SliderProps & ControlProps> = (
     if (activeUIElement === id) {
       const {left, width} = sizeAndBoundaries();
 
-      const handleX = mouseX - left;
+      if (left && width) {
+        const handleX = mouseX - left;
 
-      if (mapping !== "cent-wise-deviation") {
-        if (handleX > 0 && handleX < width) {
-          setHandlePosition(handleX);
-        } else if (handleX < 0) {
-          setHandlePosition(0);
-        } else setHandlePosition(width);
-      }
-      
-      else {
-        if (handleX > 6 && handleX < width - 6) {
-          setHandlePosition(handleX);
-        } else if (handleX < 6) {
-          setHandlePosition(6);
-        } else setHandlePosition(width - 6);
+        // Cent-wise deviation sliders have a different handle
+        if (mapping !== "cent-wise-deviation") {
+          if (handleX > 0 && handleX < width) {
+            setHandlePosition(handleX);
+          } else if (handleX < 0) {
+            setHandlePosition(0);
+          } else setHandlePosition(width);
+        }
+        
+        else {
+          if (handleX > 6 && handleX < width - 6) {
+            setHandlePosition(handleX);
+          } else if (handleX < 6) {
+            setHandlePosition(6);
+          } else setHandlePosition(width - 6);
+        }
       }
     }
 
@@ -77,8 +101,11 @@ const Slider: FC<SliderProps & ControlProps> = (
   const handleDown = (e: MouseEvent<HTMLElement>) => {
     if (typeof(recorded) !== 'undefined' && recorded === false) return;
 
-    const x = e.clientX - sizeAndBoundaries().left;
-    setHandlePosition(x);
+    const {left} = sizeAndBoundaries();
+
+    const x = left ? e.clientX - left
+      : null;
+    if (x) setHandlePosition(x);
     sendActiveUIElementToParent(id);
   }
 
@@ -89,19 +116,33 @@ const Slider: FC<SliderProps & ControlProps> = (
 // AUDIO PARAMETER MAPPING
 //--------------------------------------------------     
 
+
     const {width} = sizeAndBoundaries();
-      
-    if (mapping === 'player-volume' && audio.players[id - 30]) {
-      const logVol = mapLinearToLogarithmicScale(handlePosition, 0, width, 0.001, 24) - 12;
-      audio.players[id - 30].volume.value = logVol;
-    }
+    
+    if (width) {
+      if (mapping === 'player-volume' && audio.players[id - 30]) {
+        const logVol = mapLinearToLogarithmicScale(handlePosition, 0, width, 0.001, 24) - 12;
+        audio.players[id - 30].volume.value = logVol;
+      }
+  
+      else if (mapping === 'microtonal-spread') {
+          audio.microtonalSpread = scale(handlePosition, 0, width, 0, 1);
+      }
+  
+      // This value has to be sent upstairs because it is printed to the screen
+      else if (mapping === 'cent-wise-deviation' && sendCentWiseDeviation) {
+        sendCentWiseDeviation(scale(handlePosition, 6, width - 6, -50, 50));
+      }
+  
+      // This value has to be sent upstairs because it might be shared between several oscillators
+      else if (effectsParameters.includes(mapping) && sendFxParameterValue) {
+        let newValue = scale(handlePosition, 0, width, 0, 1);
+        
+        if (newValue < 0) newValue = 0;
+        else if (newValue > 1) newValue = 1;
 
-    else if (mapping === 'microtonal-spread') {
-        audio.microtonalSpread = scale(handlePosition, 0, width, 0, 1);
-    }
-
-    else if (mapping === 'cent-wise-deviation' && sendCentWiseDeviation) {
-      sendCentWiseDeviation(scale(handlePosition, 6, width - 6, -50, 50));
+        sendFxParameterValue(newValue, mapping);
+      }
     }
   }, [handlePosition, id, mapping, sizeAndBoundaries]);
 

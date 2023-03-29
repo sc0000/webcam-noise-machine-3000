@@ -29,8 +29,8 @@ const pitches: Pitch[] = [];
 let prediction: handpose.AnnotatedPrediction[] = [];
 let lastPrediction: handpose.AnnotatedPrediction[] = [];
 
-let worker = new Worker(new URL("./predictionWorker", import.meta.url), { name: 'PredictionkWorker', type: 'module'});
-let { load, getPrediction, sendImageData } = wrap<import('./predictionWorker').PredictionWorker>(worker);
+const worker = new Worker(new URL("./predictionWorker", import.meta.url), { name: 'PredictionkWorker', type: 'module'});
+const { load, getPrediction, sendImageData } = wrap<import('./predictionWorker').PredictionWorker>(worker);
 
 //--------------------------------------------------
 
@@ -43,6 +43,8 @@ const Hand: FC<ControlProps> = ({
   // Current number of pitch areas
   const [num, setNum] = useState(1);
 
+  const [startButton, setStartButton] = useState('start audio');
+
   const sendActiveUIElementToHand = (i: number): void => {
     sendActiveUIElementToParent(i);
   }
@@ -51,7 +53,7 @@ const Hand: FC<ControlProps> = ({
   const updatePitch = (landmarks: Coords3D, i: number) => {
     for (let j = 0; j < pitchAreas.length; ++j) {
       if (coordinates[i].y > pitchAreas[j].y && coordinates[i].y < (pitchAreas[j].y + pitchAreas[j].height)) {
-        const note = `${pitches[j].pitch}${randomInt(pitches[j].min, pitches[j].max)}`;
+        const note = `${pitches[j]?.pitch}${randomInt(pitches[j].min, pitches[j].max)}`;
         let freq = audio.toFrequency(note);
         freq *= Math.pow(2, pitches[j].deviation / 1200); // add in cent-wise deviation
 
@@ -82,9 +84,11 @@ const Hand: FC<ControlProps> = ({
   // TODO: Move into Audio class
   const updatePitchNoHand = (i: number) => {
     // const targetPitch = 880 - scale(coordinates[i].y, 0, canvasRef.current?.height!, 220, 880);
-    const targetPitch = 880 - mapLinearToLogarithmicScale(coordinates[i].y, 0.0001, canvasRef.current?.height!, 220, 880);
+    const targetPitch: number | null = canvasRef.current?.height ? 
+      880 - mapLinearToLogarithmicScale(coordinates[i].y, 0.0001, canvasRef.current.height, 220, 880)
+      : null;
     
-    if (audio.oscillators[i])
+    if (audio.oscillators[i] && targetPitch)
       audio.updatePitch(audio.oscillators[i], targetPitch);
   }
 
@@ -93,7 +97,10 @@ const Hand: FC<ControlProps> = ({
     const minVolume = -62;
     const maxVolume = -36;
 
-    audio.oscillators[i].volume.value = mapLinearToLogarithmicScale(coordinates[i].x, 0, canvasRef.current?.width!, Math.abs(maxVolume), Math.abs(minVolume)) + minVolume + maxVolume;
+    if (canvasRef.current?.width)
+      audio.oscillators[i].volume.value = mapLinearToLogarithmicScale(
+        coordinates[i].x, 0, canvasRef.current.width, Math.abs(maxVolume), Math.abs(minVolume)
+      ) + minVolume + maxVolume;
   }
 
   const drawHand = useCallback(async (prediction: handpose.AnnotatedPrediction[] | undefined, videoWidth: number, videoHeight: number) => {
@@ -116,16 +123,22 @@ const Hand: FC<ControlProps> = ({
       prediction.forEach((p: handpose.AnnotatedPrediction) => {
         const landmarks = p.landmarks;
         
-        
         for (let i = 0; i < landmarks.length; ++i) {
-          const targetX = canvasRef.current?.width! - scale(landmarks[i][0], 0, videoWidth, 0, canvasRef.current?.width!);
-          const targetY = scale(landmarks[i][1], 0, videoHeight, 0, canvasRef.current?.height!);
+          const targetX: number | null = canvasRef.current?.width ? 
+            canvasRef.current.width - scale(landmarks[i][0], 0, videoWidth, 0, canvasRef.current?.width)
+            : null;
+
+          const targetY: number | null = canvasRef.current?.height ?
+            scale(landmarks[i][1], 0, videoHeight, 0, canvasRef.current.height)
+            : null;
           
-          coordinates[i].x = lerp(coordinates[i].x, targetX, INTERP_SPEED);
-          coordinates[i].y = lerp(coordinates[i].y, targetY, INTERP_SPEED);
+          if (targetX)
+            coordinates[i].x = lerp(coordinates[i].x, targetX, INTERP_SPEED);
+
+          if (targetY)
+            coordinates[i].y = lerp(coordinates[i].y, targetY, INTERP_SPEED);
 
           const targetSize = scale(Math.abs(landmarks[i][2]), 0, 80, 2, 32);
-          // const zMicro = scale(Math.abs(landmarks[i][2]), [0, 80], [2, 1000]);
           coordinates[i].size = lerp(coordinates[i].size, targetSize, 0.01);
           
           if (ctx) 
@@ -142,11 +155,19 @@ const Hand: FC<ControlProps> = ({
       for (let i = 0; i < 21; ++i) {
         coordinates[i].angle += Math.PI * 0.005;
 
-        const targetX = (canvasRef.current?.width! / 2) - Math.sin(coordinates[i].angle) * 300;
-        const targetY = (canvasRef.current?.height! / 2) - Math.cos(coordinates[i].angle) * 300;
+        const targetX: number | null = canvasRef.current?.width ? 
+          (canvasRef.current.width / 2) - Math.sin(coordinates[i].angle) * 300
+          : null;
 
-        coordinates[i].x = lerp(coordinates[i].x, targetX, INTERP_SPEED_NO_HAND);
-        coordinates[i].y = lerp(coordinates[i].y, targetY, INTERP_SPEED_NO_HAND);
+        const targetY: number | null = canvasRef.current?.height ? 
+          (canvasRef.current?.height / 2) - Math.cos(coordinates[i].angle) * 300
+          : null;
+
+        if (targetX)
+          coordinates[i].x = lerp(coordinates[i].x, targetX, INTERP_SPEED_NO_HAND);
+
+        if (targetY)
+          coordinates[i].y = lerp(coordinates[i].y, targetY, INTERP_SPEED_NO_HAND);
 
         ctx?.fillRect(coordinates[i].x, coordinates[i].y, coordinates[i].size, coordinates[i].size);
 
@@ -168,7 +189,7 @@ const Hand: FC<ControlProps> = ({
         const videoHeight = video.videoHeight;
 
         // Extract image data
-        let videoCanvas = document.createElement('canvas');
+        const videoCanvas = document.createElement('canvas');
 
         // unnecessary!?
         videoCanvas.width = videoWidth;
@@ -176,7 +197,7 @@ const Hand: FC<ControlProps> = ({
 
         const videoCtx = videoCanvas.getContext('2d',{ willReadFrequently: true });
 
-        let imageData: ImageData;
+        let imageData: ImageData | null = null;
 
         if (videoCtx !== null) {
           videoCtx.drawImage(video, 0, 0, videoCanvas.width, videoCanvas.height);
@@ -185,7 +206,7 @@ const Hand: FC<ControlProps> = ({
           videoCtx.clearRect(0, 0, videoCanvas.width, videoCanvas.height);
         }
 
-        sendImageData(imageData!);
+        if (imageData) sendImageData(imageData);
 
         if (prediction)
           lastPrediction = prediction;
@@ -193,7 +214,7 @@ const Hand: FC<ControlProps> = ({
         prediction = await getPrediction();
        
         // Scale canvas to prevent blur
-        fixDPI(canvasRef.current!);
+        if (canvasRef.current) fixDPI(canvasRef.current);
 
         if (canvasRef.current && coordinates.length === 0) {
           for (let i = 0; i < 21; ++i) {
@@ -235,7 +256,7 @@ const Hand: FC<ControlProps> = ({
   }, [num]);
 
   const createPitchAreas = (n: number) => {
-    let pitchAreas = [];
+    const pitchAreas = [];
 
     for (let i = 0; i < n; ++i) {
       // TODO: Make pitch w/ octave transposition into own type
@@ -259,7 +280,7 @@ const Hand: FC<ControlProps> = ({
 
   return (
     <section id="hand">
-      <div className="header">
+      <div className="header" style={{position: "absolute", width: "80%", justifyContent: "center", overflow: "hidden"}}>
         <div className="set-subs">
           <div style={{
               marginTop: "0.6rem", marginLeft: "0.3rem", fontSize: "1rem", padding: "0.rem", width: "3rem"
@@ -280,6 +301,16 @@ const Hand: FC<ControlProps> = ({
 
         <h3>WEBCAM NOISE MACHINE 3000</h3>
         
+        <div style={{float: "right", width: "240px", display: "flex", alignItems: "center", justifyContent: "center"}}>
+            <div className="btn btn-hand" style={{padding: "12px"}} onKeyDown={()=>{}}
+              onClick={() => {
+                  setStartButton(startButton === 'stop audio' ? 'start audio' : 'stop audio');
+                  startButton === 'start audio' ? audio.start() : audio.stop();
+                }
+              }
+              >{startButton}
+            </div>
+          </div>
       </div>
       
       <Webcam ref={webcamRef} width={0} height={0} />

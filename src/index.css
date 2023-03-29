@@ -45,10 +45,11 @@ div#root>div {
 }
 
 #controls {
-    width: 20vw;
+    width: 307px;
     height: 100vw;
     background-color: var(--color-2);
     color: var(--color-1);
+    float: right;
 }
 
 h3,

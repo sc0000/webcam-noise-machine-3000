@@ -44,7 +44,6 @@
 
 .players {
   width: 100%;
-
 }
 
 .shapes-options {
@@ -61,8 +60,8 @@
 }
 
 .shapes-options-outer {
-  padding-top: 9px;
-  border-top: 3px solid var(--color-1);
+  padding-top: 6px;
+  /* border-top: 3px solid var(--color-1); */
 }
 
 .shapes {
@@ -76,11 +75,33 @@
   display: grid;
   flex-wrap: nowrap;
   justify-content: center;
-
-  padding-top: 1rem;
-  padding-bottom: 1rem;
+  padding-top: 6px;
+  padding-bottom: 6px;
   width: 100%;
   border-bottom: 3px solid var(--color-1);
+}
+
+.fx-update {
+  padding: 3px;
+  border-bottom: 3px solid var(--color-1);
+}
+
+.fx-update-options {
+  margin: 3px 6px;
+  display: grid;
+  grid-template-columns: auto auto auto auto;
+}
+
+.fx-update-options>.btn {
+  width: calc(100% - 6px);
+  position: relative;
+  padding: 0.4rem;
+  margin: 3px;
+  font-size: 0.5rem;
+}
+
+.fx-update-sliders {
+  font-size: 0.6rem;
 }
 
 .fingers {
@@ -111,5 +132,6 @@
   padding: 9px;
   margin-bottom: 3px;
   border-bottom: 3px solid var(--color-1);
+  font-size: 0.7rem;
 
 }

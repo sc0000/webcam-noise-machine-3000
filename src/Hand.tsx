@@ -10,7 +10,7 @@ import { wrap } from 'comlink';
 
 import { scale, mapLinearToLogarithmicScale, lerp, fixDPI, randomInt } from './utils'
 import audio from './Audio'
-import { Pitch } from './Audio'
+import { Pitch, MIN_VOLUME, MAX_VOLUME} from './Audio'
 import PitchArea from './PitchArea'
 import { ControlProps } from './ControlLayer'
 
@@ -94,13 +94,12 @@ const Hand: FC<ControlProps> = ({
 
   // TODO: Move into Audio class
   const updateVolume = (i: number) => {
-    const minVolume = -62;
-    const maxVolume = -36;
+    
 
     if (canvasRef.current?.width)
       audio.oscillators[i].volume.value = mapLinearToLogarithmicScale(
-        coordinates[i].x, 0, canvasRef.current.width, Math.abs(maxVolume), Math.abs(minVolume)
-      ) + minVolume + maxVolume;
+        coordinates[i].x, 0, canvasRef.current.width, Math.abs(MAX_VOLUME), Math.abs(MIN_VOLUME)
+      ) + MIN_VOLUME + MAX_VOLUME + audio.volumeModifiers[audio.oscillators[i].type as string];
   }
 
   const drawHand = useCallback(async (prediction: handpose.AnnotatedPrediction[] | undefined, videoWidth: number, videoHeight: number) => {

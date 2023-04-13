@@ -2,6 +2,7 @@ import { useRef, useState, useEffect, useContext, useCallback, FC, MouseEvent } 
 import './slider.css'
 
 import audio from './Audio'
+import { EFFECTS_PARAMETERS } from './Audio'
 import { scale, mapLinearToLogarithmicScale } from './utils'
 import { MouseContext } from './MouseContext';
 import { ControlProps } from './ControlLayer';
@@ -16,8 +17,6 @@ interface SliderProps {
   sendFxParameterValue?: (val: number, mapping: string) => void
   lastFxParameterValue?: number
 }
-
-const effectsParameters = ["tremolo-frequency", "tremolo-depth", "reverb-decay", "reverb-mix"];
 
 //--------------------------------------------------   
 
@@ -135,7 +134,7 @@ const Slider: FC<SliderProps & ControlProps> = ({
       }
   
       // This value has to be sent upstairs because it might be shared between several oscillators
-      else if (effectsParameters.includes(mapping) && sendFxParameterValue) {
+      else if (EFFECTS_PARAMETERS.includes(mapping) && sendFxParameterValue) {
         let newValue = scale(handlePosition, 0, width, 0, 1);
         
         if (newValue < 0) newValue = 0;

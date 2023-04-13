@@ -1,7 +1,7 @@
 import { useState, FC, useEffect } from 'react'
 import Player from './Player'
 import audio from './Audio'
-import { WAVEFORMS } from './Audio'
+import { WAVEFORMS, MIN_VOLUME, MAX_VOLUME, EFFECTS_PARAMETERS } from './Audio'
 import './controls.css'
 import Dropdown from './Dropdown'
 import Slider from './Slider'
@@ -11,7 +11,6 @@ import { scale } from './utils'
 //--------------------------------------------------
 
 const ASSIGNMENT_MODES = ["single", "all of type", "all"];
-const EFFECTS_PARAMETERS = ["tremolo-frequency", "tremolo-depth", "reverb-decay", "reverb-mix"];
 
 //--------------------------------------------------
 
@@ -29,22 +28,20 @@ const Controls: FC<ControlProps> = ({
 
 // ? -----------------------------------------------
 
-  const [lastFxParameterState, setLastFxParameterState] = useState([0, 0, 0, 0]);
-
-  // const sendFxParameterState = (newState: number[]) => {
-  //   setLastFxParameterState(newState);
-  // }
+  const [lastFxParameterState, setLastFxParameterState] = useState([0, 0, 0, 0, 0.5]);
 
   const [tremoloFrequency, setTremoloFrequency] = useState(0);
   const [tremoloDepth, setTremoloDepth] = useState(0);
   const [reverbDecay, setReverbDecay] = useState(0);
   const [reverbMix, setReverbMix] = useState(0);
+  const [volume, setVolume] = useState(0.5);
 
   const sendFxParameterValue = (val: number, mapping: string) => {
     if (mapping === "tremolo-frequency") setTremoloFrequency(val);
     else if (mapping === "tremolo-depth") setTremoloDepth(val);
     else if (mapping === "reverb-decay") setReverbDecay(val);
     else if (mapping === "reverb-mix") setReverbMix(val);
+    else if (mapping === "volume") setVolume(val);
   }
 
   useEffect(() => {
@@ -58,10 +55,13 @@ const Controls: FC<ControlProps> = ({
         audio.reverbs[i].set({
           decay: scale(reverbDecay, 0, 1, 0.001, 4), // replace with log scaling
           wet: reverbMix > 1 ? 1 : reverbMix,
-        })
+        });
       }
-    })
-  }, [tremoloFrequency, tremoloDepth, reverbDecay, reverbMix]);
+
+      audio.volumeModifiers[fxUpdateWaveform] = scale(volume, 0, 1, MAX_VOLUME, Math.abs(MAX_VOLUME) - 6);
+      console.log(volume);
+    });
+  }, [tremoloFrequency, tremoloDepth, reverbDecay, reverbMix, volume]);
 
   useEffect(() => {
     // TODO: Add Reverb parameters. Use Log scaling in frequency (and decay?)!
@@ -70,6 +70,7 @@ const Controls: FC<ControlProps> = ({
     let td = 0;
     let rd = 0;
     let rm = 0;
+    let vl = 0;
 
     WAVEFORMS.forEach((w, i) => {
       if (fxUpdateWaveform === w) {
@@ -77,10 +78,11 @@ const Controls: FC<ControlProps> = ({
         td = audio.tremolos[i].depth.value + 0.001;
         rd = scale(audio.reverbs[i].decay as number, 0.001, 4, 0, 1) + 0.001;
         rm = audio.reverbs[i].wet.value + 0.001;
+        vl = scale(audio.volumeModifiers[fxUpdateWaveform], MAX_VOLUME, Math.abs(MAX_VOLUME) - 6, 0, 1);
       }
     });
 
-    setLastFxParameterState([tf, td, rd, rm]);
+    setLastFxParameterState([tf, td, rd, rm, vl]);
   }, [fxUpdateWaveform]);
 
   useEffect(() => {
@@ -217,10 +219,10 @@ const Controls: FC<ControlProps> = ({
               })}
             </div>
 
-            <div className="fx-update-sliders" style={{height: "110px"}}>
+            <div className="fx-update-sliders" style={{height: "max-content"}}>
               {EFFECTS_PARAMETERS.map((ep, i) => {
                 return (
-                  <div key={i+1} style={{margin: "6px", display: "flex", height: "20%"}}>
+                  <div key={i+1} style={{margin: "6px", display: "flex", height: "20px"}}>
                     <div style={{width: "30%"}}>
                       {ep.replace("-", " ")}
                     </div>

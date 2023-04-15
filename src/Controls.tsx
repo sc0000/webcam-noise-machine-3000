@@ -1,7 +1,7 @@
 import { useState, FC, useEffect } from 'react'
 import Player from './Player'
 import audio from './Audio'
-import { WAVEFORMS, MIN_VOLUME, MAX_VOLUME, EFFECTS_PARAMETERS } from './Audio'
+import { WAVEFORMS, EFFECTS_PARAMETERS } from './Audio'
 import './controls.css'
 import Dropdown from './Dropdown'
 import Slider from './Slider'
@@ -32,11 +32,11 @@ const Controls: FC<ControlProps> = ({
 
   const [tremoloFrequency, setTremoloFrequency] = useState(0);
   const [tremoloDepth, setTremoloDepth] = useState(0);
-  const [reverbDecay, setReverbDecay] = useState(0);
-  const [reverbMix, setReverbMix] = useState(0);
+  const [reverbDecay, setReverbDecay] = useState(0.5);
+  const [reverbMix, setReverbMix] = useState(0.5);
   const [volume, setVolume] = useState(0.5);
 
-  const sendFxParameterValue = (val: number, mapping: string) => {
+  const sendParameterValue = (val: number, mapping: string) => {
     if (mapping === "tremolo-frequency") setTremoloFrequency(val);
     else if (mapping === "tremolo-depth") setTremoloDepth(val);
     else if (mapping === "reverb-decay") setReverbDecay(val);
@@ -58,13 +58,12 @@ const Controls: FC<ControlProps> = ({
         });
       }
 
-      audio.volumeModifiers[fxUpdateWaveform] = scale(volume, 0, 1, MAX_VOLUME, Math.abs(MAX_VOLUME) - 6);
-      console.log(volume);
+      audio.volumeModifiers[fxUpdateWaveform] = scale(volume, 0, 1, audio.maxVolumeMaster, Math.abs(audio.maxVolumeMaster) - 6);
     });
   }, [tremoloFrequency, tremoloDepth, reverbDecay, reverbMix, volume]);
 
   useEffect(() => {
-    // TODO: Add Reverb parameters. Use Log scaling in frequency (and decay?)!
+    // Use Log scaling in frequency (and decay?)!
 
     let tf = 0;
     let td = 0;
@@ -78,16 +77,16 @@ const Controls: FC<ControlProps> = ({
         td = audio.tremolos[i].depth.value + 0.001;
         rd = scale(audio.reverbs[i].decay as number, 0.001, 4, 0, 1) + 0.001;
         rm = audio.reverbs[i].wet.value + 0.001;
-        vl = scale(audio.volumeModifiers[fxUpdateWaveform], MAX_VOLUME, Math.abs(MAX_VOLUME) - 6, 0, 1);
+        vl = scale(audio.volumeModifiers[fxUpdateWaveform], audio.maxVolumeMaster, Math.abs(audio.maxVolumeMaster) - 6, 0, 1);
       }
     });
 
     setLastFxParameterState([tf, td, rd, rm, vl]);
   }, [fxUpdateWaveform]);
 
-  useEffect(() => {
-    console.log(lastFxParameterState);
-  }, [lastFxParameterState]);
+  // useEffect(() => {
+  //   console.log(lastFxParameterState);
+  // }, [lastFxParameterState]);
 
 // ? -----------------------------------------------
 
@@ -146,6 +145,42 @@ const Controls: FC<ControlProps> = ({
   return (
     <section id="controls">
         <div className="control-buttons">
+
+          {/* Microtonal slider */}
+          <div className="microtonal">
+            <div style={{display: "flex", width: "100%", height: "26px", padding: "3px"}}>
+              <div className="control-label">no hand pitch</div>
+              <div style={{width: "67%", marginLeft: "6px"}}>
+                <Slider 
+                  id={71} 
+                  mapping={"no-hand-pitch"} 
+                  activeUIElement={activeUIElement} 
+                  sendActiveUIElementToParent={sendActiveUIElementToControls}/>
+              </div>
+            </div>
+
+            <div style={{display: "flex", width: "100%", height: "26px", padding: "3px"}}>
+              <div className="control-label">microt. amount</div>
+              <div style={{width: "67%", marginLeft: "6px"}}>
+                <Slider 
+                  id={72} 
+                  mapping={"microtonal-spread"} 
+                  activeUIElement={activeUIElement} 
+                  sendActiveUIElementToParent={sendActiveUIElementToControls}/>
+              </div>
+            </div>
+            
+            <div style={{display: "flex", width: "100%", height: "26px", padding: "3px"}}>
+              <div className="control-label">master volume</div>
+              <div style={{width: "67%", marginLeft: "6px"}}>
+                <Slider 
+                  id={73} 
+                  mapping={"master-volume"} 
+                  activeUIElement={activeUIElement} 
+                  sendActiveUIElementToParent={sendActiveUIElementToControls}/>
+              </div>
+            </div>
+          </div>
           
 
           <div className="shapes-options-outer" style={{display: "flex", justifyContent: "center"}}>
@@ -223,7 +258,7 @@ const Controls: FC<ControlProps> = ({
               {EFFECTS_PARAMETERS.map((ep, i) => {
                 return (
                   <div key={i+1} style={{margin: "6px", display: "flex", height: "20px"}}>
-                    <div style={{width: "30%"}}>
+                    <div className="control-label">
                       {ep.replace("-", " ")}
                     </div>
                     {/* TODO: FIX CSS */}
@@ -233,7 +268,7 @@ const Controls: FC<ControlProps> = ({
                         mapping={ep}
                         activeUIElement={activeUIElement}
                         sendActiveUIElementToParent={sendActiveUIElementToControls}
-                        sendFxParameterValue={sendFxParameterValue}
+                        sendParameterValue={sendParameterValue}
                         lastFxParameterValue={lastFxParameterState[i] as number}
                       />
                     </div>
@@ -243,19 +278,7 @@ const Controls: FC<ControlProps> = ({
               })}
             </div>
           </div>
-
-          {/* Microtonal slider */}
-          <div className="microtonal">
-            <h5>microtonal deviations</h5>
-            <div style={{padding: "3px", height: "24px"}}>
-              <Slider 
-                id={21} 
-                mapping={"microtonal-spread"} 
-                activeUIElement={activeUIElement} 
-                sendActiveUIElementToParent={sendActiveUIElementToControls}/>
-            </div>
-          </div>
-
+      
           <div className="players-outer">
             <div className="players">
               {createPlayers(4)}

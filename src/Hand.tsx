@@ -9,8 +9,7 @@ import Webcam from 'react-webcam'
 import { wrap } from 'comlink';
 
 import { scale, mapLinearToLogarithmicScale, lerp, fixDPI, randomInt } from './utils'
-import audio from './Audio'
-import { Pitch, MIN_VOLUME, MAX_VOLUME} from './Audio'
+import audio, { Pitch } from './Audio'
 import PitchArea from './PitchArea'
 import { ControlProps } from './ControlLayer'
 
@@ -19,7 +18,7 @@ import './hand.css'
 //--------------------------------------------------
 
 const INTERP_SPEED = 0.04;
-const INTERP_SPEED_NO_HAND = 0.01;
+const INTERP_SPEED_NO_HAND = 0.02;
 
 const coordinates: {x: number, y: number, size: number, angle: number}[] = [];
 
@@ -83,9 +82,8 @@ const Hand: FC<ControlProps> = ({
 
   // TODO: Move into Audio class
   const updatePitchNoHand = (i: number) => {
-    // const targetPitch = 880 - scale(coordinates[i].y, 0, canvasRef.current?.height!, 220, 880);
     const targetPitch: number | null = canvasRef.current?.height ? 
-      880 - mapLinearToLogarithmicScale(coordinates[i].y, 0.0001, canvasRef.current.height, 220, 880)
+      audio.noHandMaxPitch - mapLinearToLogarithmicScale(coordinates[i].y, 0.0001, canvasRef.current.height, audio.noHandMaxPitch / 4, audio.noHandMaxPitch)
       : null;
     
     if (audio.oscillators[i] && targetPitch)
@@ -96,10 +94,13 @@ const Hand: FC<ControlProps> = ({
   const updateVolume = (i: number) => {
     
 
-    if (canvasRef.current?.width)
+    if (canvasRef.current?.width) {
+      const minVolumeMaster = audio.maxVolumeMaster * 2;
+
       audio.oscillators[i].volume.value = mapLinearToLogarithmicScale(
-        coordinates[i].x, 0, canvasRef.current.width, Math.abs(MAX_VOLUME), Math.abs(MIN_VOLUME)
-      ) + MIN_VOLUME + MAX_VOLUME + audio.volumeModifiers[audio.oscillators[i].type as string];
+        coordinates[i].x, 0, canvasRef.current.width, Math.abs(audio.maxVolumeMaster), Math.abs(minVolumeMaster)
+      ) + minVolumeMaster + audio.maxVolumeMaster + audio.volumeModifiers[audio.oscillators[i].type as string];
+    }
   }
 
   const drawHand = useCallback(async (prediction: handpose.AnnotatedPrediction[] | undefined, videoWidth: number, videoHeight: number) => {
@@ -211,7 +212,7 @@ const Hand: FC<ControlProps> = ({
           lastPrediction = prediction;
 
         prediction = await getPrediction();
-       
+
         // Scale canvas to prevent blur
         if (canvasRef.current) fixDPI(canvasRef.current);
 
@@ -280,26 +281,31 @@ const Hand: FC<ControlProps> = ({
   return (
     <section id="hand">
       <div className="header" style={{position: "absolute", width: "80%", justifyContent: "center", overflow: "hidden"}}>
+        
         <div className="set-subs">
           <div style={{
-              marginTop: "0.6rem", marginLeft: "0.3rem", fontSize: "1rem", padding: "0.rem", width: "3rem"
+              marginTop: "9px", marginLeft: "6px", fontSize: "1rem", padding: "0.rem", width: "3rem"
             }}
 
             className={num < 13 ? "btn btn-hand" : "btn-hand-disabled"} onKeyDown={()=>{}} onClick={() => {
               if (num < 13) setNum(num + 1);
-            }} >+</div>
+            }}>
+              +
+          </div>
 
           <div style={{
-              marginTop: "0.6rem", marginLeft: "0.3rem", fontSize: "1rem", padding: "0.rem", width: "3rem"
+              marginTop: "9px", marginLeft: "6px", fontSize: "1rem", padding: "0.rem", width: "3rem"
             }}
             
             className={num > 0 ? "btn btn-hand" : "btn-hand-disabled"} onKeyDown={()=>{}} onClick={() => {
               if (num > 0) setNum(num - 1);
-            }} >-</div>
+            }}>
+              -
+          </div>
         </div>
 
         <h3>WEBCAM NOISE MACHINE 3000</h3>
-        
+      
         <div style={{float: "right", width: "240px", display: "flex", alignItems: "center", justifyContent: "center"}}>
             <div className="btn btn-hand" style={{padding: "12px"}} onKeyDown={()=>{}}
               onClick={() => {

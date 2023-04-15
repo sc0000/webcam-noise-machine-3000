@@ -16,9 +16,6 @@ interface volumeModifierProps {
 
 export const WAVEFORMS = ['sine', 'triangle', 'sawtooth', 'square'];
 
-export const MIN_VOLUME = -62;
-export const MAX_VOLUME = -36;
-
 export const EFFECTS_PARAMETERS = ["tremolo-frequency", "tremolo-depth", "reverb-decay", "reverb-mix", "volume"];
 
 //--------------------------------------------------
@@ -29,6 +26,17 @@ class Audio {
   oscillators: Tone.Oscillator[] = [];
   tremolos: Tone.Tremolo[] = [];
   reverbs: Tone.Reverb[] = [];
+  
+  volumeModifiers: volumeModifierProps = {
+    sine: 0,
+    triangle: 0,
+    sawtooth: 0,
+    square: 0
+  }
+
+  maxVolumeMaster = -36;
+
+  noHandMaxPitch = 880;
 
   octaveSpread = {
     min: 3, 
@@ -103,13 +111,6 @@ class Audio {
     const criticalBandwidth = 25 + 75 * (1 + 1.4 * Math.pow(Math.abs(frequency) / 1000, 2)) ** 0.69;
     const maxDev = Math.max(criticalBandwidth / 2, 0);
     return maxDev;
-  }
-
-  volumeModifiers: volumeModifierProps = {
-    sine: 0,
-    triangle: 0,
-    sawtooth: 0,
-    square: 0
   }
 }
 

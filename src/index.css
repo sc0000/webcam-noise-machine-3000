@@ -170,11 +170,13 @@ section>div {
 .set-subs {
     display: flex;
     flex-direction: row;
-    justify-content: flex-end;
+    /* justify-content: flex-end; */
     flex-wrap: nowrap;
     overflow: -moz-hidden-unscrollable;
     margin: 0;
     padding: 0;
+    /* position: absolute;
+    left: 0; */
 }
 
 .selector {

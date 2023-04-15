@@ -18,6 +18,12 @@
   font-size: 0.7rem;
 }
 
+.control-label {
+  width: 30%;
+  text-align: left;
+  padding-left: 3px;
+}
+
 .randomize-outer {
   height: max-content;
   display: flex;
@@ -129,9 +135,11 @@
 .microtonal {
   width: 100%;
   height: max-content;
-  padding: 9px;
+  padding: 6px;
   margin-bottom: 3px;
   border-bottom: 3px solid var(--color-1);
-  font-size: 0.7rem;
+  font-size: 0.6rem;
+  /* display: flex;
+  flex-direction: column; */
 
 }

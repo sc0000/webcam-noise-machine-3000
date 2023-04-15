@@ -30,11 +30,11 @@ const Controls: FC<ControlProps> = ({
 
   const [lastFxParameterState, setLastFxParameterState] = useState([0, 0, 0, 0, 0.5]);
 
-  const [tremoloFrequency, setTremoloFrequency] = useState(0);
-  const [tremoloDepth, setTremoloDepth] = useState(0);
-  const [reverbDecay, setReverbDecay] = useState(0.5);
-  const [reverbMix, setReverbMix] = useState(0.5);
-  const [volume, setVolume] = useState(0.5);
+  const [tremoloFrequency, setTremoloFrequency] = useState(scale(audio.tremolos[0].frequency.value as number, 0, 30, 0, 1));
+  const [tremoloDepth, setTremoloDepth] = useState(audio.tremolos[0].depth.value);
+  const [reverbDecay, setReverbDecay] = useState(scale(audio.reverbs[0].decay as number, 0, 4, 0, 1));
+  const [reverbMix, setReverbMix] = useState(audio.reverbs[0].wet.value);
+  const [volume, setVolume] = useState(scale(audio.volumeModifiers[fxUpdateWaveform], audio.maxVolumeMaster, Math.abs(audio.maxVolumeMaster) - 6, 0, 1));
 
   const sendParameterValue = (val: number, mapping: string) => {
     if (mapping === "tremolo-frequency") setTremoloFrequency(val);
@@ -146,41 +146,7 @@ const Controls: FC<ControlProps> = ({
     <section id="controls">
         <div className="control-buttons">
 
-          {/* Microtonal slider */}
-          <div className="microtonal">
-            <div style={{display: "flex", width: "100%", height: "26px", padding: "3px"}}>
-              <div className="control-label">no hand pitch</div>
-              <div style={{width: "67%", marginLeft: "6px"}}>
-                <Slider 
-                  id={71} 
-                  mapping={"no-hand-pitch"} 
-                  activeUIElement={activeUIElement} 
-                  sendActiveUIElementToParent={sendActiveUIElementToControls}/>
-              </div>
-            </div>
-
-            <div style={{display: "flex", width: "100%", height: "26px", padding: "3px"}}>
-              <div className="control-label">microt. amount</div>
-              <div style={{width: "67%", marginLeft: "6px"}}>
-                <Slider 
-                  id={72} 
-                  mapping={"microtonal-spread"} 
-                  activeUIElement={activeUIElement} 
-                  sendActiveUIElementToParent={sendActiveUIElementToControls}/>
-              </div>
-            </div>
-            
-            <div style={{display: "flex", width: "100%", height: "26px", padding: "3px"}}>
-              <div className="control-label">master volume</div>
-              <div style={{width: "67%", marginLeft: "6px"}}>
-                <Slider 
-                  id={73} 
-                  mapping={"master-volume"} 
-                  activeUIElement={activeUIElement} 
-                  sendActiveUIElementToParent={sendActiveUIElementToControls}/>
-              </div>
-            </div>
-          </div>
+         
           
 
           <div className="shapes-options-outer" style={{display: "flex", justifyContent: "center"}}>
@@ -276,6 +242,42 @@ const Controls: FC<ControlProps> = ({
                   </div>
                 )
               })}
+            </div>
+          </div>
+
+           {/* Microtonal slider */}
+           <div className="microtonal">
+            <div style={{display: "flex", width: "100%", height: "26px", padding: "3px"}}>
+              <div className="control-label">no hand pitch</div>
+              <div style={{width: "67%", marginLeft: "6px"}}>
+                <Slider 
+                  id={71} 
+                  mapping={"no-hand-pitch"} 
+                  activeUIElement={activeUIElement} 
+                  sendActiveUIElementToParent={sendActiveUIElementToControls}/>
+              </div>
+            </div>
+
+            <div style={{display: "flex", width: "100%", height: "26px", padding: "3px"}}>
+              <div className="control-label">microt. amount</div>
+              <div style={{width: "67%", marginLeft: "6px"}}>
+                <Slider 
+                  id={72} 
+                  mapping={"microtonal-spread"} 
+                  activeUIElement={activeUIElement} 
+                  sendActiveUIElementToParent={sendActiveUIElementToControls}/>
+              </div>
+            </div>
+            
+            <div style={{display: "flex", width: "100%", height: "26px", padding: "3px"}}>
+              <div className="control-label">master volume</div>
+              <div style={{width: "67%", marginLeft: "6px"}}>
+                <Slider 
+                  id={73} 
+                  mapping={"master-volume"} 
+                  activeUIElement={activeUIElement} 
+                  sendActiveUIElementToParent={sendActiveUIElementToControls}/>
+              </div>
             </div>
           </div>
       

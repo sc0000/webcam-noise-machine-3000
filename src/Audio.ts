@@ -53,11 +53,14 @@ class Audio {
     }
 
     for (let i = 0; i < 4; ++i) {
-      const tremolo = new Tone.Tremolo(0, 0).toDestination();
+      const tremolo = new Tone.Tremolo(1, 0.1).toDestination();
       this.tremolos.push(tremolo);
 
-      const reverb = new Tone.Reverb(0).toDestination();
-      reverb.wet.value = 0;
+      const reverb = new Tone.Reverb(2.0).toDestination();
+      reverb.set({
+        // decay: 2.0,
+        wet: 0.3,
+      })
       this.reverbs.push(reverb);
     }
   }

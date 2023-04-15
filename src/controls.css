@@ -22,6 +22,7 @@
   width: 30%;
   text-align: left;
   padding-left: 3px;
+  justify-content: center;
 }
 
 .randomize-outer {

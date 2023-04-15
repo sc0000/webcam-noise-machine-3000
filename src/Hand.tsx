@@ -280,7 +280,7 @@ const Hand: FC<ControlProps> = ({
 
   return (
     <section id="hand">
-      <div className="header" style={{position: "absolute", width: "80%", justifyContent: "center", overflow: "hidden"}}>
+      <div className="header" style={{display: "flex", width: "calc(100% - 307px)", justifyContent: "center", overflow: "hidden"}}>
         
         <div className="set-subs">
           <div style={{
@@ -305,9 +305,9 @@ const Hand: FC<ControlProps> = ({
         </div>
 
         <h3>WEBCAM NOISE MACHINE 3000</h3>
-      
-        <div style={{float: "right", width: "240px", display: "flex", alignItems: "center", justifyContent: "center"}}>
-            <div className="btn btn-hand" style={{padding: "12px"}} onKeyDown={()=>{}}
+
+        <div style={{display: "flex", alignItems: "center", marginRight: "9px", marginLeft: "auto"}}>
+            <div className="btn btn-hand" style={{padding: "12px", width: "120px"}} onKeyDown={()=>{}}
               onClick={() => {
                   setStartButton(startButton === 'stop audio' ? 'start audio' : 'stop audio');
                   startButton === 'start audio' ? audio.start() : audio.stop();
@@ -315,7 +315,8 @@ const Hand: FC<ControlProps> = ({
               }
               >{startButton}
             </div>
-          </div>
+        </div>
+          
       </div>
       
       <Webcam ref={webcamRef} width={0} height={0} />

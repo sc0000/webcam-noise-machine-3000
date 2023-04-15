@@ -38,7 +38,7 @@ div#root>div {
 }
 
 #hand {
-    width: 80vw;
+    width: calc(100vw - 307px);
     height: 100vw;
     background-color: var(--color-1);
     color: var(--color-2);
@@ -50,6 +50,7 @@ div#root>div {
     background-color: var(--color-2);
     color: var(--color-1);
     float: right;
+    margin-left: auto;
 }
 
 h3,

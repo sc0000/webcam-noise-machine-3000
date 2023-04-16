@@ -26,10 +26,16 @@
 }
 
 .player>.btn {
-  /* width: 37.2px; */
   height: 37.2px;
   margin: 0.2rem;
   padding: 0.3rem 0.2rem;
+}
+
+.player>.btn-disabled {
+  color: var(--color-4);
+  background: var(--color-2);
+  border: 3px solid var(--color-4);
+  animation: fadeIn 0.4s;
 }
 
 .slider>.slider-outer {
@@ -44,10 +50,4 @@
   width: 100%;
   min-height: 37.2px;
   display: grid;
-}
-
-.btn-disabled {
-  height: 37.2px;
-  margin: 0.2rem;
-  padding: 0.3rem 0.2rem;
 }

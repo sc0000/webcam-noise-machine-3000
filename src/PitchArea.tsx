@@ -83,7 +83,7 @@ const PitchArea: FC<PitchAreaProps & ControlProps> = (
         else {
             return (
                 <div>
-                    <div className={octaveSpread.max < MAX_OCTAVE ? "btn-pitch" : "btn-pitch-disabled"} onKeyDown={()=>{}} onClick={() => {
+                    <div className={octaveSpread.max < MAX_OCTAVE ? "btn-pitch" : "btn-pitch btn-pitch-disabled"} onKeyDown={()=>{}} onClick={() => {
                         if (octaveSpread.max < MAX_OCTAVE)
                             setOctaveSpread({
                                 min: octaveSpread.min, 
@@ -93,7 +93,7 @@ const PitchArea: FC<PitchAreaProps & ControlProps> = (
                     }
                     >+</div>
 
-                    <div className={octaveSpread.max > MIN_OCTAVE ? "btn-pitch" : "btn-pitch-disabled"} onKeyDown={()=>{}} onClick={() => {
+                    <div className={octaveSpread.max > MIN_OCTAVE ? "btn-pitch" : "btn-pitch btn-pitch-disabled"} onKeyDown={()=>{}} onClick={() => {
                         if (octaveSpread.max > 1)
                             setOctaveSpread({
                                 min: (octaveSpread.min >= octaveSpread.max ? octaveSpread.max - 1 : octaveSpread.min), 
@@ -126,7 +126,7 @@ const PitchArea: FC<PitchAreaProps & ControlProps> = (
 
         <div className="octave-spread">
             <div className="btn-pitch btn-pitch-active" style={{cursor: "default"}}>oct {locked ? octaveSpread.min : range}</div>
-            <div className={octaveSpread.min < MAX_OCTAVE ? "btn-pitch" : "btn-pitch-disabled"} onKeyDown={()=>{}} onClick={() => {
+            <div className={octaveSpread.min < MAX_OCTAVE ? "btn-pitch" : "btn-pitch btn-pitch-disabled"} onKeyDown={()=>{}} onClick={() => {
                     if (octaveSpread.min < MAX_OCTAVE) {
                         if (locked)
                             setOctaveSpread({
@@ -143,7 +143,7 @@ const PitchArea: FC<PitchAreaProps & ControlProps> = (
                 }}>+
             </div>
 
-            <div className={octaveSpread.min > MIN_OCTAVE ? "btn-pitch" : "btn-pitch-disabled"} onKeyDown={()=>{}} onClick={() => {
+            <div className={octaveSpread.min > MIN_OCTAVE ? "btn-pitch" : "btn-pitch btn-pitch-disabled"} onKeyDown={()=>{}} onClick={() => {
                     if (octaveSpread.min > 1) {
                         if (locked)
                             setOctaveSpread({

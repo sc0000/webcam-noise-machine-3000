@@ -92,8 +92,6 @@ const Hand: FC<ControlProps> = ({
 
   // TODO: Move into Audio class
   const updateVolume = (i: number) => {
-    
-
     if (canvasRef.current?.width) {
       const minVolumeMaster = audio.maxVolumeMaster * 2;
 
@@ -287,7 +285,7 @@ const Hand: FC<ControlProps> = ({
               marginTop: "9px", marginLeft: "6px", fontSize: "1rem", padding: "0.rem", width: "3rem"
             }}
 
-            className={num < 13 ? "btn btn-hand" : "btn-hand-disabled"} onKeyDown={()=>{}} onClick={() => {
+            className={num < 13 ? "btn btn-hand" : "btn btn-hand btn-hand-disabled"} onKeyDown={()=>{}} onClick={() => {
               if (num < 13) setNum(num + 1);
             }}>
               +
@@ -297,7 +295,7 @@ const Hand: FC<ControlProps> = ({
               marginTop: "9px", marginLeft: "6px", fontSize: "1rem", padding: "0.rem", width: "3rem"
             }}
             
-            className={num > 0 ? "btn btn-hand" : "btn-hand-disabled"} onKeyDown={()=>{}} onClick={() => {
+            className={num > 0 ? "btn btn-hand" : "btn btn-hand btn-hand-disabled"} onKeyDown={()=>{}} onClick={() => {
               if (num > 0) setNum(num - 1);
             }}>
               -

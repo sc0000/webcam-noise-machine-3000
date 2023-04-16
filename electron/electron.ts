@@ -1,7 +1,9 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, Tray } from 'electron';
 import * as path from 'path';
 
-let mainWindow: Electron.BrowserWindow | null;
+let mainWindow: Electron.BrowserWindow | null = null;
+
+let tray: Tray | null = null;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -15,6 +17,7 @@ function createWindow() {
     },
     autoHideMenuBar: true,
     frame: false,
+    icon: path.join(__dirname, '../src/assets/tray.png')
   });
 
   // Load the index.html of the app
@@ -29,7 +32,9 @@ function createWindow() {
     // in an array if the app supports multi windows, this is the time
     // when the corresponding element should be deleted.
     mainWindow = null;
-  })
+  });
+
+  tray = new Tray(path.join(__dirname, '../src/assets/tray.png'));
 }
 
 // This method will be called when Electron has finished

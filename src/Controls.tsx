@@ -1,4 +1,4 @@
-import { useState, FC, useEffect } from 'react'
+import { useState, FC, useEffect, Fragment } from 'react'
 import Player from './Player'
 import audio from './Audio'
 import { WAVEFORMS, EFFECTS_PARAMETERS } from './Audio'
@@ -63,7 +63,7 @@ const Controls: FC<ControlProps> = ({
   }, [tremoloFrequency, tremoloDepth, reverbDecay, reverbMix, volume]);
 
   useEffect(() => {
-    // Use Log scaling in frequency (and decay?)!
+    // TODO: use Log scaling in frequency (and decay?)!
 
     let tf = 0;
     let td = 0;
@@ -83,10 +83,6 @@ const Controls: FC<ControlProps> = ({
 
     setLastFxParameterState([tf, td, rd, rm, vl]);
   }, [fxUpdateWaveform]);
-
-  // useEffect(() => {
-  //   console.log(lastFxParameterState);
-  // }, [lastFxParameterState]);
 
 // ? -----------------------------------------------
 
@@ -146,10 +142,7 @@ const Controls: FC<ControlProps> = ({
     <section id="controls">
         <div className="control-buttons">
 
-         
-          
-
-          <div className="shapes-options-outer" style={{display: "flex", justifyContent: "center"}}>
+          <div className="shapes-options-outer">
             <div className="shapes-options">
               {ASSIGNMENT_MODES.map((m) => {
                 return (
@@ -220,15 +213,20 @@ const Controls: FC<ControlProps> = ({
               })}
             </div>
 
-            <div className="fx-update-sliders" style={{height: "max-content"}}>
+            <div className="fx-update-sliders">
               {EFFECTS_PARAMETERS.map((ep, i) => {
                 return (
                   <div key={i+1} style={{margin: "6px", display: "flex", height: "20px"}}>
                     <div className="control-label">
-                      {ep.replace("-", " ")}
+                    {ep.split("-").map((text, i) => (
+                      // rome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+                      <Fragment key={i}>
+                        {text}
+                        <br />
+                      </Fragment>
+                    ))}
                     </div>
-                    {/* TODO: FIX CSS */}
-                    <div style={{width: "67%", marginLeft: "6px"}}>
+                    <div className="controls-slider-outer">
                       <Slider 
                         id={60 + i}
                         mapping={ep}
@@ -245,11 +243,11 @@ const Controls: FC<ControlProps> = ({
             </div>
           </div>
 
-           {/* Microtonal slider */}
-           <div className="microtonal">
-            <div style={{display: "flex", width: "100%", height: "26px", padding: "3px"}}>
+          {/* Global controls */}
+          <div className="global-controls-outer">
+            <div className="global-controls">
               <div className="control-label">no hand pitch</div>
-              <div style={{width: "67%", marginLeft: "6px"}}>
+              <div className="controls-slider-outer">
                 <Slider 
                   id={71} 
                   mapping={"no-hand-pitch"} 
@@ -258,9 +256,9 @@ const Controls: FC<ControlProps> = ({
               </div>
             </div>
 
-            <div style={{display: "flex", width: "100%", height: "26px", padding: "3px"}}>
+            <div className="global-controls">
               <div className="control-label">microt. amount</div>
-              <div style={{width: "67%", marginLeft: "6px"}}>
+              <div className="controls-slider-outer">
                 <Slider 
                   id={72} 
                   mapping={"microtonal-spread"} 
@@ -269,9 +267,9 @@ const Controls: FC<ControlProps> = ({
               </div>
             </div>
             
-            <div style={{display: "flex", width: "100%", height: "26px", padding: "3px"}}>
+            <div className="global-controls">
               <div className="control-label">master volume</div>
-              <div style={{width: "67%", marginLeft: "6px"}}>
+              <div className="controls-slider-outer">
                 <Slider 
                   id={73} 
                   mapping={"master-volume"} 

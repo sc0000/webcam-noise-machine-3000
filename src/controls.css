@@ -1,8 +1,3 @@
-.octave-spread {
-  font-size: 0.7rem;
-  display: flex;
-}
-
 .control-buttons {
   display: flex;
   flex-wrap: nowrap;
@@ -15,77 +10,32 @@
 }
 
 .control-buttons>.btn {
-  font-size: 0.7rem;
+  font-size: 8px;
 }
 
 .control-label {
+  font-size: 8px;
+  line-height: 10px;
   width: 30%;
   text-align: left;
   padding-left: 3px;
   justify-content: center;
 }
 
-.randomize-outer {
-  height: max-content;
-  display: flex;
-  flex-direction: row-reverse;
-  margin: 0;
-  padding: 0;
-}
-
-.randomize-outer>.btn {
-  padding: 0.4rem;
-  font-size: 0.5rem;
+.controls-slider-outer {
+  width: 67%;
+  margin-left: 6px;
 }
 
 .button-outer {
   margin-bottom: 0rem;
-  font-size: 0.75rem;
+  font-size: 8px;
 }
 
 .players-outer {
   padding-top: 6px;
   padding-left: 9px;
   padding-right: 9px;
-}
-
-.players {
-  width: 100%;
-}
-
-.shapes-options {
-  display: grid;
-  grid-template-columns: auto auto auto auto;
-}
-
-.shapes-options>.btn {
-  width: calc(100% - 6px);
-  position: relative;
-  padding: 0.4rem;
-  margin: 3px;
-  font-size: 0.5rem;
-}
-
-.shapes-options-outer {
-  padding-top: 6px;
-  /* border-top: 3px solid var(--color-1); */
-}
-
-.shapes {
-  display: flex;
-  flex-direction: column;
-  font-size: 0.7rem;
-  width: 100%;
-}
-
-.shapes-all {
-  display: grid;
-  flex-wrap: nowrap;
-  justify-content: center;
-  padding-top: 6px;
-  padding-bottom: 6px;
-  width: 100%;
-  border-bottom: 3px solid var(--color-1);
 }
 
 .fx-update {
@@ -109,12 +59,80 @@
 
 .fx-update-sliders {
   font-size: 0.6rem;
+  height: max-content;
 }
 
 .fingers {
   display: flex;
   width: max-content;
   justify-content: center;
+}
+
+.global-controls-outer {
+  width: 100%;
+  height: max-content;
+  padding: 6px;
+  margin-bottom: 3px;
+  border-bottom: 3px solid var(--color-1);
+}
+
+.global-controls {
+  display: flex;
+  width: 100%;
+  height: 26px;
+  padding: 3px;
+}
+
+.players {
+  width: 100%;
+}
+
+.randomize-outer {
+  height: max-content;
+  display: flex;
+  flex-direction: row-reverse;
+  margin: 0;
+  padding: 0;
+}
+
+.randomize-outer>.btn {
+  padding: 0.4rem;
+}
+
+.shapes-options {
+  display: grid;
+  grid-template-columns: auto auto auto auto;
+}
+
+.shapes-options>.btn {
+  width: calc(100% - 6px);
+  position: relative;
+  padding: 0.4rem;
+  margin: 3px;
+  font-size: 8px;
+}
+
+.shapes-options-outer {
+  padding-top: 6px;
+  display: flex;
+  justify-content: center;
+}
+
+.shapes {
+  display: flex;
+  flex-direction: column;
+  font-size: 10px;
+  width: 100%;
+}
+
+.shapes-all {
+  display: grid;
+  flex-wrap: nowrap;
+  justify-content: center;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  width: 100%;
+  border-bottom: 3px solid var(--color-1);
 }
 
 .shapes-thumb {
@@ -131,16 +149,4 @@
 
 .shapes-pinky {
   margin-top: 4rem;
-}
-
-.microtonal {
-  width: 100%;
-  height: max-content;
-  padding: 6px;
-  margin-bottom: 3px;
-  border-bottom: 3px solid var(--color-1);
-  font-size: 0.6rem;
-  /* display: flex;
-  flex-direction: column; */
-
 }

@@ -59,7 +59,6 @@ section>div {
     height: max-content;
     margin-top: 1rem;
     margin-bottom: 0.5rem;
-    /* justify-content: center; */
     text-align: center;
     background: transparent;
     display: grid;
@@ -118,18 +117,7 @@ section>div {
 }
 
 .btn-hand-disabled {
-    width: max-content;
-    justify-content: center;
-    height: max-content;
-    display: inline-grid;
-    margin: 1rem, 0.3rem;
-    padding: 0.5rem 0.75rem;
-    font-size: 0.5rem;
-    float: left;
-    background: var(--color-2);
     color: var(--color-4);
-    border: 3px solid var(--color-1);
-    transition: var(--transition);
 }
 
 .subdiv {
@@ -161,30 +149,16 @@ section>div {
     overflow: -moz-hidden-unscrollable;
     position: absolute;
     height: calc(3.3rem + 1px);
-    width: 70vw;
 }
 
 .header>div.btn {
     float: right;
 }
 
-.set-subs {
-    display: flex;
-    flex-direction: row;
-    /* justify-content: flex-end; */
-    flex-wrap: nowrap;
-    overflow: -moz-hidden-unscrollable;
-    margin: 0;
-    padding: 0;
-    /* position: absolute;
-    left: 0; */
-}
-
 .selector {
     width: max-content;
     height: max-content;
     z-index: 99;
-    /* float: left; */
 }
 
 @keyframes fadeIn {
@@ -203,7 +177,6 @@ section>div {
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
-    /* grid-template-columns: auto auto; */
 }
 
 .btn-pitch {
@@ -237,33 +210,6 @@ section>div {
 }
 
 .btn-pitch-disabled {
-    float: left;
-    width: max-content;
-    justify-content: center;
-    height: max-content;
     color: var(--color-4);
-    background: transparent;
-    font-size: 0.5rem;
-    padding: 0.2rem;
-    margin: 0.1rem;
-    /* cursor: pointer; */
     border: 3px solid var(--color-4);
-    transition: var(--transition);
-    animation: fadeIn 1s;
-}
-
-.btn-disabled {
-    width: max-content;
-    justify-content: center;
-    height: max-content;
-    display: inline-grid;
-    color: var(--color-4);
-    background: var(--color-2);
-    border: 3px solid var(--color-4);
-    margin: 0.2rem;
-    padding: 0.3rem 0.2rem;
-    transition: var(--transition);
-    animation: fadeIn 0.4s;
-    /* animation: fadeOut 0.05s; */
-    height: 37.2px;
 }

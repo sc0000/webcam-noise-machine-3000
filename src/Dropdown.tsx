@@ -84,13 +84,7 @@ const Dropdown: FC<DropdownProps> = (
   // TODO: GET RID OF INLINE CSS!
 
   const createSelector = (): JSX.Element => {
-    return (<div className="shapes" style={{
-                position: "absolute", 
-                width: "max-content", 
-                backgroundColor: "var(--color-2)", 
-                zIndex: "999", 
-                paddingBottom: "1px", 
-                border: "2px solid var(--color-2)"}}>
+    return (<div className="shapes shapes-create">
               <div style={{paddingBottom: "3px", display: "grid", }}>
                 {WAVEFORMS.map((w) => {
                     return (
@@ -115,14 +109,8 @@ const Dropdown: FC<DropdownProps> = (
 
   return (
     <div className="dropdown" onKeyUp={()=>{}} onMouseLeave={() => sendLastWaveform("")}>
-        <div style={{
-            padding: "0.3rem",
-            fontSize: "0.4rem",
-            margin: "0.3rem",
-          }} 
-          
-          className={className}
-          onKeyDown={()=>{}}
+        <div style={{padding: "0.3rem", fontSize: "0.4rem", margin: "0.3rem"}} 
+          className={className} onKeyDown={()=>{}}
           onMouseEnter={() => {
             sendLastWaveform(activeWaveform);
           }}

@@ -188,7 +188,6 @@ const Slider: FC<SliderProps & ControlProps> = ({
   return (
     <div  className={mapping === "player-volume" && !recorded ? "slider-outer slider-outer-disabled" : "slider-outer"} 
           onMouseDown={handleDown}
-          // ? CSS parameter width is still hardcoded...
           style={mapping === "cent-wise-deviation" ? {width: "93px", border: "3px solid var(--color-1)"} : {}}>
         <div  className={innerClassName()} 
               ref={innerRef}>

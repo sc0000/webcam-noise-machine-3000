@@ -150,3 +150,12 @@
 .shapes-pinky {
   margin-top: 4rem;
 }
+
+.shapes-create {
+  position: absolute;
+  width: max-content;
+  background-color: var(--color-2);
+  z-index: 999;
+  padding-bottom: 1px;
+  border: 2px solid var(--color-2);
+}

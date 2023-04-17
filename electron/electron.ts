@@ -1,8 +1,7 @@
-import { app, BrowserWindow, Tray } from 'electron';
+import { app, BrowserWindow, Tray, ipcMain } from 'electron';
 import * as path from 'path';
 
-let mainWindow: Electron.BrowserWindow | null = null;
-
+let mainWindow: BrowserWindow | null = null;
 let tray: Tray | null = null;
 
 function createWindow() {
@@ -12,34 +11,53 @@ function createWindow() {
     minWidth: 1024,
     minHeight: 820,
     backgroundColor: "#101820ff",
+    minimizable: true,
+    maximizable: true,
     webPreferences: {
-      preload: path.join(__dirname, "preload.js")
+      preload: path.join(__dirname, "preload.js"),
+      devTools: true,
+      nodeIntegration: true,
+      contextIsolation: true,
     },
     autoHideMenuBar: true,
     frame: false,
-    icon: path.join(__dirname, '../src/assets/tray.png')
+    icon: path.join(__dirname, '../src/assets/tray-big.png'),
   });
 
-  // Load the index.html of the app
   mainWindow.loadFile(path.join(__dirname, "index.html"));
 
-  // Open the DevTools
-  // mainWindow.webContents.openDevTools();
-
-  // Emitted when the window is closed.
   mainWindow.on("closed", () => {
-    // Dereference the window object, usually one would store windows
-    // in an array if the app supports multi windows, this is the time
-    // when the corresponding element should be deleted.
     mainWindow = null;
   });
 
-  tray = new Tray(path.join(__dirname, '../src/assets/tray.png'));
+  tray = new Tray(path.join(__dirname, '../src/assets/tray-big.png'));
+
+  // Event listeners for ipcMain to handle events from the renderer process
+  ipcMain.on("minimizeWindow", () => {
+    console.log("minimizeWindow event received");
+    if (mainWindow) {
+      mainWindow.minimize();
+    }
+  });
+
+  ipcMain.on("maximizeWindow", () => {
+    console.log("maximizeWindow event received");
+    if (mainWindow) {
+      if (mainWindow.isMaximized()) {
+        mainWindow.restore();
+      } else {
+        mainWindow.maximize();
+      }
+    }
+  });
+
+  ipcMain.on("closeWindow", () => {
+    if (mainWindow) {
+      mainWindow.close();
+    }
+  });
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
 app.on("ready", createWindow);
 
 app.on('window-all-closed', () => {
@@ -57,3 +75,4 @@ app.on("activate", () => {
     createWindow();
   }
 });
+

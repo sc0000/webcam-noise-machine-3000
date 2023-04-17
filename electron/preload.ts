@@ -1,7 +1,10 @@
-window.addEventListener("DOMContentLoaded", () => {
-  
-})
+const { contextBridge, ipcRenderer } = require('electron');
 
-
-// Just to solve TS error
-export {}
+contextBridge.exposeInMainWorld('electron', {
+  ipcRenderer: {
+      // rome-ignore lint/suspicious/noExplicitAny: <explanation>
+      send: (channel: string, ...args: any) => {
+      ipcRenderer.send(channel, ...args);
+    }
+  }
+});

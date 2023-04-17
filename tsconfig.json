@@ -23,5 +23,6 @@
   "include": [
     "src",
     "electron",
+    "src/global.d.ts",
   ]
 }

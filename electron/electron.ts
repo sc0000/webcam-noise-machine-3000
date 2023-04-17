@@ -56,6 +56,14 @@ function createWindow() {
       mainWindow.close();
     }
   });
+
+  // Send window maximized state to renderer process
+  ipcMain.on('get-window-maximized-state', (event) => {
+    if (mainWindow) {
+      const isMaximized = mainWindow.isMaximized();
+      event.reply('window-maximized-state', isMaximized);
+    }
+  });
 }
 
 app.on("ready", createWindow);

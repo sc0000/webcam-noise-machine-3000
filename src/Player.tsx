@@ -22,14 +22,14 @@ interface PlayerProps {
 //--------------------------------------------------
 
 const Player: React.FC<PlayerProps> = ({i, activeUIElement, sendActiveUIElementToParent}) => {
-    const [recordButton, setRecordButton] = useState(RECORDBUTTONRED);
-    const [isRecording, setIsRecording] = useState(false);
-    const [hasRecorded, setHasRecorded] = useState(false);
-    const [playButton, setPlayButton] = useState(PLAYBUTTONDISABLED);
+  const [recordButton, setRecordButton] = useState(RECORDBUTTONRED);
+  const [isRecording, setIsRecording] = useState(false);
+  const [hasRecorded, setHasRecorded] = useState(false);
+  const [playButton, setPlayButton] = useState(STOPBUTTON);
 
-    const sendActiveUIElementToPlayer = (id: number): void => {
-      sendActiveUIElementToParent(id);
-    }
+  const sendActiveUIElementToPlayer = (id: number): void => {
+    sendActiveUIElementToParent(id);
+  }
 
 //--------------------------------------------------    
 
@@ -45,13 +45,11 @@ const Player: React.FC<PlayerProps> = ({i, activeUIElement, sendActiveUIElementT
                 }
 
                 else {
-                  // update();
                   audio.stopRecording(i);
                   setIsRecording(false);
                   setHasRecorded(true);
                   setRecordButton(RECORDBUTTONRED);
-                  // setClassName("btn btn-controls");
-                  setPlayButton(PLAYBUTTON);
+                  setPlayButton(STOPBUTTON);
                 }
               }
             }
@@ -73,14 +71,16 @@ const Player: React.FC<PlayerProps> = ({i, activeUIElement, sendActiveUIElementT
           {/* Play button */}
           <img src={hasRecorded ? playButton : PLAYBUTTONDISABLED} alt="" style={{ transition: "opacity 200ms ease-in-out" }} onKeyDown={()=>{}} 
             onClick={() => {
-                if (playButton === PLAYBUTTONACTIVE) {
-                  audio.players[i].start(); 
-                  setPlayButton(STOPBUTTONACTIVE);
-                }
-            
-                else {
-                  audio.players[i].stop();
-                  setPlayButton(PLAYBUTTONACTIVE);
+                if (audio.players[i] !== undefined) {
+                  if (playButton === PLAYBUTTONACTIVE) {
+                    audio.players[i].start(); 
+                    setPlayButton(STOPBUTTONACTIVE);
+                  }
+              
+                  else {
+                    audio.players[i].stop();
+                    setPlayButton(PLAYBUTTONACTIVE);
+                  }
                 }
               }
             } 
@@ -109,7 +109,9 @@ const Player: React.FC<PlayerProps> = ({i, activeUIElement, sendActiveUIElementT
           {/* Half speed button */}
           <div style={{paddingTop: "0.47rem"}} onKeyDown={()=>{}}
             onClick={() => {
-                audio.players[i].playbackRate *= 0.5;
+                if (audio.players[i] !== undefined) {
+                  audio.players[i].playbackRate *= 0.5;
+                }
               }
             } 
 
@@ -119,7 +121,9 @@ const Player: React.FC<PlayerProps> = ({i, activeUIElement, sendActiveUIElementT
           {/* Double speed button */}
           <div style={{paddingTop: "0.47rem"}} onKeyDown={()=>{}} 
             onClick={() => {
-                audio.players[i].playbackRate *= 2;
+                if (audio.players[i] !== undefined) {
+                  audio.players[i].playbackRate *= 2;
+                }
               }
             } 
             

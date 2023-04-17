@@ -82,10 +82,13 @@ class Audio {
   async stopRecording(i: number): Promise<Tone.Player[]> {
     const recording = await this.recorder.stop();
 
+    if (this.players[i] !== undefined)
+      this.players[i].dispose();
+
     this.players[i] = new Tone.Player({
         url: URL.createObjectURL(recording),
         loop: true,
-        autostart: false,
+        autostart: true,
         fadeIn: 0.5,
         fadeOut: 0.5,
     }).toDestination();

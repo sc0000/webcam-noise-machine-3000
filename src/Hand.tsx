@@ -7,6 +7,7 @@ import '@tensorflow/tfjs-backend-cpu'
 
 import Webcam from 'react-webcam'
 import { wrap } from 'comlink';
+import * as Tone from 'tone';
 
 import { scale, mapLinearToLogarithmicScale, lerp, fixDPI, randomInt } from './utils'
 import audio, { Pitch } from './Audio'
@@ -306,7 +307,8 @@ const Hand: FC<ControlProps> = ({
 
         <div style={{display: "flex", alignItems: "center", marginRight: "9px", marginLeft: "auto"}}>
             <div className="btn btn-hand" style={{padding: "12px", width: "120px"}} onKeyDown={()=>{}}
-              onClick={() => {
+              onClick={async () => {
+                  await Tone.start();
                   setStartButton(startButton === 'stop audio' ? 'start audio' : 'stop audio');
                   startButton === 'start audio' ? audio.start() : audio.stop();
                 }

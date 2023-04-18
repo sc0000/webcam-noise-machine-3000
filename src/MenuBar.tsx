@@ -8,12 +8,10 @@ import "./menuBar.css";
 
 const MenuBar: FC = () => {
   const handleMinimizeClick = () => {
-    console.log("handleMinimizeClick called");
     window.electron.ipcRenderer.send("minimizeWindow");
   };
   
   const handleMaximizeClick = () => {
-    console.log("handleMaximizeClick called");
     window.electron.ipcRenderer.send("maximizeWindow");
   };
 

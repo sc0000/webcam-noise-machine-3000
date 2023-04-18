@@ -34,14 +34,12 @@ function createWindow() {
 
   // Event listeners for ipcMain to handle events from the renderer process
   ipcMain.on("minimizeWindow", () => {
-    console.log("minimizeWindow event received");
     if (mainWindow) {
       mainWindow.minimize();
     }
   });
 
   ipcMain.on("maximizeWindow", () => {
-    console.log("maximizeWindow event received");
     if (mainWindow) {
       if (mainWindow.isMaximized()) {
         mainWindow.restore();

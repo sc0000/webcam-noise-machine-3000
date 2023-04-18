@@ -11,6 +11,7 @@ import * as Tone from 'tone';
 
 import { scale, mapLinearToLogarithmicScale, lerp, fixDPI, randomInt } from './utils'
 import audio, { Pitch } from './Audio'
+import LoadingScreen from './LoadingScreen'
 import PitchArea from './PitchArea'
 import { ControlProps } from './ControlLayer'
 
@@ -39,6 +40,8 @@ const Hand: FC<ControlProps> = ({
 }) => {
   const webcamRef = useRef<Webcam>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  const [loading, setLoading] = useState(true);
 
   // Current number of pitch areas
   const [num, setNum] = useState(1);
@@ -109,10 +112,10 @@ const Hand: FC<ControlProps> = ({
 
     if (ctx) {
       ctx.fillStyle = getComputedStyle(document.documentElement)
-      .getPropertyValue('--color-2');
+        .getPropertyValue('--color-2');
 
       ctx.strokeStyle = getComputedStyle(document.documentElement)
-            .getPropertyValue('--color-3');
+        .getPropertyValue('--color-3');
 
       ctx.lineWidth = 3;
       ctx.lineCap = 'square';
@@ -201,14 +204,17 @@ const Hand: FC<ControlProps> = ({
         if (videoCtx !== null) {
           videoCtx.drawImage(video, 0, 0, videoCanvas.width, videoCanvas.height);
           imageData = videoCtx.getImageData(0, 0, videoCanvas.width, videoCanvas.height);
-          // console.log(imageData.data);
           videoCtx.clearRect(0, 0, videoCanvas.width, videoCanvas.height);
         }
 
         if (imageData) sendImageData(imageData);
 
-        if (prediction)
+        if (prediction) {
           lastPrediction = prediction;
+
+          if (prediction.length > 0 && loading)
+            setLoading(false);
+        }
 
         prediction = await getPrediction();
 
@@ -325,7 +331,7 @@ const Hand: FC<ControlProps> = ({
         <canvas ref={canvasRef} />
         <div className="subdivs">
           
-          { createPitchAreas(num) }
+          { !loading ? createPitchAreas(num) : <LoadingScreen/>}
           
         </div>       
       </div>

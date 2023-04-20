@@ -19,8 +19,8 @@ import './hand.css'
 
 //--------------------------------------------------
 
-const INTERP_SPEED = 0.04;
-const INTERP_SPEED_NO_HAND = 0.02;
+const INTERP_SPEED = 0.08;
+const INTERP_SPEED_NO_HAND = 0.04;
 
 const coordinates: {x: number, y: number, size: number, angle: number}[] = [];
 
@@ -28,9 +28,8 @@ const pitchAreas: DOMRect[] = [];
 const pitches: Pitch[] = [];
 
 let prediction: handpose.AnnotatedPrediction[] = [];
-let lastPrediction: handpose.AnnotatedPrediction[] = [];
 
-const worker = new Worker(new URL("./predictionWorker", import.meta.url), { name: 'PredictionkWorker', type: 'module'});
+const worker = new Worker(new URL("./predictionWorker", import.meta.url), { name: 'PredictionWorker', type: 'module'});
 const { load, getPrediction, sendImageData } = wrap<import('./predictionWorker').PredictionWorker>(worker);
 
 //--------------------------------------------------
@@ -44,7 +43,7 @@ const Hand: FC<ControlProps> = ({
   const [loading, setLoading] = useState(true);
 
   // Current number of pitch areas
-  const [num, setNum] = useState(1);
+  const [num, setNum] = useState(0);
 
   const [startButton, setStartButton] = useState('start audio');
 
@@ -56,6 +55,7 @@ const Hand: FC<ControlProps> = ({
   const updatePitch = (landmarks: Coords3D, i: number) => {
     for (let j = 0; j < pitchAreas.length; ++j) {
       if (coordinates[i].y > pitchAreas[j].y && coordinates[i].y < (pitchAreas[j].y + pitchAreas[j].height)) {
+        if (i === 8) console.log('index tip in', j);
         const note = `${pitches[j]?.pitch}${randomInt(pitches[j].min, pitches[j].max)}`;
         let freq = audio.toFrequency(note);
         freq *= Math.pow(2, pitches[j].deviation / 1200); // add in cent-wise deviation
@@ -75,7 +75,7 @@ const Hand: FC<ControlProps> = ({
 
         freq += scaledDeviation;
 
-        if (freq < 0) freq = 0;
+        if (!freq || freq < 0) freq = 0;
 
         audio.oscillators[i].set({
           frequency: freq,
@@ -105,8 +105,16 @@ const Hand: FC<ControlProps> = ({
     }
   }
 
+  const updatePrediction = async () => {
+    while (true) {
+      prediction = await getPrediction();
+      await new Promise(resolve => setTimeout(resolve, 20));
+    }
+  }
+
   const drawHand = useCallback(async (prediction: handpose.AnnotatedPrediction[] | undefined, videoWidth: number, videoHeight: number) => {
-    if (!prediction) prediction = lastPrediction;
+    console.log('prediction:', prediction);
+    console.log('loading:', loading);
     
     const ctx = canvasRef.current?.getContext("2d");
 
@@ -147,7 +155,11 @@ const Hand: FC<ControlProps> = ({
             ctx.fillRect(coordinates[i].x,  coordinates[i].y, coordinates[i].size, coordinates[i].size);          
 
           // Update corresponding oscillator
-          updatePitch(landmarks, i);
+          if (pitchAreas.length > 0)
+            updatePitch(landmarks, i);
+
+          else updatePitchNoHand(i);
+          
           updateVolume(i);
         }
       });
@@ -180,75 +192,68 @@ const Hand: FC<ControlProps> = ({
     }
   }, []);
 
-  const detect = useCallback(async () => {
-    if (webcamRef.current &&
-      webcamRef.current?.video?.readyState === 4) {
-        // Get video properties
-        const video = webcamRef.current.video;
-
-        // Get intrinsic size of the resource
-        const videoWidth = video.videoWidth;
-        const videoHeight = video.videoHeight;
-
-        // Extract image data
-        const videoCanvas = document.createElement('canvas');
-
-        // unnecessary!?
-        videoCanvas.width = videoWidth;
-        videoCanvas.height = videoHeight;
-
-        const videoCtx = videoCanvas.getContext('2d',{ willReadFrequently: true });
-
-        let imageData: ImageData | null = null;
-
-        if (videoCtx !== null) {
-          videoCtx.drawImage(video, 0, 0, videoCanvas.width, videoCanvas.height);
-          imageData = videoCtx.getImageData(0, 0, videoCanvas.width, videoCanvas.height);
-          videoCtx.clearRect(0, 0, videoCanvas.width, videoCanvas.height);
-        }
-
-        if (imageData) sendImageData(imageData);
-
-        if (prediction) {
-          lastPrediction = prediction;
-
-          if (prediction.length > 0 && loading)
-            setLoading(false);
-        }
-
-        prediction = await getPrediction();
-
-        // Scale canvas to prevent blur
-        if (canvasRef.current) fixDPI(canvasRef.current);
-
-        if (canvasRef.current && coordinates.length === 0) {
-          for (let i = 0; i < 21; ++i) {
-            const c = {
-              x: canvasRef.current?.clientWidth / 2,
-              y: canvasRef.current?.clientHeight / 2,
-              size: 8,
-              angle: 2 * Math.PI * Math.random(), 
-            }
-        
-            coordinates.push(c);
-          }
-        }
-
-        // Draw to canvas
-        drawHand(prediction, videoWidth, videoHeight);
+  const render = useCallback(() => {
+    if (webcamRef.current && webcamRef.current?.video?.readyState === 4) {
+      // Get video properties
+      const video = webcamRef.current.video;
+  
+      // Get intrinsic size of the resource
+      const videoWidth = video.videoWidth;
+      const videoHeight = video.videoHeight;
+  
+      // Extract image data
+      const videoCanvas = document.createElement('canvas');
+  
+      // unnecessary!?
+      videoCanvas.width = videoWidth;
+      videoCanvas.height = videoHeight;
+  
+      const videoCtx = videoCanvas.getContext('2d', { willReadFrequently: true });
+  
+      let imageData = null;
+  
+      if (videoCtx !== null) {
+        videoCtx.drawImage(video, 0, 0, videoCanvas.width, videoCanvas.height);
+        imageData = videoCtx.getImageData(0, 0, videoCanvas.width, videoCanvas.height);
+        videoCtx.clearRect(0, 0, videoCanvas.width, videoCanvas.height);
       }
+  
+      if (imageData) sendImageData(imageData);
+
+      if (canvasRef.current && coordinates.length === 0) {
+        for (let i = 0; i < 21; ++i) {
+          const c = {
+            x: canvasRef.current?.clientWidth / 2,
+            y: canvasRef.current?.clientHeight / 2,
+            size: 8,
+            angle: 2 * Math.PI * Math.random(),
+          }
+
+          coordinates.push(c);
+        }
+      }
+
+      // Scale canvas to prevent blur
+      if (canvasRef.current) fixDPI(canvasRef.current);
+     
+      if (prediction.some(e => e) && loading) setLoading(false);
+  
+      // Draw to canvas
+      drawHand(prediction, videoWidth, videoHeight);
+    }
   }, [drawHand]);
 
-  const runHandpose = useCallback(async () => {
+  const runHandpose = useCallback(() => {
     const loop = setInterval(() => {
-      detect();
-    }, 20);
+      render();
+    }, 30);
 
     return () => clearInterval(loop);
-  }, [detect]);
+  }, [render]);
 
   useEffect(() => { 
     load();
+    updatePrediction();
     runHandpose();
   }, [runHandpose]);
 
@@ -328,11 +333,10 @@ const Hand: FC<ControlProps> = ({
       <Webcam ref={webcamRef} width={0} height={0} />
 
       <div className="container">
-        <canvas ref={canvasRef} />
+        
         <div className="subdivs">
-          
+          <canvas ref={canvasRef} />
           { !loading ? createPitchAreas(num) : <LoadingScreen/>}
-          
         </div>       
       </div>
     </section>

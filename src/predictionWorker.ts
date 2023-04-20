@@ -15,9 +15,9 @@ const load = async () => {
     
     if (model) console.log("Hand recognition model loaded");
 
-    const loop = setInterval(() => {
+    setInterval(() => {
         makePrediction();
-    }, 12);
+    }, 20);
 }
 
 const makePrediction = async () => {

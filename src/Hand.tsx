@@ -55,7 +55,6 @@ const Hand: FC<ControlProps> = ({
   const updatePitch = (landmarks: Coords3D, i: number) => {
     for (let j = 0; j < pitchAreas.length; ++j) {
       if (coordinates[i].y > pitchAreas[j].y && coordinates[i].y < (pitchAreas[j].y + pitchAreas[j].height)) {
-        if (i === 8) console.log('index tip in', j);
         const note = `${pitches[j]?.pitch}${randomInt(pitches[j].min, pitches[j].max)}`;
         let freq = audio.toFrequency(note);
         freq *= Math.pow(2, pitches[j].deviation / 1200); // add in cent-wise deviation
@@ -113,9 +112,6 @@ const Hand: FC<ControlProps> = ({
   }
 
   const drawHand = useCallback(async (prediction: handpose.AnnotatedPrediction[] | undefined, videoWidth: number, videoHeight: number) => {
-    console.log('prediction:', prediction);
-    console.log('loading:', loading);
-    
     const ctx = canvasRef.current?.getContext("2d");
 
     if (ctx) {

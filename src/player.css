@@ -36,6 +36,8 @@
   background: var(--color-2);
   border: 3px solid var(--color-4);
   animation: fadeIn 0.4s;
+  cursor: default;
+  pointer-events: none;
 }
 
 .slider>.slider-outer {

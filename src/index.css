@@ -118,6 +118,8 @@ section>div {
 
 .btn-hand-disabled {
     color: var(--color-4);
+    cursor: default;
+    pointer-events: none;
 }
 
 .subdiv {
@@ -211,4 +213,6 @@ section>div {
 .btn-pitch-disabled {
     color: var(--color-4);
     border: 3px solid var(--color-4);
+    cursor: default;
+    pointer-events: none;
 }

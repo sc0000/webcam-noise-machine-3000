@@ -190,7 +190,7 @@ const Hand: FC<ControlProps> = ({
         updateVolume(i);
       }
     }
-  }, []);
+  }, [loading]);
 
   const render = useCallback(() => {
     if (webcamRef.current && webcamRef.current?.video?.readyState === 4) {
@@ -241,7 +241,7 @@ const Hand: FC<ControlProps> = ({
       // Draw to canvas
       drawHand(prediction, videoWidth, videoHeight);
     }
-  }, [drawHand]);
+  }, [drawHand, loading]);
 
   const runHandpose = useCallback(() => {
     const loop = setInterval(() => {
@@ -297,7 +297,7 @@ const Hand: FC<ControlProps> = ({
               marginTop: "9px", marginLeft: "6px", fontSize: "1rem", padding: "0.rem", width: "3rem"
             }}
 
-            className={num < 13 ? "btn btn-hand" : "btn btn-hand btn-hand-disabled"} onKeyDown={()=>{}} onClick={() => {
+            className={num < 13 && !loading ? "btn btn-hand" : "btn btn-hand btn-hand-disabled"} onKeyDown={()=>{}} onClick={() => {
               if (num < 13) setNum(num + 1);
             }}>
               +
@@ -307,7 +307,7 @@ const Hand: FC<ControlProps> = ({
               marginTop: "9px", marginLeft: "6px", fontSize: "1rem", padding: "0.rem", width: "3rem"
             }}
             
-            className={num > 0 ? "btn btn-hand" : "btn btn-hand btn-hand-disabled"} onKeyDown={()=>{}} onClick={() => {
+            className={num > 0  && !loading ? "btn btn-hand" : "btn btn-hand btn-hand-disabled"} onKeyDown={()=>{}} onClick={() => {
               if (num > 0) setNum(num - 1);
             }}>
               -
@@ -317,7 +317,7 @@ const Hand: FC<ControlProps> = ({
         <h3>WEBCAM NOISE MACHINE 3000</h3>
 
         <div style={{display: "flex", alignItems: "center", marginRight: "9px", marginLeft: "auto"}}>
-            <div className="btn btn-hand" style={{padding: "12px", width: "120px"}} onKeyDown={()=>{}}
+            <div className={!loading ? "btn btn-hand" : "btn btn-hand btn-hand-disabled"} style={{padding: "12px", width: "120px"}} onKeyDown={()=>{}}
               onClick={async () => {
                   await Tone.start();
                   setStartButton(startButton === 'stop audio' ? 'start audio' : 'stop audio');

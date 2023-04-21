@@ -33,7 +33,6 @@
     "start:desktop": "npm run build:desktop && electron ./build/electron.js",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "make:linux": "electron-builder --linux",
     "make:macos": "electron-builder --mac",
     "make:win": "electron-builder --win --x64"
   },
@@ -43,19 +42,17 @@
       "build/**/*"
     ],
     "win": {
-      "icon": "src/assets/tray-big.png",
+      "icon": "src/assets/tray-big2.png",
       "target": [
         "nsis"
       ]
     },
-    "linux": {
-      "target": [
-        "deb",
-        "rpm",
-        "AppImage"
-      ],
-      "category": "Development"
-    }
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "icon": "src/assets/tray-big2.png",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false
+   }
   },
   "eslintConfig": {
     "extends": [

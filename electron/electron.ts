@@ -1,8 +1,7 @@
-import { app, BrowserWindow, Tray, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import * as path from 'path';
 
 let mainWindow: BrowserWindow | null = null;
-let tray: Tray | null = null;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -21,7 +20,7 @@ function createWindow() {
     },
     autoHideMenuBar: true,
     frame: false,
-    icon: path.join(__dirname, '../src/assets/tray-big.png'),
+    icon: path.join(__dirname, '../src/assets/tray-big2.png'),
   });
 
   mainWindow.loadFile(path.join(__dirname, "index.html"));
@@ -29,8 +28,6 @@ function createWindow() {
   mainWindow.on("closed", () => {
     mainWindow = null;
   });
-
-  tray = new Tray(path.join(__dirname, '../src/assets/tray-big.png'));
 
   // Event listeners for ipcMain to handle events from the renderer process
   ipcMain.on("minimizeWindow", () => {

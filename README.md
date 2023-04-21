@@ -8,7 +8,7 @@ Setup modules: `npm install`. Requires Node 16.15.0 or above.
 
 Run in the browser: `npm run start:web`
 
-Build as an Electron app `npm run build:web` and `npm run build:desktop`
+Build as an Electron app: `npm run build:web` and `npm run build:desktop`.
 Run: `npm run start:desktop`. This command includes `build:desktop`.
 
 ## Generate executable

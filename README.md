@@ -4,20 +4,19 @@ Webcam-controlled synth powered by TensorFlow.js hand recognition, packaged up a
 
 ## Build and run
 
-Setup modules: `npm install`. Requires Node 16.15.0 or above.
+* Setup modules: `npm install`. Requires Node 16.15.0 or above.
 
-Run in the browser: `npm run start:web`
+* Run in the browser: `npm run start:web`. Unfortunately, this app has serious performance issues in Firefox.
 
-Build as an Electron app: `npm run build:web` and `npm run build:desktop`.
+* Build as an Electron app: `npm run build:web && npm run build:desktop`.
 
-Run: `npm run start:desktop`. This command includes `build:desktop`.
+* After building, run: `npm run start:desktop`. This command includes `build:desktop`.
 
 ## Generate executable
 
-`npm run make:win`
-`npm run make:macos`
-`npm run make:linux`
+* After building, run `npm run make:win` or `npm run make:macos`.
 
-## Known issue
+## Known issues
 
 * FX parameter sliders are sometimes not updated correctly when assigned to another waveform.
+* Usually, the camera needs to see a hand for the loading screen to disappear.

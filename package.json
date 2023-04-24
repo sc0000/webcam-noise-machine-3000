@@ -1,7 +1,7 @@
 {
   "name": "theremin-v2.5",
   "productName": "Webcam Noise Machine 3000",
-  "author": "Sebastian Cyliax",
+  "author": "sc0000",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

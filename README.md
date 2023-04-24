@@ -4,7 +4,7 @@ Webcam-controlled synth powered by TensorFlow.js hand recognition, packaged up a
 
 ## Build and run
 
-* Setup modules: `npm install`. Requires Node 16.15.0 or above.
+* Setup dependencies: `npm install`. Requires Node 16.15.0 or above.
 
 * Run in the browser: `npm run start:web`. Unfortunately, this app has serious performance issues in Firefox.
 

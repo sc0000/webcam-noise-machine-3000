@@ -4,7 +4,13 @@ export const scale = (value: number, inMin: number, inMax: number, outMin: numbe
     return (value - inMin) / (inMax - inMin) * (outMax - outMin) + outMin;
 }
 
-export const mapLinearToLogarithmicScale = (value: number, inMin: number, inMax: number, outMin: number, outMax: number): number => {
+export const mapLinearToLogarithmicScale = (
+  value: number, 
+  inMin: number, 
+  inMax: number, 
+  outMin: number, 
+  outMax: number
+): number => {
     if (value <= 0) return outMin;
         
     const log_value = Math.log(value + (Math.abs(inMin) + Math.abs(inMax)) / 1000);

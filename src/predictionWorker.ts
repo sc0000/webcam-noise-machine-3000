@@ -9,32 +9,32 @@ let prediction: handpose.AnnotatedPrediction[] = [];
 let imageData: ImageData;
 
 const load = async () => {
-    if (model !== null) return;
+  if (model !== null) return;
 
-    model = await handpose.load();
-    
-    if (model) console.log("Hand recognition model loaded");
+  model = await handpose.load();
+  
+  if (model) console.log("Hand recognition model loaded");
 
-    setInterval(() => {
-        makePrediction();
-    }, 20);
+  setInterval(() => {
+      makePrediction();
+  }, 20);
 }
 
 const makePrediction = async () => {
-    if (imageData && model?.estimateHands(imageData))
-        prediction = await model?.estimateHands(imageData);
+  if (imageData && model?.estimateHands(imageData))
+    prediction = await model?.estimateHands(imageData);
 }
 
 const getPrediction = (): handpose.AnnotatedPrediction[] => {
-    return prediction;
+  return prediction;
 }
 
 const sendImageData = (iD: ImageData) => {
-    imageData = iD;
+  imageData = iD;
 }
 
 const worker = {
-    load, getPrediction, sendImageData
+  load, getPrediction, sendImageData
 }
 
 export type PredictionWorker = typeof worker;

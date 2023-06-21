@@ -21,7 +21,7 @@ interface PlayerProps {
 
 //--------------------------------------------------
 
-const Player: React.FC<PlayerProps> = ({i, activeUIElement, sendActiveUIElementToParent}) => {
+const Player: React.FC<PlayerProps> = ({ i, activeUIElement, sendActiveUIElementToParent }) => {
   const [recordButton, setRecordButton] = useState(RECORDBUTTONRED);
   const [isRecording, setIsRecording] = useState(false);
   const [hasRecorded, setHasRecorded] = useState(false);
@@ -31,110 +31,111 @@ const Player: React.FC<PlayerProps> = ({i, activeUIElement, sendActiveUIElementT
     sendActiveUIElementToParent(id);
   }
 
-//--------------------------------------------------    
+  //--------------------------------------------------    
 
   return (
     <div className="player">
-          {/* Record button */}
-          <img src={recordButton} alt="" onKeyDown={()=>{}} 
-            onClick={() => {
-                if (!isRecording) {
-                  setIsRecording(true);
-                  audio.startRecording();
-                  setRecordButton(RECORDBUTTONACTIVE);
-                }
+      {/* Record button */}
+      <img src={recordButton} alt="" onKeyDown={() => { }}
+        onClick={() => {
+          if (!isRecording) {
+            setIsRecording(true);
+            audio.startRecording();
+            setRecordButton(RECORDBUTTONACTIVE);
+          }
 
-                else {
-                  audio.stopRecording(i);
-                  setIsRecording(false);
-                  setHasRecorded(true);
-                  setRecordButton(RECORDBUTTONRED);
-                  setPlayButton(STOPBUTTON);
-                }
-              }
-            }
-          
-            onMouseEnter={() => {
-                if (recordButton === RECORDBUTTONRED)
-                  setRecordButton(RECORDBUTTONACTIVE);
-              }
-            }
+          else {
+            audio.stopRecording(i);
+            setIsRecording(false);
+            setHasRecorded(true);
+            setRecordButton(RECORDBUTTONRED);
+            setPlayButton(STOPBUTTON);
+          }
+        }
+        }
 
-            onMouseLeave={() => {
-                if (!isRecording)
-                  setRecordButton(RECORDBUTTONRED);
-            }}
+        onMouseEnter={() => {
+          if (recordButton === RECORDBUTTONRED)
+            setRecordButton(RECORDBUTTONACTIVE);
+        }
+        }
 
-            className={recordButton === RECORDBUTTONRED ? "btn btn-controls" : "btn btn-controls btn-controls-active"}
-          />
+        onMouseLeave={() => {
+          if (!isRecording)
+            setRecordButton(RECORDBUTTONRED);
+        }}
 
-          {/* Play button */}
-          <img src={hasRecorded ? playButton : PLAYBUTTONDISABLED} alt="" style={{ transition: "opacity 200ms ease-in-out" }} onKeyDown={()=>{}} 
-            onClick={() => {
-                if (audio.players[i] !== undefined) {
-                  if (playButton === PLAYBUTTONACTIVE) {
-                    audio.players[i].start(); 
-                    setPlayButton(STOPBUTTONACTIVE);
-                  }
-              
-                  else {
-                    audio.players[i].stop();
-                    setPlayButton(PLAYBUTTONACTIVE);
-                  }
-                }
-              }
-            } 
-              
-            onMouseEnter={() => {
-                if (playButton === PLAYBUTTON)
-                  setPlayButton(PLAYBUTTONACTIVE);
+        className={recordButton === RECORDBUTTONRED ? "btn btn-controls" : "btn btn-controls btn-controls-active"}
+      />
 
-                else if (playButton === STOPBUTTON)
-                  setPlayButton(STOPBUTTONACTIVE);
-              }
+      {/* Play button */}
+      <img src={hasRecorded ? playButton : PLAYBUTTONDISABLED} alt=""
+        style={{ transition: "opacity 200ms ease-in-out" }}
+        onKeyDown={() => { }}
+        onClick={() => {
+          if (audio.players[i] !== undefined) {
+            if (playButton === PLAYBUTTONACTIVE) {
+              audio.players[i].start();
+              setPlayButton(STOPBUTTONACTIVE);
             }
 
-            onMouseLeave={() => {
-                if (playButton === PLAYBUTTONACTIVE)
-                  setPlayButton(PLAYBUTTON);     
+            else {
+              audio.players[i].stop();
+              setPlayButton(PLAYBUTTONACTIVE);
+            }
+          }
+        }
+        }
 
-                else if (playButton === STOPBUTTONACTIVE)
-                  setPlayButton(STOPBUTTON);
-              }
-            } 
-            
-            className={hasRecorded ? "btn btn-controls" : "btn btn-controls btn-disabled"} 
-          />
+        onMouseEnter={() => {
+          if (playButton === PLAYBUTTON)
+            setPlayButton(PLAYBUTTONACTIVE);
 
-          {/* Half speed button */}
-          <div style={{paddingTop: "0.47rem"}} onKeyDown={()=>{}}
-            onClick={() => {
-                if (audio.players[i] !== undefined) {
-                  audio.players[i].playbackRate *= 0.5;
-                }
-              }
-            } 
+          else if (playButton === STOPBUTTON)
+            setPlayButton(STOPBUTTONACTIVE);
+        }
+        }
 
-            className={hasRecorded ? "btn btn-controls" : "btn btn-controls btn-disabled"}>/2
-          </div>
+        onMouseLeave={() => {
+          if (playButton === PLAYBUTTONACTIVE)
+            setPlayButton(PLAYBUTTON);
 
-          {/* Double speed button */}
-          <div style={{paddingTop: "0.47rem"}} onKeyDown={()=>{}} 
-            onClick={() => {
-                if (audio.players[i] !== undefined) {
-                  audio.players[i].playbackRate *= 2;
-                }
-              }
-            } 
-            
-            className={hasRecorded ? "btn btn-controls" : "btn btn-controls btn-disabled"}>*2
-        </div>
+          else if (playButton === STOPBUTTONACTIVE)
+            setPlayButton(STOPBUTTON);
+        }
+        }
 
-        <div className="slider">
-          <Slider id={i + 30} mapping={"player-volume"} recorded={hasRecorded} 
-            activeUIElement={activeUIElement} sendActiveUIElementToParent={sendActiveUIElementToPlayer}/>
-        </div>
-        
+        className={hasRecorded ? "btn btn-controls" : "btn btn-controls btn-disabled"}
+      />
+
+      {/* Half speed button */}
+      <div style={{ paddingTop: "0.47rem" }} onKeyDown={() => { }}
+        onClick={() => {
+          if (audio.players[i] !== undefined) {
+            audio.players[i].playbackRate *= 0.5;
+          }
+        }
+        }
+
+        className={hasRecorded ? "btn btn-controls" : "btn btn-controls btn-disabled"}>/2
+      </div>
+
+      {/* Double speed button */}
+      <div style={{ paddingTop: "0.47rem" }} onKeyDown={() => { }}
+        onClick={() => {
+          if (audio.players[i] !== undefined) {
+            audio.players[i].playbackRate *= 2;
+          }
+        }
+        }
+
+        className={hasRecorded ? "btn btn-controls" : "btn btn-controls btn-disabled"}>*2
+      </div>
+
+      <div className="slider">
+        <Slider id={i + 30} mapping={"player-volume"} recorded={hasRecorded}
+          activeUIElement={activeUIElement} sendActiveUIElementToParent={sendActiveUIElementToPlayer} />
+      </div>
     </div>
   )
 }

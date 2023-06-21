@@ -21,8 +21,8 @@ interface SliderProps {
 //--------------------------------------------------   
 
 const Slider: FC<SliderProps & ControlProps> = ({
-  id, mapping, recorded, sendCentWiseDeviation, 
-  sendParameterValue, lastFxParameterValue, 
+  id, mapping, recorded, sendCentWiseDeviation,
+  sendParameterValue, lastFxParameterValue,
   activeUIElement, sendActiveUIElementToParent
 }) => {
   const innerRef = useRef<HTMLDivElement>(null);
@@ -39,33 +39,33 @@ const Slider: FC<SliderProps & ControlProps> = ({
       right: right,
       width: width,
     }
-    
+
   }, [innerRef]);
 
   useEffect(() => {
-    if (typeof(lastFxParameterValue) === 'number') {
-      const {width} = sizeAndBoundaries();
+    if (typeof (lastFxParameterValue) === 'number') {
+      const { width } = sizeAndBoundaries();
 
       const newHandleX = width ?
         scale(lastFxParameterValue, 0, 1, 0, width) : null;
 
       if (newHandleX) setHandlePosition(newHandleX);
     }
-      
+
   }, [lastFxParameterValue]);
 
   // Set Player default volume to recorded level
   useEffect(() => {
-    const {width} = sizeAndBoundaries();
+    const { width } = sizeAndBoundaries();
 
     if (
-      mapping === 'player-volume' || 
+      mapping === 'player-volume' ||
       mapping === 'cent-wise-deviation' ||
       mapping === 'reverb-decay' ||
       mapping === 'reverb-mix') {
       if (width) setHandlePosition(width / 2);
     }
-      
+
     else if (mapping === 'master-volume' || mapping === 'no-hand-pitch') {
       if (width) setHandlePosition(width / 3);
     }
@@ -73,11 +73,11 @@ const Slider: FC<SliderProps & ControlProps> = ({
 
   const [handlePosition, setHandlePosition] = useState(0);
 
-  const {mouseX} = useContext(MouseContext);
+  const { mouseX } = useContext(MouseContext);
 
   useEffect(() => {
     if (activeUIElement === id) {
-      const {left, width} = sizeAndBoundaries();
+      const { left, width } = sizeAndBoundaries();
 
       if (left && width) {
         const handleX = mouseX - left;
@@ -90,7 +90,7 @@ const Slider: FC<SliderProps & ControlProps> = ({
             setHandlePosition(0);
           } else setHandlePosition(width);
         }
-        
+
         else {
           if (handleX > 6 && handleX < width - 6) {
             setHandlePosition(handleX);
@@ -105,9 +105,9 @@ const Slider: FC<SliderProps & ControlProps> = ({
   }, [mouseX]);
 
   const handleDown = (e: MouseEvent<HTMLElement>) => {
-    if (typeof(recorded) !== 'undefined' && recorded === false) return;
+    if (typeof (recorded) !== 'undefined' && recorded === false) return;
 
-    const {left} = sizeAndBoundaries();
+    const { left } = sizeAndBoundaries();
 
     const x = left ? e.clientX - left
       : null;
@@ -118,18 +118,19 @@ const Slider: FC<SliderProps & ControlProps> = ({
   // TODO: Consolidate with context useEffect!
   useEffect(() => {
 
-//--------------------------------------------------   
-// AUDIO PARAMETER MAPPING
-//--------------------------------------------------     
+    //--------------------------------------------------   
+    // AUDIO PARAMETER MAPPING
+    //--------------------------------------------------     
 
 
-    const {width} = sizeAndBoundaries();
-    
+    const { width } = sizeAndBoundaries();
+
     if (width) {
       if (mapping === 'master-volume') {
         const minMaxVol = -72;
         const maxMaxVol = -6;
-        const newVol = mapLinearToLogarithmicScale(handlePosition, 0.0001, width, Math.abs(maxMaxVol), Math.abs(minMaxVol)) + minMaxVol + maxMaxVol;
+        const newVol = mapLinearToLogarithmicScale(handlePosition, 0.0001, width,
+          Math.abs(maxMaxVol), Math.abs(minMaxVol)) + minMaxVol + maxMaxVol;
         audio.maxVolumeMaster = newVol;
       }
 
@@ -137,20 +138,20 @@ const Slider: FC<SliderProps & ControlProps> = ({
         const logVol = mapLinearToLogarithmicScale(handlePosition, 0, width, 0.001, 24) - 12;
         audio.players[id - 30].volume.value = logVol;
       }
-  
+
       else if (mapping === 'microtonal-spread') {
         audio.microtonalSpread = scale(handlePosition, 0, width, 0, 1);
       }
-  
+
       // This value has to be sent upstairs because it is printed to the screen
       else if (mapping === 'cent-wise-deviation' && sendCentWiseDeviation) {
         sendCentWiseDeviation(scale(handlePosition, 6, width - 6, -50, 50));
       }
-  
+
       // This value has to be sent upstairs because it might be shared between several oscillators
       else if (EFFECTS_PARAMETERS.includes(mapping) && sendParameterValue) {
         let newValue = scale(handlePosition, 0, width, 0, 1);
-        
+
         if (newValue < 0) newValue = 0;
         else if (newValue > 1) newValue = 1;
 
@@ -160,7 +161,7 @@ const Slider: FC<SliderProps & ControlProps> = ({
       else if (mapping === 'no-hand-pitch') {
         audio.noHandMaxPitch = mapLinearToLogarithmicScale(handlePosition, 0.0001, width, 220, 14080);
       }
-        
+
     }
   }, [handlePosition, id, mapping, sizeAndBoundaries]);
 
@@ -171,31 +172,31 @@ const Slider: FC<SliderProps & ControlProps> = ({
   }, [mapping, recorded]);
 
   const handleStyle = (): CSSProperties => {
-      if (mapping === "cent-wise-deviation")
-        return ({
-          position: "relative",
-          backgroundColor: "var(--color-3)",
-          left: `${handlePosition - 6}px`
-        });
-      
-      else return ({width: `${handlePosition}px`});
+    if (mapping === "cent-wise-deviation")
+      return ({
+        position: "relative",
+        backgroundColor: "var(--color-3)",
+        left: `${handlePosition - 6}px`
+      });
+
+    else return ({ width: `${handlePosition}px` });
   }
 
-//--------------------------------------------------
+  //--------------------------------------------------
 
   // TODO: Tidy up inline CSS with dedicated class for cent-wise-deviation slider!
 
   return (
-    <div  className={mapping === "player-volume" && !recorded ? "slider-outer slider-outer-disabled" : "slider-outer"} 
-          onMouseDown={handleDown}
-          style={mapping === "cent-wise-deviation" ? {width: "93px", border: "3px solid var(--color-1)"} : {}}>
-        <div  className={innerClassName()} 
-              ref={innerRef}>
-            <div className={mapping === "player-volume" && !recorded ? "slider-handle slider-handle-disabled" : "slider-handle"} 
-                ref={handleRef}
-                style={handleStyle()}
-            />
-        </div>
+    <div className={mapping === "player-volume" && !recorded ? "slider-outer slider-outer-disabled" : "slider-outer"}
+      onMouseDown={handleDown}
+      style={mapping === "cent-wise-deviation" ? { width: "93px", border: "3px solid var(--color-1)" } : {}}>
+      <div className={innerClassName()}
+        ref={innerRef}>
+        <div className={mapping === "player-volume" && !recorded ? "slider-handle slider-handle-disabled" : "slider-handle"}
+          ref={handleRef}
+          style={handleStyle()}
+        />
+      </div>
     </div>
   )
 }

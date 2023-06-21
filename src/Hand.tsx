@@ -22,14 +22,14 @@ import './hand.css'
 const INTERP_SPEED = 0.08;
 const INTERP_SPEED_NO_HAND = 0.04;
 
-const coordinates: {x: number, y: number, size: number, angle: number}[] = [];
+const coordinates: { x: number, y: number, size: number, angle: number }[] = [];
 
 const pitchAreas: DOMRect[] = [];
 const pitches: Pitch[] = [];
 
 let prediction: handpose.AnnotatedPrediction[] = [];
 
-const worker = new Worker(new URL("./predictionWorker", import.meta.url), { name: 'PredictionWorker', type: 'module'});
+const worker = new Worker(new URL("./predictionWorker", import.meta.url), { name: 'PredictionWorker', type: 'module' });
 const { load, getPrediction, sendImageData } = wrap<import('./predictionWorker').PredictionWorker>(worker);
 
 //--------------------------------------------------
@@ -59,7 +59,8 @@ const Hand: FC<ControlProps> = ({
         let freq = audio.toFrequency(note);
         freq *= Math.pow(2, pitches[j].deviation / 1200); // add in cent-wise deviation
 
-        // ADDING PITCH DEVIATIONS DEPENDING ON DISTANCE FROM THE CENTER LINE OF THE PITCH AREA (amount set by global 'microtonal deviation' slider)
+        // ADDING PITCH DEVIATIONS DEPENDING ON DISTANCE FROM THE CENTER LINE OF THE PITCH AREA 
+        // (amount set by global 'microtonal deviation' slider)
         const pitchArea = pitchAreas[j];
         const center = pitchArea.y + (pitchArea.height / 2);
         const deviation = Math.abs(coordinates[i].y - center);
@@ -69,8 +70,9 @@ const Hand: FC<ControlProps> = ({
         // then get direction back into the picture after scaling
         const direction = (coordinates[i].y > center ? -1 : 1);
 
-        const scaledDeviation = mapLinearToLogarithmicScale(landmarkY, center, center + (pitchArea.height / 2), 0.1, audio.maxDeviation(freq)) * 
-          direction * audio.microtonalSpread;
+        const scaledDeviation = mapLinearToLogarithmicScale(landmarkY, center,
+          center + (pitchArea.height / 2), 0.1, audio.maxDeviation(freq))
+          * direction * audio.microtonalSpread;
 
         freq += scaledDeviation;
 
@@ -85,10 +87,11 @@ const Hand: FC<ControlProps> = ({
 
   // TODO: Move into Audio class
   const updatePitchNoHand = (i: number) => {
-    const targetPitch: number | null = canvasRef.current?.height ? 
-      audio.noHandMaxPitch - mapLinearToLogarithmicScale(coordinates[i].y, 0.0001, canvasRef.current.height, audio.noHandMaxPitch / 4, audio.noHandMaxPitch)
+    const targetPitch: number | null = canvasRef.current?.height ?
+      audio.noHandMaxPitch - mapLinearToLogarithmicScale(coordinates[i].y, 0.0001,
+        canvasRef.current.height, audio.noHandMaxPitch / 4, audio.noHandMaxPitch)
       : null;
-    
+
     if (audio.oscillators[i] && targetPitch)
       audio.updatePitch(audio.oscillators[i], targetPitch);
   }
@@ -111,109 +114,111 @@ const Hand: FC<ControlProps> = ({
     }
   }
 
-  const drawHand = useCallback(async (prediction: handpose.AnnotatedPrediction[] | undefined, videoWidth: number, videoHeight: number) => {
-    const ctx = canvasRef.current?.getContext("2d");
+  const drawHand = useCallback(
+    async (prediction: handpose.AnnotatedPrediction[] | undefined, videoWidth: number, videoHeight: number
+    ) => {
+      const ctx = canvasRef.current?.getContext("2d");
 
-    if (ctx) {
-      ctx.fillStyle = getComputedStyle(document.documentElement)
-        .getPropertyValue('--color-2');
+      if (ctx) {
+        ctx.fillStyle = getComputedStyle(document.documentElement)
+          .getPropertyValue('--color-2');
 
-      ctx.strokeStyle = getComputedStyle(document.documentElement)
-        .getPropertyValue('--color-3');
+        ctx.strokeStyle = getComputedStyle(document.documentElement)
+          .getPropertyValue('--color-3');
 
-      ctx.lineWidth = 3;
-      ctx.lineCap = 'square';
-    }
-    
-    if (prediction != null && prediction.length > 0) {
-      prediction.forEach((p: handpose.AnnotatedPrediction) => {
-        const landmarks = p.landmarks;
-        
-        for (let i = 0; i < landmarks.length; ++i) {
-          const targetX: number | null = canvasRef.current?.width ? 
-            canvasRef.current.width - scale(landmarks[i][0], 0, videoWidth, 0, canvasRef.current?.width)
+        ctx.lineWidth = 3;
+        ctx.lineCap = 'square';
+      }
+
+      if (prediction != null && prediction.length > 0) {
+        prediction.forEach((p: handpose.AnnotatedPrediction) => {
+          const landmarks = p.landmarks;
+
+          for (let i = 0; i < landmarks.length; ++i) {
+            const targetX: number | null = canvasRef.current?.width ?
+              canvasRef.current.width - scale(landmarks[i][0], 0, videoWidth, 0, canvasRef.current?.width)
+              : null;
+
+            const targetY: number | null = canvasRef.current?.height ?
+              scale(landmarks[i][1], 0, videoHeight, 0, canvasRef.current.height)
+              : null;
+
+            if (targetX)
+              coordinates[i].x = lerp(coordinates[i].x, targetX, INTERP_SPEED);
+
+            if (targetY)
+              coordinates[i].y = lerp(coordinates[i].y, targetY, INTERP_SPEED);
+
+            const targetSize = scale(Math.abs(landmarks[i][2]), 0, 80, 2, 32);
+            coordinates[i].size = lerp(coordinates[i].size, targetSize, 0.01);
+
+            if (ctx)
+              ctx.fillRect(coordinates[i].x, coordinates[i].y, coordinates[i].size, coordinates[i].size);
+
+            // Update corresponding oscillator
+            if (pitchAreas.length > 0)
+              updatePitch(landmarks, i);
+
+            else updatePitchNoHand(i);
+
+            updateVolume(i);
+          }
+        });
+      }
+
+      else {
+        for (let i = 0; i < 21; ++i) {
+          coordinates[i].angle += Math.PI * 0.005;
+
+          const targetX: number | null = canvasRef.current?.width ?
+            (canvasRef.current.width / 2) - Math.sin(coordinates[i].angle) * 300
             : null;
 
           const targetY: number | null = canvasRef.current?.height ?
-            scale(landmarks[i][1], 0, videoHeight, 0, canvasRef.current.height)
+            (canvasRef.current?.height / 2) - Math.cos(coordinates[i].angle) * 300
             : null;
-          
+
           if (targetX)
-            coordinates[i].x = lerp(coordinates[i].x, targetX, INTERP_SPEED);
+            coordinates[i].x = lerp(coordinates[i].x, targetX, INTERP_SPEED_NO_HAND);
 
           if (targetY)
-            coordinates[i].y = lerp(coordinates[i].y, targetY, INTERP_SPEED);
+            coordinates[i].y = lerp(coordinates[i].y, targetY, INTERP_SPEED_NO_HAND);
 
-          const targetSize = scale(Math.abs(landmarks[i][2]), 0, 80, 2, 32);
-          coordinates[i].size = lerp(coordinates[i].size, targetSize, 0.01);
-          
-          if (ctx) 
-            ctx.fillRect(coordinates[i].x,  coordinates[i].y, coordinates[i].size, coordinates[i].size);          
+          ctx?.fillRect(coordinates[i].x, coordinates[i].y, coordinates[i].size, coordinates[i].size);
 
           // Update corresponding oscillator
-          if (pitchAreas.length > 0)
-            updatePitch(landmarks, i);
-
-          else updatePitchNoHand(i);
-          
+          updatePitchNoHand(i);
           updateVolume(i);
         }
-      });
-    }
-
-    else {
-      for (let i = 0; i < 21; ++i) {
-        coordinates[i].angle += Math.PI * 0.005;
-
-        const targetX: number | null = canvasRef.current?.width ? 
-          (canvasRef.current.width / 2) - Math.sin(coordinates[i].angle) * 300
-          : null;
-
-        const targetY: number | null = canvasRef.current?.height ? 
-          (canvasRef.current?.height / 2) - Math.cos(coordinates[i].angle) * 300
-          : null;
-
-        if (targetX)
-          coordinates[i].x = lerp(coordinates[i].x, targetX, INTERP_SPEED_NO_HAND);
-
-        if (targetY)
-          coordinates[i].y = lerp(coordinates[i].y, targetY, INTERP_SPEED_NO_HAND);
-
-        ctx?.fillRect(coordinates[i].x, coordinates[i].y, coordinates[i].size, coordinates[i].size);
-
-        // Update corresponding oscillator
-        updatePitchNoHand(i);
-        updateVolume(i);
       }
-    }
-  }, [loading]);
+    }, [loading]);
 
   const render = useCallback(() => {
     if (webcamRef.current && webcamRef.current?.video?.readyState === 4) {
       // Get video properties
       const video = webcamRef.current.video;
-  
+
       // Get intrinsic size of the resource
       const videoWidth = video.videoWidth;
       const videoHeight = video.videoHeight;
-  
+
       // Extract image data
       const videoCanvas = document.createElement('canvas');
-  
+
       // unnecessary!?
       videoCanvas.width = videoWidth;
       videoCanvas.height = videoHeight;
-  
+
       const videoCtx = videoCanvas.getContext('2d', { willReadFrequently: true });
-  
+
       let imageData = null;
-  
+
       if (videoCtx !== null) {
         videoCtx.drawImage(video, 0, 0, videoCanvas.width, videoCanvas.height);
         imageData = videoCtx.getImageData(0, 0, videoCanvas.width, videoCanvas.height);
         videoCtx.clearRect(0, 0, videoCanvas.width, videoCanvas.height);
       }
-  
+
       if (imageData) sendImageData(imageData);
 
       if (canvasRef.current && coordinates.length === 0) {
@@ -231,9 +236,9 @@ const Hand: FC<ControlProps> = ({
 
       // Scale canvas to prevent blur
       if (canvasRef.current) fixDPI(canvasRef.current);
-     
+
       if (prediction.some(e => e) && loading) setLoading(false);
-  
+
       // Draw to canvas
       drawHand(prediction, videoWidth, videoHeight);
     }
@@ -247,7 +252,7 @@ const Hand: FC<ControlProps> = ({
     return () => clearInterval(loop);
   }, [render]);
 
-  useEffect(() => { 
+  useEffect(() => {
     load();
     updatePrediction();
     runHandpose();
@@ -258,82 +263,110 @@ const Hand: FC<ControlProps> = ({
     document.querySelectorAll('.subdiv').forEach((s) => {
       pitchAreas.push(s.getBoundingClientRect());
     });
-    
+
   }, [num]);
 
   const createPitchAreas = (n: number) => {
     const pitchAreas = [];
 
     for (let i = 0; i < n; ++i) {
-      // TODO: Make pitch w/ octave transposition into own type
       const sendPitch = (p: Pitch) => {
-          pitches[i] = p;
-      } 
+        pitches[i] = p;
+      }
 
       pitchAreas.push(
-        <PitchArea  key={i}
-                    i={i}
-                    sendPitch={sendPitch}
-                    activeUIElement={activeUIElement}
-                    sendActiveUIElementToParent={sendActiveUIElementToHand}/>
+        <PitchArea key={i}
+          i={i}
+          sendPitch={sendPitch}
+          activeUIElement={activeUIElement}
+          sendActiveUIElementToParent={sendActiveUIElementToHand} />
       );
     }
 
     return pitchAreas;
   }
 
-//--------------------------------------------------  
+  //--------------------------------------------------  
 
   return (
     <section id="hand">
-      <div className="header" style={{display: "flex", width: "calc(100% - 307px)", justifyContent: "center", overflow: "hidden"}}>
-        
+      <div className="header"
+        style={{
+          display: "flex",
+          width: "calc(100% - 307px)",
+          justifyContent: "center",
+          overflow: "hidden"
+        }}>
+
         <div className="set-subs">
           <div style={{
-              marginTop: "9px", marginLeft: "6px", fontSize: "1rem", padding: "0.rem", width: "3rem"
-            }}
+            marginTop: "9px",
+            marginLeft: "6px",
+            fontSize: "1rem",
+            padding: "0.rem",
+            width: "3rem"
+          }}
 
-            className={num < 13 && !loading ? "btn btn-hand" : "btn btn-hand btn-hand-disabled"} onKeyDown={()=>{}} onClick={() => {
+            className={num < 13 && !loading ? "btn btn-hand" : "btn btn-hand btn-hand-disabled"}
+            onKeyDown={() => { }}
+            onClick={() => {
               if (num < 13) setNum(num + 1);
             }}>
-              +
+            +
           </div>
 
           <div style={{
-              marginTop: "9px", marginLeft: "6px", fontSize: "1rem", padding: "0.rem", width: "3rem"
-            }}
-            
-            className={num > 0  && !loading ? "btn btn-hand" : "btn btn-hand btn-hand-disabled"} onKeyDown={()=>{}} onClick={() => {
+            marginTop: "9px",
+            marginLeft: "6px",
+            fontSize: "1rem",
+            padding: "0.rem",
+            width: "3rem"
+          }}
+
+            className={num > 0 && !loading ? "btn btn-hand" : "btn btn-hand btn-hand-disabled"}
+            onKeyDown={() => { }}
+            onClick={() => {
               if (num > 0) setNum(num - 1);
             }}>
-              -
+            -
           </div>
         </div>
 
         <h3>WEBCAM NOISE MACHINE 3000</h3>
 
-        <div style={{display: "flex", alignItems: "center", marginRight: "9px", marginLeft: "auto"}}>
-            <div className={!loading ? "btn btn-hand" : "btn btn-hand btn-hand-disabled"} style={{padding: "12px", width: "120px"}} onKeyDown={()=>{}}
-              onClick={async () => {
-                  await Tone.start();
-                  setStartButton(startButton === 'stop audio' ? 'start audio' : 'stop audio');
-                  startButton === 'start audio' ? audio.start() : audio.stop();
-                }
-              }
-              >{startButton}
-            </div>
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          marginRight: "9px",
+          marginLeft: "auto"
+        }}>
+
+          <div className={!loading ? "btn btn-hand" : "btn btn-hand btn-hand-disabled"}
+            style={{
+              padding: "12px",
+              width: "120px"
+            }}
+            onKeyDown={() => { }}
+            onClick={async () => {
+              await Tone.start();
+              setStartButton(startButton === 'stop audio' ? 'start audio' : 'stop audio');
+              startButton === 'start audio' ? audio.start() : audio.stop();
+            }
+            }
+          >{startButton}
+          </div>
         </div>
-          
+
       </div>
-      
+
       <Webcam ref={webcamRef} width={0} height={0} />
 
       <div className="container">
-        
+
         <div className="subdivs">
           <canvas ref={canvasRef} />
-          { !loading ? createPitchAreas(num) : <LoadingScreen/>}
-        </div>       
+          {!loading ? createPitchAreas(num) : <LoadingScreen />}
+        </div>
       </div>
     </section>
   )

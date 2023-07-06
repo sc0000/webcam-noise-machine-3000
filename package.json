@@ -1,5 +1,5 @@
 {
-  "name": "theremin-v2.5",
+  "name": "webcam-noise-machine-3000",
   "productName": "Webcam Noise Machine 3000",
   "author": "sc0000",
   "version": "0.1.0",
@@ -15,6 +15,7 @@
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
     "comlink": "^4.4.1",
+    "cross-env": "^7.0.3",
     "fs": "^0.0.1-security",
     "fs-extra": "^11.1.0",
     "path": "^0.12.7",
@@ -28,7 +29,7 @@
   },
   "scripts": {
     "start:web": "react-scripts start",
-    "build:web": "set PUBLIC_URL=./&& react-scripts build && node buildBugWorkaround.js",
+    "build:web": "cross-env PUBLIC_URL=./ react-scripts build && node buildBugWorkaround.js",
     "build:desktop": "tsc -p electron/tsconfig.json",
     "start:desktop": "npm run build:desktop && electron ./build/electron.js",
     "test": "react-scripts test",
@@ -37,7 +38,7 @@
     "make:win": "electron-builder --win --x64"
   },
   "build": {
-    "appId": "com.Cyliax.WebcamNoiseMachine3000",
+    "appId": "io.github.sc0000.webcam-noise-machine-3000",
     "files": [
       "build/**/*"
     ],
@@ -52,7 +53,7 @@
       "icon": "src/assets/tray-big2.png",
       "hardenedRuntime": true,
       "gatekeeperAssess": false
-   }
+    }
   },
   "eslintConfig": {
     "extends": [

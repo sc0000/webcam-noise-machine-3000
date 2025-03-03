@@ -94,7 +94,7 @@ class Audio {
         fadeOut: 0.5,
     }).toDestination();
 
-    console.log(`from audio.stopRecording(): ${this.players}`);
+    console.log(`from this.stopRecording(): ${this.players}`);
 
     return this.players;
   }

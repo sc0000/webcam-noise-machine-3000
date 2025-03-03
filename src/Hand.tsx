@@ -9,7 +9,7 @@ import Webcam from 'react-webcam'
 import { wrap } from 'comlink';
 import * as Tone from 'tone';
 
-import { scale, mapLinearToLogarithmicScale, lerp, fixDPI, randomInt } from './utils'
+import { scale, mapLinearToLogarithmicScale, lerp, fixDPI, randomInt, randomFloat } from './utils'
 import audio, { Pitch } from './Audio'
 import LoadingScreen from './LoadingScreen'
 import PitchArea from './PitchArea'
@@ -26,6 +26,12 @@ const coordinates: { x: number, y: number, size: number, angle: number }[] = [];
 
 const pitchAreas: DOMRect[] = [];
 const pitches: Pitch[] = [];
+
+const noHandAngleIncrement: number[] = [];
+
+for (let i = 0; i < 21; ++i) {
+  noHandAngleIncrement.push(randomFloat(0.002, 0.008))
+}
 
 let prediction: handpose.AnnotatedPrediction[] = [];
 
@@ -51,7 +57,6 @@ const Hand: FC<ControlProps> = ({
     sendActiveUIElementToParent(i);
   }
 
-  // TODO: Move into Audio class
   const updatePitch = (landmarks: Coords3D, i: number) => {
     for (let j = 0; j < pitchAreas.length; ++j) {
       if (coordinates[i].y > pitchAreas[j].y && coordinates[i].y < (pitchAreas[j].y + pitchAreas[j].height)) {
@@ -85,7 +90,6 @@ const Hand: FC<ControlProps> = ({
     }
   }
 
-  // TODO: Move into Audio class
   const updatePitchNoHand = (i: number) => {
     const targetPitch: number | null = canvasRef.current?.height ?
       audio.noHandMaxPitch - mapLinearToLogarithmicScale(coordinates[i].y, 0.0001,
@@ -96,21 +100,6 @@ const Hand: FC<ControlProps> = ({
       audio.updatePitch(audio.oscillators[i], targetPitch);
   }
 
-  // const updatePitchNoHand = (i: number) => {
-  //   if (!canvasRef.current || !canvasRef.current.height) return;
-  //   if (!coordinates[i] || typeof coordinates[i].y !== "number") return;
-
-  //   const targetPitch = audio.noHandMaxPitch - mapLinearToLogarithmicScale(
-  //       coordinates[i].y, 0.0001, canvasRef.current.height, 
-  //       audio.noHandMaxPitch / 4, audio.noHandMaxPitch
-  //   );
-
-  //   if (audio.oscillators[i] && targetPitch !== null && !isNaN(targetPitch)) {
-  //     audio.updatePitch(audio.oscillators[i], targetPitch);
-  //   }
-  // };
-
-  // TODO: Move into Audio class
   const updateVolume = (i: number) => {
     if (canvasRef.current?.width) {
       const minVolumeMaster = audio.maxVolumeMaster * 2;
@@ -182,7 +171,7 @@ const Hand: FC<ControlProps> = ({
 
       else {
         for (let i = 0; i < 21; ++i) {
-          coordinates[i].angle += Math.PI * 0.005;
+          coordinates[i].angle += Math.PI * noHandAngleIncrement[i];
 
           const targetX: number | null = canvasRef.current?.width ?
             (canvasRef.current.width / 2) - Math.sin(coordinates[i].angle) * 300

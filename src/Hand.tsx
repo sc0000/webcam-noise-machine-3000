@@ -96,6 +96,20 @@ const Hand: FC<ControlProps> = ({
       audio.updatePitch(audio.oscillators[i], targetPitch);
   }
 
+  // const updatePitchNoHand = (i: number) => {
+  //   if (!canvasRef.current || !canvasRef.current.height) return;
+  //   if (!coordinates[i] || typeof coordinates[i].y !== "number") return;
+
+  //   const targetPitch = audio.noHandMaxPitch - mapLinearToLogarithmicScale(
+  //       coordinates[i].y, 0.0001, canvasRef.current.height, 
+  //       audio.noHandMaxPitch / 4, audio.noHandMaxPitch
+  //   );
+
+  //   if (audio.oscillators[i] && targetPitch !== null && !isNaN(targetPitch)) {
+  //     audio.updatePitch(audio.oscillators[i], targetPitch);
+  //   }
+  // };
+
   // TODO: Move into Audio class
   const updateVolume = (i: number) => {
     if (canvasRef.current?.width) {
@@ -359,7 +373,12 @@ const Hand: FC<ControlProps> = ({
 
       </div>
 
-      <Webcam ref={webcamRef} width={0} height={0} />
+      <Webcam
+        ref={webcamRef}
+        width={0}
+        height={0}
+        videoConstraints={{ facingMode: "user" }}
+      />
 
       <div className="container">
 

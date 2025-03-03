@@ -28,11 +28,14 @@ export const lerp = (A: number, B: number, factor: number): number => {
 }
 
 export const logerp = (A: number, B: number, factor: number): number => {
-    const logA = Math.log10(A);
-    const logB = Math.log10(B);
-    const logFactor = logA + (logB - logA) * factor;
-    return Math.pow(10, logFactor);
-  }
+  const safeA = Math.max(A, 0.0001);
+  const safeB = Math.max(B, 0.0001);
+
+  const logA = Math.log10(safeA);
+  const logB = Math.log10(safeB);
+  const logFactor = logA + (logB - logA) * factor;
+  return Math.pow(10, logFactor);
+}
 
 export const fixDPI = (canvas: HTMLCanvasElement) => {
     const dpi = window.devicePixelRatio;

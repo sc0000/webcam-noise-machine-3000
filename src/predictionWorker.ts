@@ -1,3 +1,5 @@
+// Copyright 2025 Sebastian Cyliax
+
 import * as handpose from '@tensorflow-models/handpose'
 import '@tensorflow/tfjs-backend-webgl'
 import '@tensorflow/tfjs-backend-cpu'

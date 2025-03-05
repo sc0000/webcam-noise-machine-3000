@@ -1,3 +1,5 @@
+// Copyright 2025 Sebastian Cyliax
+
 import { useState, FC, useEffect, Fragment } from 'react'
 import Player from './Player'
 import audio from './Audio'
@@ -17,7 +19,7 @@ const ASSIGNMENT_MODES = ["single", "all of type", "all"];
 const Controls: FC<ControlProps> = ({
   activeUIElement, sendActiveUIElementToParent
 }) => {
-  
+
   // Waveforms
   const [lastWaveform, setLastWaveform] = useState("");
   const [newWaveform, setNewWaveform] = useState("sine");
@@ -26,7 +28,7 @@ const Controls: FC<ControlProps> = ({
 
   const [fxUpdateWaveform, setFxUpdateWaveform] = useState("sine");
 
-// ? -----------------------------------------------
+  // ? -----------------------------------------------
 
   const [lastFxParameterState, setLastFxParameterState] = useState([0, 0, 0, 0, 0.5]);
 
@@ -84,7 +86,7 @@ const Controls: FC<ControlProps> = ({
     setLastFxParameterState([tf, td, rd, rm, vl]);
   }, [fxUpdateWaveform]);
 
-// ? -----------------------------------------------
+  // ? -----------------------------------------------
 
   const sendLastWaveform = (s: string) => {
     setLastWaveform(s);
@@ -114,7 +116,7 @@ const Controls: FC<ControlProps> = ({
           sendNewWaveform={sendNewWaveform}
           assignmentMode={assignmentMode}
           randomize={randomize}
-          />
+        />
       );
     }
 
@@ -128,8 +130,8 @@ const Controls: FC<ControlProps> = ({
 
     for (let i = 0; i < n; ++i) {
       players.push(
-        <Player key={i} i={i} activeUIElement={activeUIElement} 
-          sendActiveUIElementToParent={sendActiveUIElementToControls}/>
+        <Player key={i} i={i} activeUIElement={activeUIElement}
+          sendActiveUIElementToParent={sendActiveUIElementToControls} />
       )
     }
 
@@ -140,84 +142,85 @@ const Controls: FC<ControlProps> = ({
 
   return (
     <section id="controls">
-        <div className="control-buttons">
+      <div className="control-buttons">
 
-          <div className="shapes-options-outer">
-            <div className="shapes-options">
-              {ASSIGNMENT_MODES.map((m) => {
-                return (
-                  <div key={m} className={assignmentMode === m ? "btn btn-controls btn-controls-active" : "btn btn-controls"}
-                    onKeyDown={()=>{}} onClick={() => setAssignmentMode(m)}
-                    >{m}
-                  </div>
-                )
-              })}
+        <div className="shapes-options-outer">
+          <div className="shapes-options">
+            {ASSIGNMENT_MODES.map((m) => {
+              return (
+                <div key={m} className={assignmentMode === m ? "btn btn-controls btn-controls-active" : "btn btn-controls"}
+                  onKeyDown={() => { }} onClick={() => setAssignmentMode(m)}
+                >{m}
+                </div>
+              )
+            })}
 
-              <div className="btn btn-controls" onKeyDown={()=>{}}
-                onClick={() => {
-                  setRandomize(true);
-                  setTimeout(() => setRandomize(false), 0)}}
-                  >rand</div>
-            </div>
+            <div className="btn btn-controls" onKeyDown={() => { }}
+              onClick={() => {
+                setRandomize(true);
+                setTimeout(() => setRandomize(false), 0)
+              }}
+            >rand</div>
           </div>
+        </div>
 
-          <div className="shapes shapes-all" onKeyDown={()=>{}} >
-              <div className="fingers">
-                <div className="shapes shapes-thumb">
-                  {createNodes(4)}
-                </div>
+        <div className="shapes shapes-all" onKeyDown={() => { }} >
+          <div className="fingers">
+            <div className="shapes shapes-thumb">
+              {createNodes(4)}
+            </div>
 
-                <div className="shapes shapes-index">
-                  {createNodes(8)}
-                </div>
+            <div className="shapes shapes-index">
+              {createNodes(8)}
+            </div>
 
-                <div className="shapes shapes-middle">
-                  {createNodes(12)}
-                  
-                  {/* Palm landmark: */}
-                  <div style={{marginTop: "7rem"}}>
-                    <Dropdown 
-                    iterator={0}
-                    activeUIElement={activeUIElement}
-                    lastWaveform={lastWaveform}
-                    newWaveform={newWaveform}
-                    sendActiveUIElementToParent={sendActiveUIElementToControls}
-                    sendLastWaveform={sendLastWaveform}
-                    sendNewWaveform={sendNewWaveform}
-                    assignmentMode={assignmentMode}
-                    randomize={randomize} />
-                  </div>
+            <div className="shapes shapes-middle">
+              {createNodes(12)}
 
-                </div>
-
-                <div className="shapes shapes-ring">
-                  {createNodes(16)}
-                </div>
-
-                <div className="shapes shapes-pinky">
-                  {createNodes(20)}
-                </div>
-
+              {/* Palm landmark: */}
+              <div style={{ marginTop: "7rem" }}>
+                <Dropdown
+                  iterator={0}
+                  activeUIElement={activeUIElement}
+                  lastWaveform={lastWaveform}
+                  newWaveform={newWaveform}
+                  sendActiveUIElementToParent={sendActiveUIElementToControls}
+                  sendLastWaveform={sendLastWaveform}
+                  sendNewWaveform={sendNewWaveform}
+                  assignmentMode={assignmentMode}
+                  randomize={randomize} />
               </div>
-          </div>
 
-          <div className="fx-update">
-            <div className="fx-update-options">
-              {WAVEFORMS.map((w) => {
-                return (
-                  <div key={w} className={fxUpdateWaveform === w ? "btn btn-controls btn-controls-active" : "btn btn-controls"}
-                    onKeyDown={()=>{}} onClick={() => setFxUpdateWaveform(w)}
-                    >{w.substring(0, 3)}
-                  </div>
-                )
-              })}
             </div>
 
-            <div className="fx-update-sliders">
-              {EFFECTS_PARAMETERS.map((ep, i) => {
-                return (
-                  <div key={i+1} style={{margin: "6px", display: "flex", height: "20px"}}>
-                    <div className="control-label">
+            <div className="shapes shapes-ring">
+              {createNodes(16)}
+            </div>
+
+            <div className="shapes shapes-pinky">
+              {createNodes(20)}
+            </div>
+
+          </div>
+        </div>
+
+        <div className="fx-update">
+          <div className="fx-update-options">
+            {WAVEFORMS.map((w) => {
+              return (
+                <div key={w} className={fxUpdateWaveform === w ? "btn btn-controls btn-controls-active" : "btn btn-controls"}
+                  onKeyDown={() => { }} onClick={() => setFxUpdateWaveform(w)}
+                >{w.substring(0, 3)}
+                </div>
+              )
+            })}
+          </div>
+
+          <div className="fx-update-sliders">
+            {EFFECTS_PARAMETERS.map((ep, i) => {
+              return (
+                <div key={i + 1} style={{ margin: "6px", display: "flex", height: "20px" }}>
+                  <div className="control-label">
                     {ep.split("-").map((text, i) => (
                       // rome-ignore lint/suspicious/noArrayIndexKey: <explanation>
                       <Fragment key={i}>
@@ -225,66 +228,66 @@ const Controls: FC<ControlProps> = ({
                         <br />
                       </Fragment>
                     ))}
-                    </div>
-                    <div className="controls-slider-outer">
-                      <Slider 
-                        id={60 + i}
-                        mapping={ep}
-                        activeUIElement={activeUIElement}
-                        sendActiveUIElementToParent={sendActiveUIElementToControls}
-                        sendParameterValue={sendParameterValue}
-                        lastFxParameterValue={lastFxParameterState[i] as number}
-                      />
-                    </div>
-                    
                   </div>
-                )
-              })}
+                  <div className="controls-slider-outer">
+                    <Slider
+                      id={60 + i}
+                      mapping={ep}
+                      activeUIElement={activeUIElement}
+                      sendActiveUIElementToParent={sendActiveUIElementToControls}
+                      sendParameterValue={sendParameterValue}
+                      lastFxParameterValue={lastFxParameterState[i] as number}
+                    />
+                  </div>
+
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* Global controls */}
+        <div className="global-controls-outer">
+          <div className="global-controls">
+            <div className="control-label">no hand pitch</div>
+            <div className="controls-slider-outer">
+              <Slider
+                id={71}
+                mapping={"no-hand-pitch"}
+                activeUIElement={activeUIElement}
+                sendActiveUIElementToParent={sendActiveUIElementToControls} />
             </div>
           </div>
 
-          {/* Global controls */}
-          <div className="global-controls-outer">
-            <div className="global-controls">
-              <div className="control-label">no hand pitch</div>
-              <div className="controls-slider-outer">
-                <Slider 
-                  id={71} 
-                  mapping={"no-hand-pitch"} 
-                  activeUIElement={activeUIElement} 
-                  sendActiveUIElementToParent={sendActiveUIElementToControls}/>
-              </div>
-            </div>
-
-            <div className="global-controls">
-              <div className="control-label">microt. amount</div>
-              <div className="controls-slider-outer">
-                <Slider 
-                  id={72} 
-                  mapping={"microtonal-spread"} 
-                  activeUIElement={activeUIElement} 
-                  sendActiveUIElementToParent={sendActiveUIElementToControls}/>
-              </div>
-            </div>
-            
-            <div className="global-controls">
-              <div className="control-label">master volume</div>
-              <div className="controls-slider-outer">
-                <Slider 
-                  id={73} 
-                  mapping={"master-volume"} 
-                  activeUIElement={activeUIElement} 
-                  sendActiveUIElementToParent={sendActiveUIElementToControls}/>
-              </div>
+          <div className="global-controls">
+            <div className="control-label">microt. amount</div>
+            <div className="controls-slider-outer">
+              <Slider
+                id={72}
+                mapping={"microtonal-spread"}
+                activeUIElement={activeUIElement}
+                sendActiveUIElementToParent={sendActiveUIElementToControls} />
             </div>
           </div>
-      
-          <div className="players-outer">
-            <div className="players">
-              {createPlayers(4)}
+
+          <div className="global-controls">
+            <div className="control-label">master volume</div>
+            <div className="controls-slider-outer">
+              <Slider
+                id={73}
+                mapping={"master-volume"}
+                activeUIElement={activeUIElement}
+                sendActiveUIElementToParent={sendActiveUIElementToControls} />
             </div>
           </div>
         </div>
+
+        <div className="players-outer">
+          <div className="players">
+            {createPlayers(4)}
+          </div>
+        </div>
+      </div>
 
     </section>
   )

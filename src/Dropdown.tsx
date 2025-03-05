@@ -1,3 +1,5 @@
+// Copyright 2025 Sebastian Cyliax
+
 import { useState, useEffect, FC } from 'react'
 import { ToneOscillatorType } from 'tone';
 import audio from './Audio'

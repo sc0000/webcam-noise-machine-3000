@@ -1,3 +1,5 @@
+// Copyright 2025 Sebastian Cyliax
+
 import { createContext, Dispatch, SetStateAction, ReactNode, useState } from "react";
 
 export interface MouseContextInterface {
@@ -9,7 +11,7 @@ export interface MouseContextInterface {
 
 const defaultState = {
   mouseX: 0,
-  setMouseX: (n: number) => {}
+  setMouseX: (n: number) => { }
 } as MouseContextInterface;
 
 export const MouseContext = createContext(defaultState);
@@ -18,11 +20,11 @@ type MouseProviderProps = {
   children: ReactNode,
 }
 
-const MouseContextProvider = ({children}: MouseProviderProps) => {
+const MouseContextProvider = ({ children }: MouseProviderProps) => {
   const [mouseX, setMouseX] = useState<number>(0);
 
   return (
-    <MouseContext.Provider value={{mouseX, setMouseX}}>
+    <MouseContext.Provider value={{ mouseX, setMouseX }}>
       {children}
     </MouseContext.Provider>
   )

@@ -1,3 +1,5 @@
+// Copyright 2025 Sebastian Cyliax
+
 import { FC } from "react";
 
 import CLOSEWINDOW from "./assets/close-window.png";
@@ -10,7 +12,7 @@ const MenuBar: FC = () => {
   const handleMinimizeClick = () => {
     window.electron.ipcRenderer.send("minimizeWindow");
   };
-  
+
   const handleMaximizeClick = () => {
     window.electron.ipcRenderer.send("maximizeWindow");
   };
@@ -26,21 +28,21 @@ const MenuBar: FC = () => {
           src={MINIMIZEWINDOW}
           alt=""
           className="btn-menubar"
-          onKeyDown={() => {}}
+          onKeyDown={() => { }}
           onClick={handleMinimizeClick}
         />
         <img
           src={MAXIMIZEWINDOW}
           alt=""
           className="btn-menubar"
-          onKeyDown={() => {}}
+          onKeyDown={() => { }}
           onClick={handleMaximizeClick}
         />
         <img
           src={CLOSEWINDOW}
           alt=""
           className="btn-menubar btn-menubar-exit"
-          onKeyDown={() => {}}
+          onKeyDown={() => { }}
           onClick={handleCloseClick}
         />
       </div>

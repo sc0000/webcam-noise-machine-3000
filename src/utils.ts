@@ -1,3 +1,5 @@
+// Copyright 2025 Sebastian Cyliax
+
 import {useState, useEffect} from 'react'
 
 export const scale = (value: number, inMin: number, inMax: number, outMin: number, outMax: number): number => {

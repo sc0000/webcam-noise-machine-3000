@@ -1,3 +1,5 @@
+// Copyright 2025 Sebastian Cyliax
+
 import React, { useState } from 'react'
 import audio from './Audio';
 import Slider from './Slider';

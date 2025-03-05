@@ -1,3 +1,5 @@
+// Copyright 2025 Sebastian Cyliax
+
 import { app, BrowserWindow, ipcMain } from 'electron';
 import * as path from 'path';
 
@@ -78,4 +80,3 @@ app.on("activate", () => {
     createWindow();
   }
 });
-

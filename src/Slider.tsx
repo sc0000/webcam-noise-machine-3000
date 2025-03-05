@@ -1,3 +1,5 @@
+// Copyright 2025 Sebastian Cyliax
+
 import { useRef, useState, useEffect, useContext, useCallback, FC, MouseEvent, CSSProperties } from 'react'
 import './slider.css'
 

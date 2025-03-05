@@ -1,3 +1,5 @@
+// Copyright 2025 Sebastian Cyliax
+
 declare global {
   interface Window {
     electron: {

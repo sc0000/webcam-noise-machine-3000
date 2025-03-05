@@ -1,3 +1,5 @@
+// Copyright 2025 Sebastian Cyliax
+
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electron', {

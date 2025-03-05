@@ -1,3 +1,5 @@
+// Copyright 2025 Sebastian Cyliax
+
 import { useRef, useState, useEffect, useCallback, FC } from 'react'
 
 import * as handpose from '@tensorflow-models/handpose'

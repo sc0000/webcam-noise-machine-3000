@@ -24,4 +24,4 @@ Experimental webcam-controlled synthesizer powered by TensorFlow.js hand recogni
 
 ## Demo
 
-[Demo](https://youtu.be/7mXSGJH_6XA). Please note that this is recorded with a phone, with the audio coming straight out some *suboptimal* laptop speakers. Unfortunately, my machine wouldn't handle running this and a screen capture at the same time.
+[Demo](https://youtu.be/7mXSGJH_6XA). Please note that this is recorded with a phone, with the audio coming straight out some *suboptimal* laptop speakers, so the sound quality is really poor. Unfortunately, my machine wouldn't handle running this and a screen capture at the same time.

@@ -1,3 +1,5 @@
+// Copyright 2025 Sebastian Cyliax
+
 import { useState, useEffect, FC } from "react";
 
 import './loadingScreen.css'
@@ -21,7 +23,7 @@ const LoadingScreen: FC = () => {
             return "Loading   ";
         }
       });
-    }, 500); 
+    }, 500);
 
     return () => {
       clearInterval(interval);

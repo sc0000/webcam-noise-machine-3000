@@ -1,3 +1,5 @@
+// Copyright 2025 Sebastian Cyliax
+
 import * as Tone from 'tone'
 import { logerp } from './utils'
 

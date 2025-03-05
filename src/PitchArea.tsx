@@ -1,3 +1,5 @@
+// Copyright 2025 Sebastian Cyliax
+
 import { useState, useEffect, useCallback, FC } from 'react'
 import { randomInt } from './utils';
 import { ControlProps } from './ControlLayer';

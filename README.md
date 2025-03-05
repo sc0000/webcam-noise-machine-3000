@@ -1,6 +1,6 @@
 # Webcam Noise Machine 3000
 
-Webcam-controlled synth powered by TensorFlow.js hand recognition, packaged up as an Electron app.
+Experimental webcam-controlled synthesizer powered by TensorFlow.js hand recognition, packaged up as an Electron app.
 
 ## Build and run
 
@@ -20,3 +20,8 @@ Webcam-controlled synth powered by TensorFlow.js hand recognition, packaged up a
 
 * FX parameter sliders are sometimes not updated correctly when assigned to another waveform.
 * Usually, the camera needs to see a hand for the loading screen to disappear.
+* This app hasn't been maintained in a while, and a lot of dependencies are brought in in older versions.
+
+## Demo
+
+[Demo](https://youtu.be/7mXSGJH_6XA). Please note that this is recorded with a phone, with the audio coming straight out some *suboptimal* laptop speakers. Unfortunately, my machine wouldn't handle running this and a screen capture at the same time.

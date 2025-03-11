@@ -3,10 +3,12 @@
 import {useState, useEffect} from 'react'
 
 export const scale = (value: number, inMin: number, inMax: number, outMin: number, outMax: number): number => {
-    return (value - inMin) / (inMax - inMin) * (outMax - outMin) + outMin;
+  const factor = (value - inMin) / (inMax - inMin);
+
+  return  lerp(outMin, outMax, factor);
 }
 
-export const mapLinearToLogarithmicScale = (
+export const mapLinearToLog2 = (
   value: number, 
   inMin: number, 
   inMax: number, 
@@ -14,28 +16,76 @@ export const mapLinearToLogarithmicScale = (
   outMax: number
 ): number => {
     if (value <= 0) return outMin;
-        
-    const log_value = Math.log(value + (Math.abs(inMin) + Math.abs(inMax)) / 1000);
-    const log_inMin = Math.log(inMin + (Math.abs(inMin) + Math.abs(inMax)) / 1000);
-    const log_inMax = Math.log(inMax + (Math.abs(inMin) + Math.abs(inMax)) / 1000);
-    const log_outMin = Math.log(outMin);
-    const log_outMax = Math.log(outMax);
-    const log_result = ((log_value - log_inMin) / (log_inMax - log_inMin)) * (log_outMax - log_outMin) + log_outMin;
+
+    const factor = (value - inMin) / (inMax - inMin);
     
-    return Math.exp(log_result);
+    const outMinLog = Math.log2(outMin);
+    const outMaxLog = Math.log2(outMax);
+
+    const outExp = outMinLog + (outMaxLog - outMinLog) * factor;
+
+    return Math.pow(2, outExp);
+}
+
+export const mapLog2ToLinear = (
+  value: number, 
+  inMin: number, 
+  inMax: number, 
+  outMin: number, 
+  outMax: number
+): number => {
+    
+    const valueLog = Math.log2(value);
+    const inMinLog = Math.log2(inMin);
+    const inMaxLog = Math.log2(inMax);
+
+    const factor = (valueLog - inMinLog) / (inMaxLog - inMinLog);
+    
+    return lerp(outMin, outMax, factor);
+}
+
+export const mapLinearToLog10 = (
+  value: number, 
+  inMin: number, 
+  inMax: number, 
+  outMin: number, 
+  outMax: number
+): number => {
+    if (value <= 0) return outMin;
+
+    const factor = (value - inMin) / (inMax - inMin);
+    
+    const outMinLog = Math.log10(outMin);
+    const outMaxLog = Math.log10(outMax);
+
+    const outExp = lerp(outMinLog, outMaxLog, factor);
+
+    return Math.pow(10, outExp);
 }
 
 export const lerp = (A: number, B: number, factor: number): number => {
     return A + (B - A) * factor;
 }
 
-export const logerp = (A: number, B: number, factor: number): number => {
+export const logerp2 = (A: number, B: number, factor: number): number => {
+  const safeA = Math.max(A, 0.0001);
+  const safeB = Math.max(B, 0.0001);
+
+  const logA = Math.log2(safeA);
+  const logB = Math.log2(safeB);
+  const logFactor = logA + (logB - logA) * factor;
+  
+  return Math.pow(2, logFactor);
+}
+
+export const logerp10 = (A: number, B: number, factor: number): number => {
   const safeA = Math.max(A, 0.0001);
   const safeB = Math.max(B, 0.0001);
 
   const logA = Math.log10(safeA);
   const logB = Math.log10(safeB);
   const logFactor = logA + (logB - logA) * factor;
+  
   return Math.pow(10, logFactor);
 }
 

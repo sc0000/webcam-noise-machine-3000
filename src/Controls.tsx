@@ -8,7 +8,7 @@ import './controls.css'
 import Dropdown from './Dropdown'
 import Slider from './Slider'
 import { ControlProps } from './ControlLayer'
-import { scale } from './utils'
+import { logerp2, mapLinearToLog2, mapLog2ToLinear, scale } from './utils'
 
 //--------------------------------------------------
 
@@ -36,7 +36,7 @@ const Controls: FC<ControlProps> = ({
   const [tremoloDepth, setTremoloDepth] = useState(audio.tremolos[0].depth.value);
   const [reverbDecay, setReverbDecay] = useState(scale(audio.reverbs[0].decay as number, 0, 4, 0, 1));
   const [reverbMix, setReverbMix] = useState(audio.reverbs[0].wet.value);
-  const [volume, setVolume] = useState(scale(audio.volumeModifiers[fxUpdateWaveform], audio.maxVolumeMaster, Math.abs(audio.maxVolumeMaster) - 6, 0, 1));
+  const [volume, setVolume] = useState(0.5);
 
   const sendParameterValue = (val: number, mapping: string) => {
     if (mapping === "tremolo-frequency") setTremoloFrequency(val);
@@ -60,7 +60,8 @@ const Controls: FC<ControlProps> = ({
         });
       }
 
-      audio.volumeModifiers[fxUpdateWaveform] = scale(volume, 0, 1, audio.maxVolumeMaster, Math.abs(audio.maxVolumeMaster) - 6);
+      audio.volumeModifiers[fxUpdateWaveform] = 1 / mapLinearToLog2(volume, 0, 1,
+        audio.minInvVolumeModifier, audio.maxInvVolumeModifer);
     });
   }, [tremoloFrequency, tremoloDepth, reverbDecay, reverbMix, volume]);
 
@@ -79,14 +80,15 @@ const Controls: FC<ControlProps> = ({
         td = audio.tremolos[i].depth.value + 0.001;
         rd = scale(audio.reverbs[i].decay as number, 0.001, 4, 0, 1) + 0.001;
         rm = audio.reverbs[i].wet.value + 0.001;
-        vl = scale(audio.volumeModifiers[fxUpdateWaveform], audio.maxVolumeMaster, Math.abs(audio.maxVolumeMaster) - 6, 0, 1);
+        vl = mapLog2ToLinear(1 / audio.volumeModifiers[fxUpdateWaveform],
+          audio.minInvVolumeModifier, audio.maxInvVolumeModifer, 0, 1);
       }
     });
 
     setLastFxParameterState([tf, td, rd, rm, vl]);
   }, [fxUpdateWaveform]);
 
-  // ? -----------------------------------------------
+  // -----------------------------------------------
 
   const sendLastWaveform = (s: string) => {
     setLastWaveform(s);

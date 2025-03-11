@@ -1,7 +1,7 @@
 // Copyright 2025 Sebastian Cyliax
 
 import * as Tone from 'tone'
-import { logerp } from './utils'
+import { logerp2 } from './utils'
 
 //--------------------------------------------------
 
@@ -30,13 +30,19 @@ class Audio {
   reverbs: Tone.Reverb[] = [];
   
   volumeModifiers: volumeModifierProps = {
-    sine: 0,
-    triangle: 0,
-    sawtooth: 0,
-    square: 0
+    sine: 1,
+    triangle: 1,
+    sawtooth: 1,
+    square: 1
   }
 
-  maxVolumeMaster = -36;
+  
+  minMaxVolume = -60;
+  maxMaxVolume = -18;
+  maxVolumeMaster = (this.minMaxVolume + this.maxMaxVolume) / 2;
+
+  minInvVolumeModifier = 0.5;
+  maxInvVolumeModifer = 1.25;
 
   noHandMaxPitch = 880;
 
@@ -96,7 +102,7 @@ class Audio {
         fadeOut: 0.5,
     }).toDestination();
 
-    console.log(`from this.stopRecording(): ${this.players}`);
+    // console.log(`from this.stopRecording(): ${this.players}`);
 
     return this.players;
   }
@@ -109,7 +115,7 @@ class Audio {
   }
 
   updatePitch(osc: Tone.Oscillator, targetPitch: number) {
-    osc.frequency.value = logerp(osc.frequency.value as number, targetPitch, 0.1);
+    osc.frequency.value = logerp2(osc.frequency.value as number, targetPitch, 0.1);
   }
 
   toFrequency(note: string) {

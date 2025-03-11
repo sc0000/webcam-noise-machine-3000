@@ -11,7 +11,7 @@ import Webcam from 'react-webcam'
 import { wrap } from 'comlink';
 import * as Tone from 'tone';
 
-import { scale, mapLinearToLogarithmicScale, lerp, fixDPI, randomInt, randomFloat } from './utils'
+import { scale, mapLinearToLog2, lerp, fixDPI, randomInt, randomFloat } from './utils'
 import audio, { Pitch } from './Audio'
 import LoadingScreen from './LoadingScreen'
 import PitchArea from './PitchArea'
@@ -77,7 +77,7 @@ const Hand: FC<ControlProps> = ({
         // then get direction back into the picture after scaling
         const direction = (coordinates[i].y > center ? -1 : 1);
 
-        const scaledDeviation = mapLinearToLogarithmicScale(landmarkY, center,
+        const scaledDeviation = mapLinearToLog2(landmarkY, center,
           center + (pitchArea.height / 2), 0.1, audio.maxDeviation(freq))
           * direction * audio.microtonalSpread;
 
@@ -94,7 +94,7 @@ const Hand: FC<ControlProps> = ({
 
   const updatePitchNoHand = (i: number) => {
     const targetPitch: number | null = canvasRef.current?.height ?
-      audio.noHandMaxPitch - mapLinearToLogarithmicScale(coordinates[i].y, 0.0001,
+      audio.noHandMaxPitch - mapLinearToLog2(coordinates[i].y, 0.0001,
         canvasRef.current.height, audio.noHandMaxPitch / 4, audio.noHandMaxPitch)
       : null;
 
@@ -106,9 +106,9 @@ const Hand: FC<ControlProps> = ({
     if (canvasRef.current?.width) {
       const minVolumeMaster = audio.maxVolumeMaster * 2;
 
-      audio.oscillators[i].volume.value = mapLinearToLogarithmicScale(
-        coordinates[i].x, 0, canvasRef.current.width, Math.abs(audio.maxVolumeMaster), Math.abs(minVolumeMaster)
-      ) + minVolumeMaster + audio.maxVolumeMaster + audio.volumeModifiers[audio.oscillators[i].type as string];
+      audio.oscillators[i].volume.value =
+        scale(coordinates[i].x, 0, canvasRef.current.width, minVolumeMaster, audio.maxVolumeMaster) *
+        audio.volumeModifiers[audio.oscillators[i].type as string];
     }
   }
 

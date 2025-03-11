@@ -5,7 +5,7 @@ import './slider.css'
 
 import audio from './Audio'
 import { EFFECTS_PARAMETERS } from './Audio'
-import { scale, mapLinearToLogarithmicScale } from './utils'
+import { scale, mapLinearToLog2, mapLog2ToLinear } from './utils'
 import { MouseContext } from './MouseContext';
 import { ControlProps } from './ControlLayer';
 
@@ -60,16 +60,23 @@ const Slider: FC<SliderProps & ControlProps> = ({
   useEffect(() => {
     const { width } = sizeAndBoundaries();
 
-    if (
-      mapping === 'player-volume' ||
-      mapping === 'cent-wise-deviation' ||
-      mapping === 'reverb-decay' ||
-      mapping === 'reverb-mix') {
-      if (width) setHandlePosition(width / 2);
-    }
+    if (width) {
+      if (
+        mapping === 'player-volume' ||
+        mapping === 'cent-wise-deviation' ||
+        mapping === 'reverb-decay' ||
+        mapping === 'reverb-mix') {
+        setHandlePosition(width / 2);
+      }
 
-    else if (mapping === 'master-volume' || mapping === 'no-hand-pitch') {
-      if (width) setHandlePosition(width / 3);
+      if (mapping === 'master-volume' || mapping === 'no-hand-pitch') {
+        setHandlePosition(width / 2);
+      }
+
+      if (mapping === 'volume') {
+        setHandlePosition(mapLog2ToLinear(1, audio.minInvVolumeModifier, audio.maxInvVolumeModifer, 0.0001, width));
+      }
+
     }
   }, [mapping, sizeAndBoundaries]);
 
@@ -124,21 +131,17 @@ const Slider: FC<SliderProps & ControlProps> = ({
     // AUDIO PARAMETER MAPPING
     //--------------------------------------------------     
 
-
     const { width } = sizeAndBoundaries();
 
     if (width) {
       if (mapping === 'master-volume') {
-        const minMaxVol = -72;
-        const maxMaxVol = -6;
-        const newVol = mapLinearToLogarithmicScale(handlePosition, 0.0001, width,
-          Math.abs(maxMaxVol), Math.abs(minMaxVol)) + minMaxVol + maxMaxVol;
+        const newVol = scale(handlePosition, 0.0001, width, audio.minMaxVolume, audio.maxMaxVolume);
         audio.maxVolumeMaster = newVol;
       }
 
       else if (mapping === 'player-volume' && audio.players[id - 30]) {
-        const logVol = mapLinearToLogarithmicScale(handlePosition, 0, width, 0.001, 24) - 12;
-        audio.players[id - 30].volume.value = logVol;
+        const newVol = scale(handlePosition, 0.0001, width, -15, 15);
+        audio.players[id - 30].volume.value = newVol;
       }
 
       else if (mapping === 'microtonal-spread') {
@@ -152,7 +155,7 @@ const Slider: FC<SliderProps & ControlProps> = ({
 
       // This value has to be sent upstairs because it might be shared between several oscillators
       else if (EFFECTS_PARAMETERS.includes(mapping) && sendParameterValue) {
-        let newValue = scale(handlePosition, 0, width, 0, 1);
+        let newValue = scale(handlePosition, 0.0001, width, 0, 1);
 
         if (newValue < 0) newValue = 0;
         else if (newValue > 1) newValue = 1;
@@ -161,7 +164,7 @@ const Slider: FC<SliderProps & ControlProps> = ({
       }
 
       else if (mapping === 'no-hand-pitch') {
-        audio.noHandMaxPitch = mapLinearToLogarithmicScale(handlePosition, 0.0001, width, 220, 14080);
+        audio.noHandMaxPitch = mapLinearToLog2(handlePosition, 0.0001, width, 220, 14080);
       }
 
     }

@@ -23,5 +23,6 @@ Experimental webcam-controlled synthesizer powered by TensorFlow.js hand recogni
 ## Known issues
 
 * FX parameter sliders are sometimes not updated correctly when assigned to another waveform.
+* Some sliders have awkward scaling.
 * As of yet, the camera needs to see a hand for the loading screen to disappear.
 * This app hasn't been maintained in a while, and a lot of dependencies are brought in in older versions.
